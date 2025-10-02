@@ -31,9 +31,9 @@ RUN echo "VUE_APP_ROOT_API=" > /build/.env
 # de build docker si jamais un test ne passe pas
 COPY ./cypress/                         /build/cypress/
 RUN (npm run serve &) && \
-        npx wait-on http://localhost:8080 && \
-        npx cypress verify && \
-        npx cypress run
+    sleep 30s && \
+    npx cypress verify && \
+    npx cypress run
 
 COPY ./docker/vuejs_env_placeholder /build/.env
 
