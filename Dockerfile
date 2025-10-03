@@ -1,6 +1,6 @@
 ###
 # Phase de compilation de l'appli vuejs
-FROM cypress/included:12.3.0 as build-image
+FROM cypress/included:15.3.0 as build-image
 WORKDIR /build/
 # Mise en cache docker pour le téléchargement
 # des dépendances npm (répertoire node_modules/)

@@ -17,15 +17,15 @@
 import './commands'
 
 beforeEach(() => {
-    cy.intercept('GET', '/api/v1/getFamillesDocuments', [
+    cy.intercept('GET', '**/getFamillesDocuments', [
         { id: 'B', libelle: 'Audiovisuel' }
     ]).as('getFamillesDocuments');
 
-    cy.intercept('GET', '/api/v1/getRuleSets', [
+    cy.intercept('GET', '**/getRuleSets', [
         { id: 1, libelle: 'Les Zones 200' }
     ]).as('getRuleSets');
 
-    cy.intercept('GET', '/api/v1/getAnalyses', {
+    cy.intercept('GET', '**/getAnalyses', {
         analyses: [
             {
                 "id":"QUICK",
@@ -78,12 +78,9 @@ beforeEach(() => {
         ]
     }).as('getAnalyses');
 
-    cy.intercept('GET', '/api/v1/getGeneratedId', '1').as('getGeneratedId');
+    cy.intercept('GET', '**/getGeneratedId', '1').as('getGeneratedId');
 
     cy.visit('http://localhost:8080');
-});
 
-beforeEach(() => {
-    // Réglage de la taille de la fenêtre
     cy.viewport(1400, 1000);
-})
+});
