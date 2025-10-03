@@ -17,12 +17,12 @@
     "axios": "^1.12.2",
     "pinia": "^2.0.17",
     "roboto-fontface": "*",
-    "vue": "^2.7.8",
-    "vue-json-csv": "^1.2.12",
+    "vue": "^3.5.22",
+    "vue-json-csv": "^2.1.0",
     "vue-matomo": "^4.2.0",
     "vue-router": "^3.6.3",
     "vue-shortkey": "^3.1.7",
-    "vuetify": "^2.6.0"
+    "vuetify": "^3.10.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-router": "~5.0.0",
@@ -32,7 +32,7 @@
     "sass-loader": "^10.0.0",
     "vue-cli-plugin-vuetify": "~2.5.1",
     "vue-template-compiler": "^2.6.14",
-    "vuetify-loader": "^1.7.0"
+    "vuetify-loader": "^1.9.2"
   },
   "browserslist": [
     "> 1%",
