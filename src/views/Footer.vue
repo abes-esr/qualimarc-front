@@ -1,5 +1,5 @@
 <template>
-   <v-footer absolute padless min-height="200" color="#e6e6e6" fluid>
+   <v-footer absolute padless min-height="200" color="#e6e6e6" fluid class="d-flex flex-column px-0">
 <!--     FOOTER GRIS-->
       <v-row class="footerTopRow" align="start" justify="start" no-gutters>
 <!--        DESCRIPTION NAVIGATEUR-->
@@ -99,7 +99,7 @@
       </v-row>
 
 <!--     FOOTER NOIR-->
-      <v-row class="footerBottomRow">
+      <v-row class="footerBottomRow w-100">
          <v-col cols="6" class="mr-auto">
            <div style="font-size: 1em; font-weight: 700">Quali<span style="font-weight: 400">Marc</span> — {{ new Date().getFullYear() }} </div>
          </v-col>
