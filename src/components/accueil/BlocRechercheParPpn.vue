@@ -79,7 +79,7 @@
           ref="fileInput">
       </v-file-input>
     </div>
-    <v-alert v-if="analyseStore.getPpnInvalidsList.length !== 0" border="left" colored-border type="error" elevation="2">
+    <v-alert v-if="analyseStore.getPpnInvalidsList.length !== 0" border="start" colored-border type="error" elevation="2">
       Les PPN listés ci-dessous présentent une syntaxe non conforme et ne seront pas analysés :<br>
       <span style="color: #595959; font-size: small">Rappel : syntaxe d'un PPN = 9 caractères, composés de 9 chiffres ou de 8 chiffres + la lettre X</span><br>
       <v-expansion-panels>
@@ -105,7 +105,6 @@
         v-model="snackbarCopyPpnNumberStatus"
         timeout="2000"
         color="#43a047"
-        text
         rounded="pill"
         elevation="5"
     >
@@ -119,7 +118,8 @@
 import { useAnalyseStore } from "@/stores/analyse";
 import {onUpdated, ref} from 'vue';
 import {useHistoriqueStore} from "@/stores/historique";
-import router from "@/router";
+import { useRoute } from 'vue-router'
+const route = useRoute()
 
 //Store
 const analyseStore = useAnalyseStore();
@@ -134,7 +134,7 @@ const isDragging = ref(false);
 //Combobox
 const comboboxPpnLabel = ref('Saisir ou coller des PPN, puis cliquer hors du cadre (ou appuyer sur Entrée)'); //Message indicatif de la combobox
 const lastValuesTypedOrPasted = ref(''); //Dernière Chaîne de caractères saisie dans la combobox, servant à alimenter ensuite ppnListTyped
-const ppnListCombobox = ref((router.currentRoute.query.numeroAnalyse && historiqueStore.getHistorique.length !== 0) ? historiqueStore.getHistorique[router.currentRoute.query.numeroAnalyse].analyse.ppnValidsList : []); //Tableau de ppn alimenté par les chaînes de caractères mises dans la combobox
+const ppnListCombobox = ref((route.query.numeroAnalyse && historiqueStore.getHistorique.length !== 0) ? historiqueStore.getHistorique[route.query.numeroAnalyse].analyse.ppnValidsList : []); //Tableau de ppn alimenté par les chaînes de caractères mises dans la combobox
 const ppnInvalids = ref([]); //Tableau des ppn invalides saisis par l'utilisateur
 
 //Import de fichier

@@ -3,12 +3,12 @@
 <!--     FOOTER GRIS-->
       <v-row class="footerTopRow" align="start" justify="start" no-gutters>
 <!--        DESCRIPTION NAVIGATEUR-->
-        <v-col cols="6" id="footerDescription" v-if="!$vuetify.breakpoint.xs && !$vuetify.breakpoint.sm">
+        <v-col cols="6" id="footerDescription" v-if="mdAndUp">
           <div style="font-size: 1em; font-weight: 700">Quali<span style="font-weight: 400">Marc</span></div>
           <div style="font-size: 0.8em; text-align: justify"><span style="font-weight: 700">Quali<span style="font-weight: 400">Marc</span></span> est un outil qui analyse la qualité des notices bibliographiques du Sudoc : il repère, de manière globale ou ciblée, les absences et/ou incohérences et explique les corrections et/ou enrichissements à apporter.</div>
         </v-col>
 <!--        ACCES DIRECT NAVIGATEUR-->
-        <v-col cols="auto" id="footerAbesLinks" v-if="!$vuetify.breakpoint.xs && !$vuetify.breakpoint.sm">
+        <v-col cols="auto" id="footerAbesLinks" v-if="mdAndUp">
           <v-row class="ma-0 pa-0">
             <span aria-label="Accès direct" role="img"><v-icon color="#252C61">mdi-open-in-new</v-icon></span>
             <span class="fontPrimaryColor" style="font-size: 1em; font-weight: 700; margin-left: 5px">Accès direct</span>
@@ -43,7 +43,7 @@
          </v-container>
         </v-col>
 <!--        ACCES DIRECT MOBILE && TABLETTE-->
-        <v-col cols="auto" class="pl-4 pt-2" id="footerAbesLinks" v-if="!$vuetify.breakpoint.md && !$vuetify.breakpoint.lg && !$vuetify.breakpoint.xl">
+        <v-col cols="auto" class="pl-4 pt-2" id="footerAbesLinks" v-if="smAndDown">
           <v-row class="ma-0">
             <span aria-label="Accès direct" role="img"><v-icon color="#252C61">mdi-open-in-new</v-icon></span>
             <span style="color: #252C61; font-size: 1em; font-weight: 500; margin-left: 2px">Accès direct</span>
@@ -79,7 +79,7 @@
           </v-container>
         </v-col>
 <!--        LOGOS NAVIGATEUR-->
-        <v-col cols="auto" v-if="!$vuetify.breakpoint.xs && !$vuetify.breakpoint.sm">
+        <v-col cols="auto" v-if="mdAndUp">
           <span>
             <a href="https://www.enseignementsup-recherche.gouv.fr/fr" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Ministère de l'Enseignement Supérieur et de la Recherche" target="_blank">
               <img class="mr-2"  src="@/assets/logo-mesr.svg" height="108px" alt="logo Ministère de l'Enseignement supérieur et de la recherche"/>
@@ -88,7 +88,7 @@
           <span style='padding-right: 1em'><a href="https://abes.fr/" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de l'Abes" target="_blank"><img src="@/assets/abesLogo130.svg" height="100px" alt="logo Abes"/></a></span>
         </v-col>
 <!--        LOGOS MOBILE && TABLETTE-->
-        <v-col cols="auto" align-self="end" v-if="!$vuetify.breakpoint.md && !$vuetify.breakpoint.lg && !$vuetify.breakpoint.xl">
+        <v-col cols="auto" align-self="end" v-if="smAndDown">
           <span>
             <a href="https://www.enseignementsup-recherche.gouv.fr/fr" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Ministère de l'Enseignement Supérieur et de la Recherche" target="_blank">
               <img src="@/assets/logo-mesr.svg" height="74px" alt="logo Ministère de l'Enseignement supérieur et de la recherche"/>
@@ -136,3 +136,7 @@
 
    </v-footer>
 </template>
+<script setup>
+import { useDisplay } from 'vuetify'
+const { smAndDown, mdAndUp } = useDisplay()
+</script>
