@@ -3,8 +3,9 @@
   "version": "1.0.11-SNAPSHOT",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --port 8080 --host 0.0.0.0",
-    "build": "vue-cli-service build"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "explanations-dependencies": {
     "@mdi/font": "Distribution de Webfont pour les icônes de Material Design. Utilisé par vuetify",
@@ -25,12 +26,11 @@
     "vuetify": "^3.10.5"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
     "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
     "cypress": "^15.3.0",
-    "sass": "~1.32.0",
-    "sass-loader": "^10.0.0",
-    "vue-template-compiler": "^2.6.14"
+    "sass": "^1.93.2",
+    "vite": "^7.1.9"
   },
   "browserslist": [
     "> 1%",

@@ -20,7 +20,7 @@ app.use(vuetify)
 app.use(VueShortKey)
 
 // utilisation de piwik/matomo uniquement en production
-if (process.env.VUE_APP_ROOT_API?.includes('qualimarc.sudoc')) {
+if (import.meta.env.VITE_APP_ROOT_API?.includes('qualimarc.sudoc')) {
   app.use(VueMatomo, {
     host: 'https://piwik.abes.fr/',
     siteId: 35,
