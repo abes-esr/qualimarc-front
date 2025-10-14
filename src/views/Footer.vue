@@ -82,19 +82,19 @@
         <v-col cols="auto" v-if="mdAndUp">
           <span>
             <a href="https://www.enseignementsup-recherche.gouv.fr/fr" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Ministère de l'Enseignement Supérieur et de la Recherche" target="_blank">
-              <img class="mr-2"  src="@/assets/logo-mesr.svg" height="108px" alt="logo Ministère de l'Enseignement supérieur et de la recherche"/>
+              <img class="mr-2"  :src="logoMesr" height="108px" alt="logo Ministère de l'Enseignement supérieur et de la recherche"/>
             </a>
           </span>
-          <span style='padding-right: 1em'><a href="https://abes.fr/" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de l'Abes" target="_blank"><img src="@/assets/abesLogo130.svg" height="100px" alt="logo Abes"/></a></span>
+          <span style='padding-right: 1em'><a href="https://abes.fr/" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de l'Abes" target="_blank"><img :src="abesLogo130" height="100px" alt="logo Abes"/></a></span>
         </v-col>
 <!--        LOGOS MOBILE && TABLETTE-->
         <v-col cols="auto" align-self="end" v-if="smAndDown">
           <span>
             <a href="https://www.enseignementsup-recherche.gouv.fr/fr" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Ministère de l'Enseignement Supérieur et de la Recherche" target="_blank">
-              <img src="@/assets/logo-mesr.svg" height="74px" alt="logo Ministère de l'Enseignement supérieur et de la recherche"/>
+              <img :src="logoMesr" height="74px" alt="logo Ministère de l'Enseignement supérieur et de la recherche"/>
             </a>
           </span>
-          <span style='padding-right: 1em'><a href="https://abes.fr/" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de l'Abes" target="_blank"><img src="@/assets/abesLogo130.svg" height="70px" alt="logo Abes"/></a></span>
+          <span style='padding-right: 1em'><a href="https://abes.fr/" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de l'Abes" target="_blank"><img :src="abesLogo130" height="70px" alt="logo Abes"/></a></span>
         </v-col>
       </v-row>
 
@@ -137,6 +137,9 @@
    </v-footer>
 </template>
 <script setup>
-import { useDisplay } from 'vuetify'
+import { useDisplay } from 'vuetify';
+import logoMesr from "@/assets/logo-mesr.svg";
+import abesLogo130 from "@/assets/abesLogo130.svg";
+
 const { smAndDown, mdAndUp } = useDisplay()
 </script>
