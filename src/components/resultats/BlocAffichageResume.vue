@@ -27,9 +27,9 @@
         >
       <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
           <v-menu offset-y v-if="header.value === 'typeDocument'">
-            <template v-slot:activator="{ on, attrs }">
-              <span v-on="on" style='color: white; display: block'>{{ header.text }}</span>
-              <v-btn text class="bouton-simple" x-small v-bind="attrs" v-on="on" style="text-decoration: none;">
+            <template v-slot:activator="{ props }">
+              <span v-bind="props" style='color: white; display: block'>{{ header.text }}</span>
+              <v-btn text class="bouton-simple" x-small v-bind="props" style="text-decoration: none;">
                 <span>
                   <v-icon small color="white" :color="colorIconFilterTypeDoc()">
                     mdi-filter

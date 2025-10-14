@@ -42,7 +42,7 @@
 import {ref, watchEffect} from 'vue';
 import QualimarcService from "@/service/QualimarcService";
 
-const model = defineModel({isLoading: Boolean});
+const isLoading = defineModel('isLoading', { type: Boolean, default: false });
 const emit = defineEmits(['finished', 'cancel', 'error']);
 
 const serviceApi = QualimarcService;
@@ -53,7 +53,7 @@ const analysisInitialized = ref(false);
 const analysisCompleted = ref(false);
 
 watchEffect(() => {
-    if (model.isLoading) {
+    if (isLoading.value) {
         runProgress();
     }
 })
@@ -67,7 +67,7 @@ function runProgress() {
     isCanceled.value = false;
     const interval = setInterval(() => {
         // cas de réussite
-        if ((count.value === '100%') && !model.isLoading) {
+        if ((count.value === '100%') && !isLoading.value) {
             analysisCompleted.value = true;
             clearInterval(interval);
             finish();

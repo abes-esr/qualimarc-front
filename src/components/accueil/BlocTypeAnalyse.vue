@@ -4,9 +4,9 @@
       <v-radio :data-cy="analyse.id" v-for="analyse in analysesList" :key="analyse.id" :value="analyse">
         <template v-slot:label>
           <v-tooltip right color="#54576D" dark>
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ props }">
               <div :aria-label="'Analyse ' + (analyse.libelle + ' , ' + analyse.description)" role="img">
-                <span style="color: #595959" v-on="on">{{ analyse.libelle }}</span>
+                <span style="color: #595959" v-bind="props">{{ analyse.libelle }}</span>
               </div>
             </template>
             <span style="color: white">{{ analyse.description }}
@@ -46,8 +46,8 @@
         <v-checkbox v-for="ruleset in ruleSetList" :key="ruleset.id" :data-cy="ruleset.id" v-model="ruleSetSelected" :value="ruleset" @change="updateRuleSetInStore" class="ma-1" style="max-height: 30px">
             <template v-slot:label>
               <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <span v-on="on" style="color: #595959">{{ ruleset.libelle }}</span>
+                <template v-slot:activator="{ props }">
+                  <span v-bind="props" style="color: #595959">{{ ruleset.libelle }}</span>
               </template>
               {{ ruleset.description }}
             </v-tooltip>

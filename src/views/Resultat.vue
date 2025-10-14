@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <progress-bar :isLoading="isProgressLoading" @finished="updateNbLancement" @cancel="stopAnalyse"></progress-bar>
+    <progress-bar v-model:isLoading="isProgressLoading" @finished="updateNbLancement" @cancel="stopAnalyse"></progress-bar>
     <div class="ma-0 pa-0 mb-2" style="color: #595959; font-size: 0.9em">
       <nav aria-label="fil d'Ariane" class="filAriane">
         <ul>
@@ -35,8 +35,8 @@
         </v-layout>
           <div class="ma-0 pa-0" style="position: relative">
             <v-tooltip left>
-              <template v-slot:activator="{on}" class="ma-0 pa-0 col-auto">
-                <v-btn :disabled="itemsToExport().length === 0" style="position: absolute; top: 4px; right: -10px; margin-right: 12px;" class="button" elevation="0" v-on="on" color="#0c5c92">
+              <template v-slot:activator="{ props }" class="ma-0 pa-0 col-auto">
+                <v-btn :disabled="itemsToExport().length === 0" style="position: absolute; top: 4px; right: -10px; margin-right: 12px;" class="button" elevation="0" v-bind="props" color="#0c5c92">
                   <download-csv :delimiter="';'" :data="itemsToExport()" name="qualimarc-export.csv">
                     <span style="color: white">
                       TÉLÉCHARGER TOUS

@@ -84,14 +84,14 @@
       <span style="color: #595959; font-size: small">Rappel : syntaxe d'un PPN = 9 caractères, composés de 9 chiffres ou de 8 chiffres + la lettre X</span><br>
       <v-expansion-panels>
         <v-expansion-panel role="button">
-          <v-expansion-panel-header>
+          <v-expansion-panel-title>
               <span class="pt-2">Voir les PPN avec une syntaxe erronée</span>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
               <v-chip color="#B30900" outlined v-for="(item, index) in analyseStore.getPpnInvalidsList" :key="index">
                 {{ item }}
               </v-chip>
-          </v-expansion-panel-content>
+          </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
       <div class="mt-4 d-flex flex-row-reverse">

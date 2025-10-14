@@ -6,8 +6,8 @@
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Table générale des règles</h1>
       <!--      BOUTON TELECHARGER LES REGLES     -->
       <v-tooltip left>
-        <template v-slot:activator="{on}">
-          <v-btn class="ma-0" elevation="0" :disabled="items.length === 0" small v-on="on" color="#0c5c92">
+        <template v-slot:activator="{ props }">
+          <v-btn class="ma-0" elevation="0" :disabled="items.length === 0" small v-bind="props" color="#0c5c92">
             <download-csv :delimiter="';'" :data="items" name="qualimarc-export-regles.csv" style="color: white">
               <span style="color: white">TÉLÉCHARGER TOUTES LES R&Egrave;GLES</span>
             </download-csv>
@@ -25,8 +25,8 @@
       <v-row class="mx-4 my-2" justify="center">
         <!--            BOUTON EFFACER LES FILTRES-->
         <v-tooltip left>
-          <template v-slot:activator="{on}">
-            <v-btn class="ma-0" small outlined color="#b30900" @click="resetSelector()" v-on="on">
+          <template v-slot:activator="{ props }">
+            <v-btn class="ma-0" small outlined color="#b30900" @click="resetSelector()" v-bind="props">
               <span>Effacer tous les filtres</span>
               <v-icon class="ml-2" small color="#b30900">
                 mdi-filter-remove
@@ -67,8 +67,8 @@
           <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
             <!--      HEADER ID     -->
             <v-tooltip bottom v-if="header.value === 'id'">
-              <template v-slot:activator="{ on }">
-                <span v-on="on" style='color: white; display: block'>{{ header.textBtn }}</span>
+              <template v-slot:activator="{ props }">
+                <span v-bind="props" style='color: white; display: block'>{{ header.textBtn }}</span>
               </template>
               <span>{{ header.tooltip}}</span>
             </v-tooltip>
@@ -96,8 +96,8 @@
             </v-menu>
             <!--      ICONES DE TRI POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
             <v-menu offset-y v-if="header.value === 'id' || header.value === 'typeDoc' || header.value === 'priority'">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn text class="bouton-simple" x-small v-bind="attrs" v-on="on" style="text-decoration: none;" :aria-label="header.value">
+              <template v-slot:activator="{ props }">
+                <v-btn text class="bouton-simple" x-small v-bind="props" style="text-decoration: none;" :aria-label="header.value">
                   <span>
                     <v-icon v-if="header.value === 'typeDoc'" small :color="colorIconFilterTypeDoc()">
                       mdi-filter

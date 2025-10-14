@@ -5,8 +5,8 @@
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold">Historique des analyses</h1>
       <!--      BOUTON TELECHARGER L'HISTORIQUE     -->
       <v-tooltip left>
-        <template v-slot:activator="{on}">
-          <v-btn class="ma-0" elevation="0" :disabled="historiqueList.length === 0" small v-on="on" color="#0c5c92">
+        <template v-slot:activator="{props}">
+          <v-btn class="ma-0" elevation="0" :disabled="historiqueList.length === 0" small v-bind="props" color="#0c5c92">
             <download-csv :delimiter="';'" :data="exportHistorique(historiqueList)" name="qualimarc-export-historique.csv" >
               <span style="color: white">TÉLÉCHARGER L'HISTORIQUE</span>
             </download-csv>
@@ -36,7 +36,7 @@
           </template>
           <v-expansion-panels multiple>
             <v-expansion-panel class="mb-4" role="button">
-              <v-expansion-panel-header>
+              <v-expansion-panel-title>
                 <v-row justify="space-around">
                   <!--      AFFICHAGE DE LA DATE      -->
                   <span class="mt-1">Analyse du {{ historique.date.toLocaleString() }} <span style="font-style: italic; color: #595959">- Type d'analyse : {{ historique.analyse.analyseSelected.libelle }}</span></span>
@@ -46,8 +46,8 @@
                     <v-icon color="white" class="ml-2">mdi-arrow-right-thin-circle-outline</v-icon>
                   </v-btn>
                 </v-row>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
                 <v-divider></v-divider>
                 <v-list-item class="mt-2" style="overflow-x: scroll; overflow-y: hidden">
                   <!--      TRAITEMENT PAR RESULTAT     -->
@@ -55,7 +55,7 @@
                     <card-recapitulatif :resultats="result"><span style="color: #595959">{{ historique.resultats.indexOf(result) +1 }}</span></card-recapitulatif>
                   </v-col>
                 </v-list-item>
-              </v-expansion-panel-content>
+              </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
         </v-timeline-item>

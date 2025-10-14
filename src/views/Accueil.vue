@@ -2,7 +2,7 @@
     <v-container fluid>
         <h1 class="ml-1 mb-2 fontPrimaryColor" style="font-size: 1em; font-weight: 400">Outil d'analyse des notices
             bibliographiques du Sudoc</h1>
-        <progress-bar :isLoading="isProgressLoading" @finished="redirect" @cancel="stopAnalyse"
+        <progress-bar v-model:isLoading="isProgressLoading" @finished="redirect" @cancel="stopAnalyse"
                       @error="setMessageErreur"></progress-bar>
         <v-row class="mb-2 pa-2" justify="space-between">
             <v-col class="ma-2 pa-2" style="min-height: 34em;">

@@ -13,8 +13,8 @@
             </td>
             <td>
               <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn @click="copyText" v-bind="attrs" v-on="on"><v-icon>mdi-content-copy</v-icon></v-btn>
+                <template v-slot:activator="{ props }">
+                  <v-btn @click="copyText" v-bind="props"><v-icon>mdi-content-copy</v-icon></v-btn>
                 </template>
                 <span>Copier la requête</span>
               </v-tooltip>
