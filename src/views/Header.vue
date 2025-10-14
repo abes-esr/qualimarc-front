@@ -4,7 +4,7 @@
      <v-row :class="(mdAndUp) ? 'pr-4 pb-4 pl-12 bgColorPrimary' : 'pa-2 bgColorPrimary'" justify="center" :align="(mdAndUp) ? 'end' : 'start'" no-gutters>
        <v-col cols="2" :style="(mdAndUp) ? null : 'margin-bottom: -10px'">
          <a @click="$router.push({path: '/'})" aria-label="Redirige vers la page d'accueil de Qualimarc">
-           <img v-if="(mdAndUp)" src="@/assets/QMLogo.svg" class="titleBarLogo" alt="logo Qualimarc"/>
+           <img v-if="(mdAndUp)" :src="QMLogo" class="titleBarLogo" alt="logo Qualimarc"/>
            <img v-else src="@/assets/QMLogoIconBlue.svg" style="height: 50px; margin-bottom: -9px; margin-top: -8px" alt="logo Qualimarc"/>
          </a>
        </v-col>
@@ -45,6 +45,8 @@
 import { useRoute } from "vue-router"
 import BlocStatuts from "@/components/accueil/BlocStatuts.vue";
 import { useDisplay } from 'vuetify'
+import QMLogo from '@/assets/QMLogo.svg';
+
 const { mdAndUp } = useDisplay()
 
 const route = useRoute();
