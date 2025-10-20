@@ -92,7 +92,7 @@ function displayAndStartProgress() {
 
 function maskAndStopProgress() {
     isProgressLoading.value = false;
-    backendErrorMessage.value = "";
+    backendErrorMessage.value = null;
 }
 
 function stopAnalyse() {
