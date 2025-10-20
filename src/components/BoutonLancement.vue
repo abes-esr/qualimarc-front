@@ -87,7 +87,4 @@ function emitOnFinished(){
 </script>
 
 <style scoped>
-.button {
-  color:white;
-}
 </style>

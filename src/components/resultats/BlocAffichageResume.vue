@@ -1,7 +1,7 @@
 <template>
   <v-container class="ma-0 pa-0">
-    <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>
-    <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>
+<!--    <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>-->
+<!--    <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>-->
     <v-row class="ma-0 pa-0">
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Liste des PPN avec erreurs</h1>
     </v-row>
@@ -50,13 +50,13 @@
           <v-icon color="white" small >mdi-sort</v-icon>
       </template>
       <template v-slot:item.affiche="{ item }">
-        <v-simple-checkbox
+        <v-checkbox
             v-model="item.affiche"
             on-icon="mdi-eye"
             off-icon="mdi-eye-off-outline"
             color="#CF4A1A"
             dense
-        ></v-simple-checkbox>
+        ></v-checkbox>
       </template>
       <template v-slot:body.append>
         <tr>
