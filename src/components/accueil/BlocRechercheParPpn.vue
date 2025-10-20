@@ -4,59 +4,65 @@
       Pour optimiser l'analyse, il est recommandé de ne pas soumettre plus de 5000 PPN en une seule fois
     </span>
     <v-combobox
-        :label="comboboxPpnLabel"
-        :search-input.sync="lastValuesTypedOrPasted"
-        :value="ppnListCombobox"
+        label="Saisir ou coller des PPN, puis cliquer hors du cadre (ou appuyer sur Entrée)"
+        v-model="ppnListCombobox"
+        v-model:search="lastValuesTypedOrPasted"
         append-inner-icon=""
-        class="pa-1"
+        class="pt-1 px-1 pb-0 mb-0"
         data-cy="COMBOBOX_AJOUT_PPN"
         filled
         multiple
-        chips
         dense
         @blur="checkValuesAndFeedPpnListTyped"
         @keydown.enter="checkValuesAndFeedPpnListTyped"
         @keydown.tab="checkValuesAndFeedPpnListTyped"
     >
-      <template v-slot:selection="{ item, index }">
+      <template v-slot:selection="data">
         <v-chip
-            v-if="item === ppnCopied"
+            v-if="data.item.value === ppnCopied"
+            :key="JSON.stringify(data.item.value)"
+            v-bind="data.attrs"
             aria-label="PPN copié"
             color="#eafaed"
             role="img"
-            @click="copyLabelItem(item)"
-            @click:close="removeItem(item)"
+            @click="copyLabelItem(data.item.value)"
+            @click:close="removeItem(data.item.value)"
         >
           <span class="green--text text--darken-3" style="font-weight: 500; min-width: 83px">
             PPN COPIÉ
           </span>
           <v-icon class="ma-0 pa-0" color="green darken-3" size="16">mdi-check</v-icon>
         </v-chip>
-
         <v-chip
             v-else
-            close
-            @click="copyLabelItem(item)"
-            @click:close="removeItem(item)"
+            :key="JSON.stringify(data.item.value)"
+            v-bind="data.attrs"
+            :disabled="data.disabled"
+            :model-value="data.selected"
+            @click="copyLabelItem(data.item.value)"
+            @click:close="removeItem(data.item.value)"
+            closable
         >
-          <div :aria-label="'PPN numéro : ' + item + '. Cliquez pour copier ce numéro de PPN'" role="img">
-            <span class="pr-2">{{ item }}</span>
+          <div :aria-label="'PPN numéro : ' + data.item.title + '. Cliquez pour copier ce numéro de PPN'" role="img">
+            <span class="pr-2"> {{ data.item.title }}</span>
           </div>
         </v-chip>
       </template>
     </v-combobox>
-    <v-sheet class="d-flex align-end flex-column pt-0 pr-1" style="margin-top: -34px;">
+    <v-sheet class="d-flex align-end flex-column pt-0 pr-1" style="margin-top: -23px">
       <v-btn
-          class="pr-1"
+          class="pr-1 pt-0 mt-0 elevation-0"
           data-cy="del_all_ppn"
           depressed
-          small
-          style="border: 1px solid grey; color: grey"
+          size="small"
+          append-icon="mdi-delete"
           tile
+          flat
+          variant="outlined"
           @click="removeAllItems"
+          color="#4D4D4D"
       >
-        <span style="color: #4D4D4D">Vider la liste de ppn</span>
-        <v-icon color="#4D4D4D">mdi-delete</v-icon>
+        Vider la liste de ppn
       </v-btn>
     </v-sheet>
     <v-sheet class="py-5 d-flex justify-center">
@@ -72,34 +78,35 @@
         <v-icon class="ml-3" color="black">mdi-chevron-double-down</v-icon>
       </div>
     </v-sheet>
-    <div v-cloak
-         @dragleave="dragLeave"
-         @drop.prevent="dropFile"
-         @dragover.prevent="dragOver"
-    >
-      <v-file-input
-          ref="fileInput"
-          v-model="fichierLoaded"
-          :clearable="false"
-          :error-messages="errorMsg"
-          :label="isDragging ? 'Importer votre fichier ici pour charger un fichier .csv ou .txt contenant des PPN' : 'Cliquer ici pour sélectionner un fichier de PPN au format .csv ou .txt (ou le glisser-déposer)'"
-          :loading="isDragging"
-          :rules="rules"
-          :style="isDragging ? 'transform: scale(1.02);' : ''"
-          :success-messages="successMsg"
-          append-inner-icon="mdi-file-download-outline"
-          aria-label="Cliquer ici pour sélectionner un fichier de PPN au format .csv ou .txt (ou le glisser-déposer)"
-          class="ml-1"
-          filled
-          for="files"
-          show-size
-          truncate-length=75
-          type="file"
-          @change="isAllowToSend">
-      </v-file-input>
-    </div>
-    <v-alert v-if="analyseStore.getPpnInvalidsList.length !== 0" border="left" colored-border elevation="2"
-             type="error">
+    <v-file-input
+        @dragleave="dragLeave"
+        @drop.prevent="dropFile"
+        @dragover.prevent="dragOver"
+        ref="fileInput"
+        v-model="fichierLoaded"
+        :clearable="false"
+        :error-messages="errorMsg"
+        :label="isDragging ? 'Importer votre fichier ici pour charger un fichier .csv ou .txt contenant des PPN' : 'Cliquer ici pour sélectionner un fichier de PPN au format .csv ou .txt (ou le glisser-déposer)'"
+        :loading="isDragging"
+        :rules="rules"
+        :style="isDragging ? 'transform: scale(1.02);' : ''"
+        :success-messages="successMsg"
+        append-inner-icon="mdi-file-download-outline"
+        aria-label="Cliquer ici pour sélectionner un fichier de PPN au format .csv ou .txt (ou le glisser-déposer)"
+        class="ml-1"
+        filled
+        for="files"
+        show-size
+        truncate-length=75
+        type="file"
+        @change="isAllowToSend">
+    </v-file-input>
+    <v-alert v-if="analyseStore.getPpnInvalidsList.length !== 0"
+             border="start"
+             elevation="2"
+             type="error"
+             variant="outlined"
+            >
       Les PPN listés ci-dessous présentent une syntaxe non conforme et ne seront pas analysés :<br>
       <span style="color: #595959; font-size: small">Rappel : syntaxe d'un PPN = 9 caractères, composés de 9 chiffres ou de 8 chiffres + la lettre X</span><br>
       <v-expansion-panels>
@@ -154,8 +161,7 @@ const emit = defineEmits(['isPpnListEmpty', 'backendError']);
 const isDragging = ref(false);
 
 //Combobox
-const comboboxPpnLabel = ref('Saisir ou coller des PPN, puis cliquer hors du cadre (ou appuyer sur Entrée)'); //Message indicatif de la combobox
-const lastValuesTypedOrPasted = ref(''); //Dernière Chaîne de caractères saisie dans la combobox, servant à alimenter ensuite ppnListTyped
+const lastValuesTypedOrPasted = ref(""); //Dernière Chaîne de caractères saisie dans la combobox, servant à alimenter ensuite ppnListTyped
 const ppnListCombobox = ref((route.query.numeroAnalyse && historiqueStore.getHistorique.length !== 0) ? historiqueStore.getHistorique[route.query.numeroAnalyse].analyse.ppnValidsList : []); //Tableau de ppn alimenté par les chaînes de caractères mises dans la combobox
 const ppnInvalids = ref([]); //Tableau des ppn invalides saisis par l'utilisateur
 
@@ -247,7 +253,9 @@ function removeAllItems() {
  * Contrôle des chaînes de caractères saisies dans la combobox à la sortie de la souris du champ et alimentation de ppnListTyped
  */
 function checkValuesAndFeedPpnListTyped() {
-  if (lastValuesTypedOrPasted.value) { //Si la valeur n'est pas nulle, ce qui se produit si l'utilisateur sort du cadre sans rien taper
+  if (lastValuesTypedOrPasted.value) {
+    //Si la valeur n'est pas nulle, ce qui se produit si l'utilisateur sort du cadre sans rien taper
+    ppnListCombobox.value.pop()
     let arrayWithValidsPpn = lastValuesTypedOrPasted.value.split(/[^\da-zA-Z]/).filter(ppn_to_check => ppn_to_check.match(/^(\d{8}(\d|X|x))$/));
     let arrayWithInvalidsPpn = lastValuesTypedOrPasted.value.split(/[^\da-zA-Z]/).filter(ppn_to_check => !ppn_to_check.match(/^(\d{8}(\d|X|x))$/)).filter(str_to_clean => str_to_clean.trim() !== '');
     let arrayWithValidsPpnWithUniqueValues = arrayWithValidsPpn.filter((v, i, a) => a.indexOf(v) === i); //Fonction anonyme de dédoublonnage sur la saisie en cours
@@ -282,8 +290,8 @@ function checkPpnListIsEmptyInCombobox() {
 function isAllowToSend() {
   resetMessages();
   fileReader.onloadend = function () {
-    lastValuesTypedOrPasted.value = fileReader.result;
     if (fileReader.result.split(/[^\da-zA-Z]/).filter(str_to_clean => str_to_clean.trim() !== '').length < 5000) {
+      lastValuesTypedOrPasted.value = fileReader.result;
       successMsg.value = "Fichier importé avec succès"
       checkValuesAndFeedPpnListTyped();
     } else {
