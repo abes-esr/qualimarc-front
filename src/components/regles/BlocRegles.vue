@@ -26,11 +26,8 @@
         <!--            BOUTON EFFACER LES FILTRES-->
         <v-tooltip left>
           <template v-slot:activator="{ props }">
-            <v-btn class="ma-0" small outlined color="#b30900" @click="resetSelector()" v-bind="props">
-              <span>Effacer tous les filtres</span>
-              <v-icon class="ml-2" small color="#b30900">
-                mdi-filter-remove
-              </v-icon>
+            <v-btn class="ma-0" append-icon="mdi-filter-remove" small outlined color="#b30900" @click="resetSelector()" v-bind="props">
+              Effacer tous les filtres
             </v-btn>
           </template>
           <span>Effacer tous les filtres actifs</span>
@@ -82,7 +79,7 @@
             </span>
             <!--      CHAMP DE RECHERCHE COLONNE "Règles de vérification / qualité"     -->
             <v-menu class="ma-0 pa-0" offset-y v-if="header.value === 'message'">
-              <template v-slot:activator="{ on, attrs }">
+              <template v-slot:activator="{ props }">
                 <v-text-field
                     v-model="ruleMessage"
                     label="rechercher par mot-clé"
