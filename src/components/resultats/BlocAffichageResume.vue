@@ -1,117 +1,163 @@
 <template>
   <v-container class="ma-0 pa-0">
-<!--    <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>-->
-<!--    <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>-->
+    <!--    <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>-->
+    <!--    <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>-->
     <v-row class="ma-0 pa-0">
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Liste des PPN avec erreurs</h1>
     </v-row>
     <v-data-table
         v-if="items.length > 0"
-        class="borderBlocElements"
         id="bgColorResults"
-        v-model="modelDataTable"
+        v-model:selected="modelDataTable"
         :headers="headers"
-        :loading="loading"
-        loading-text="Chargement..."
-        :items="ppnFiltered"
         :item-class="classItemMasked"
-        @click:row="sendCurrentPpnToParent"
-        @current-items="sendItemsToParent"
-        single-select
-        item-key="ppn"
-        :footer-props="{
-          itemsPerPageOptions: [5,10,20,30,-1]
-        }"
-        dense
+        :items="ppnFiltered"
+        :loading="loading"
         :mobile-breakpoint="resizeDataTable()"
-        >
-      <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
-          <v-menu offset-y v-if="header.value === 'typeDocument'">
-            <template v-slot:activator="{ props }">
-              <span v-bind="props" style='color: white; display: block'>{{ header.text }}</span>
-              <v-btn text class="bouton-simple" size="x-small" v-bind="props" style="text-decoration: none;">
-                <span>
-                  <v-icon size="small" color="white" :color="colorIconFilterTypeDoc()">
-                    mdi-filter
-                  </v-icon>
-                </span>
-              </v-btn>
-            </template>
-            <div style='background-color:white;color: black;' class="pl-4 pr-8">
-              <v-btn class="d-block" plain v-for="type in selectType" :key="type.id" @click="eventTypeChoice(type)">
-                <v-checkbox v-model="selectedCheckbox" :label="type" :value="type"></v-checkbox>
-              </v-btn>
-              <div style="height: 30px"></div>
+        class="borderBlocElements"
+        density="compact"
+        item-key="ppn"
+        loading-text="Chargement..."
+        select-mode="single"
+        @click:row="sendCurrentPpnToParent"
+        @update:items="sendItemsToParent"
+    >
+
+      <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
+        <tr>
+          <th v-for="header in headers" :key="header.key" class="text-left">
+            <div class="d-flex align-center">
+              <span
+                  class="cursor-pointer"
+                  style='color: white; display: block'
+                  @click="toggleSort(header)"
+              >
+                  {{ header.title }}
+                <v-icon
+                    v-if="isSorted(header)"
+                    class="ml-1"
+                    size="small"
+                >
+                  {{ getSortIcon(header) }}
+                </v-icon>
+              </span>
+              <template v-if="header.key === 'typeDocument'">
+                <v-menu offset-y>
+                  <template v-slot:activator="{ props }">
+                    <v-btn class="bouton-simple" icon size="x-small" style="text-decoration: none;" v-bind="props"
+                           variant="text">
+                      <v-icon :color="colorIconFilterTypeDoc()" color="white" size="small">
+                        mdi-filter
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <div class="pr-8 pb-4" style='background-color:white;color: black;'>
+                    <v-btn v-for="type in selectType" :key="type.id" class="d-block" variant="plain"
+                           @click="eventTypeChoice(type)">
+                      <v-checkbox v-model="selectedCheckbox" :label="type" :value="type"></v-checkbox>
+                    </v-btn>
+                  </div>
+                </v-menu>
+              </template>
+
+
             </div>
-          </v-menu>
-        <span v-if="header.text === 'Aff/Masq.' || header.text === 'Nb. erreurs' || header.text === 'PPN'" style='color: white; display: block'>
-          {{ header.text }}
-        </span>
-          <v-icon color="white" size="small" >mdi-sort</v-icon>
+          </th>
+        </tr>
       </template>
-      <template v-slot:item.affiche="{ item }">
-        <v-checkbox
-            v-model="item.affiche"
-            on-icon="mdi-eye"
-            off-icon="mdi-eye-off-outline"
-            color="#CF4A1A"
-            dense
-        ></v-checkbox>
+
+
+      <!--      ffffffffffffffffffffffffffffffffffffff -->
+      <template #item="{ item }">
+        <tr :class="classItemMasked(item)">
+          <td>
+            <v-checkbox
+                v-model="item.affiche"
+                color="#CF4A1A"
+                false-icon="mdi-eye-off-outline"
+                hide-details
+                true-icon="mdi-eye"
+            ></v-checkbox>
+          </td>
+          <td>
+            {{ item.ppn }}
+          </td>
+          <td>
+            {{ item.typeDocument }}
+          </td>
+          <td>
+            {{ item.nberreurs }}
+          </td>
+        </tr>
       </template>
       <template v-slot:body.append>
         <tr>
           <td colspan="100%">
             <!--      Affichage en mode mobile      -->
-            <div class="d-flex flex-column" v-if="(mobileBreakpoint === 4000 && breakPointName === 'xl') || (mobileBreakpoint === 4000 && breakPointName === 'lg') || breakPointName === 'xs'">
+            <div
+                v-if="(mobileBreakpoint === 4000 && breakPointName === 'xl') || (mobileBreakpoint === 4000 && breakPointName === 'lg') || breakPointName === 'xs'"
+                class="d-flex flex-column">
               <div class="pl-3 d-flex align-center justify-start">
-                <v-checkbox color="#CF4A1A" input-value="1" on-icon="mdi-eye" off-icon="mdi-eye-off-outline" @change="toggleMask"/>
+                <v-checkbox color="#CF4A1A" false-icon="mdi-eye-off-outline" input-value="1" true-icon="mdi-eye"
+                            @change="toggleMask"/>
                 <span>Afficher/masquer tout</span>
               </div>
               <div class="mb-4 d-flex align-center justify-start">
-                <bouton-winibw class="mr-2" :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()" @onClick="displayPopup"></bouton-winibw>
+                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()" class="mr-2"
+                               @onClick="displayPopup"></bouton-winibw>
                 <span>Générer la requête pour WinIBW</span>
               </div>
             </div>
             <!--      Affichage en mode pc      -->
-            <div class="d-flex justify-space-between" v-else>
+            <div v-else class="d-flex justify-space-between">
               <div class="d-flex align-center mr-4">
-                <v-checkbox color="#CF4A1A" input-value="1" on-icon="mdi-eye" off-icon="mdi-eye-off-outline" @change="toggleMask"/>
+                <v-checkbox color="#CF4A1A" false-icon="mdi-eye-off-outline" input-value="1" true-icon="mdi-eye"
+                            @change="toggleMask"/>
                 <span>Afficher/masquer tout</span>
               </div>
               <div class="d-flex align-center">
                 <span class="pr-1">Générer la requête pour WinIBW</span>
-                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()" @onClick="displayPopup"></bouton-winibw>
+                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()"
+                               @onClick="displayPopup"></bouton-winibw>
               </div>
             </div>
           </td>
         </tr>
       </template>
+      <template #bottom>
+        <v-data-table-footer
+            :items-per-page-options="[5, 10, 20, 30, -1]"
+        />
+      </template>
     </v-data-table>
-    <bloc-aucune-donnee v-else>Les PPN en entrée ne comportent aucune erreur ou n’ont pas été trouvés dans le Sudoc. Reportez-vous au bloc “Récapitulatif” pour plus de détails.</bloc-aucune-donnee>
-    <PopupRequestWinibw :winibwRequest="winibwRequest" :dialog="dialog" @onClose="setDialog"></PopupRequestWinibw>
+    <bloc-aucune-donnee v-else>Les PPN en entrée ne comportent aucune erreur ou n’ont pas été trouvés dans le Sudoc.
+      Reportez-vous au bloc “Récapitulatif” pour plus de détails.
+    </bloc-aucune-donnee>
+    <PopupRequestWinibw :dialog="dialog" :winibwRequest="winibwRequest" @onClose="setDialog"></PopupRequestWinibw>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect, getCurrentInstance } from "vue"
-import { useResultatStore } from "@/stores/resultat";
+import {getCurrentInstance, onMounted, ref, watchEffect} from "vue"
+import {useResultatStore} from "@/stores/resultat";
 import BoutonWinibw from "@/components/BoutonWinibw";
 import PopupRequestWinibw from "@/components/resultats/PopupRequestWinibw";
 import QualimarcService from "@/service/QualimarcService";
 import BlocAucuneDonnee from "@/components/BlocAucuneDonnee";
+import {useDisplay} from "vuetify/framework";
 
 const resultatStore = useResultatStore();
 const serviceApi = QualimarcService;
 
-const emit = defineEmits(['onChangePpn','onChangeItems']);
-const props = defineProps({currentPpn: String, nbLancement:Number, mobileBreakpoint:Number});
+const emit = defineEmits(['onChangePpn', 'onChangeItems']);
+const props = defineProps({currentPpn: String, nbLancement: Number, mobileBreakpoint: Number});
 
 const size = '';
 const headers = [
-  { text: "Aff/Masq.", value: "affiche", class: "headerTableClass", width: 80},
-  { text: "PPN", value: "ppn", class: "headerTableClass", width: 80},
-  { text: "Type de document", value: "typeDocument", class: "headerTableClass", width: 140},
-  { text: "Nb. erreurs", value: "nberreurs", class: "headerTableClass", width: 100}
+  {title: "Aff/Masq.", key: "affiche", width: 80, headerProps: {class: "headerTableClass"}},
+  {title: "PPN", key: "ppn", width: 80, headerProps: {class: "headerTableClass"}},
+  {title: "Type de document", key: "typeDocument", width: 140, headerProps: {class: "headerTableClass"}},
+  {title: "Nb. erreurs", key: "nberreurs", width: 100, headerProps: {class: "headerTableClass"}}
 ];
 const loading = ref(false);
 const items = ref([]);
@@ -123,7 +169,7 @@ const ppnFiltered = ref([]);
 let itemsTrieAndFiltered = [];
 const modelDataTable = ref([]);
 const selectedCheckbox = ref([]);
-const breakPointName = ref(null);
+const {mdAndDown, name: breakPointName} = useDisplay()
 
 onMounted(() => {
   feedItems();
@@ -132,24 +178,24 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  if(props.currentPpn){
+  if (props.currentPpn) {
     updateItemSelected(props.currentPpn)
   }
-  if(props.nbLancement) {
+  if (props.nbLancement) {
     feedItems()
   }
 })
 
 function nextSelectedItem() {
   let index = itemsTrieAndFiltered.findIndex(item => item.ppn === props.currentPpn);
-  if(index < itemsTrieAndFiltered.length - 1) {
+  if (index < itemsTrieAndFiltered.length - 1) {
     emit('onChangePpn', itemsTrieAndFiltered[index + 1].ppn);
   }
 }
 
 function previousSelectedItem() {
   let index = itemsTrieAndFiltered.findIndex(item => item.ppn === props.currentPpn);
-  if(index > 0) {
+  if (index > 0) {
     emit('onChangePpn', itemsTrieAndFiltered[index - 1].ppn);
   }
 }
@@ -176,12 +222,12 @@ function colorIconFilterTypeDoc() {
 /**
  * fonction permetant de recuperer les ppns du store
  */
-function feedItems(){
+function feedItems() {
   loading.value = true;
   items.value = [];
   resultatStore.getResultsList.forEach((el) => {
-    if(el.detailerreurs)
-      items.value.push( {
+    if (el.detailerreurs)
+      items.value.push({
         affiche: true,
         ppn: el.ppn,
         typeDocument: el.typeDocument,
@@ -214,7 +260,7 @@ function feedTypeList() {
       .then((response) => {
         response.data.forEach((el) => selectType.value.push(el.libelle));
       }).catch((error) => {
-        //TODO : emit erreur si impossible de récupérer les types via appel axios
+    //TODO : emit erreur si impossible de récupérer les types via appel axios
     //emitOnError(error);
   });
 }
@@ -246,7 +292,7 @@ function setDialog(onClose) {
  * @param item
  * @return {{masked: boolean, showed: (boolean|*)}}
  */
-function classItemMasked(item){
+function classItemMasked(item) {
   return {
     showed: item.affiche,
     masked: !item.affiche,
@@ -256,9 +302,9 @@ function classItemMasked(item){
 /**
  * Fonction renvoyant le ppn de la ligne sélectionné vers le composant parent
  */
-function sendCurrentPpnToParent(item, row) {
-  row.select(!row.isSelected);
-  emit("onChangePpn", item.ppn);
+function sendCurrentPpnToParent(event, row) {
+  row.toggleSelect(row.item);
+  emit("onChangePpn", row.item.ppn);
 }
 
 function sendItemsToParent(items) {
@@ -300,30 +346,30 @@ function eventTypeChoice(type) {
  * en fonction du.des types de documents
  * sélectionnés
  */
-function filterPpnByType(){
-    if (selectedTypeDoc.value.indexOf("Tous") >= 0) { //  Si le selectedTypeDoc choisi est tous
+function filterPpnByType() {
+  if (selectedTypeDoc.value.indexOf("Tous") >= 0) { //  Si le selectedTypeDoc choisi est tous
     ppnFiltered.value = items.value;
-    } else if (selectedTypeDoc.value.length >= 1 && selectedTypeDoc.value.indexOf("Tous") === -1) {  //  Si le selectedTypeDoc choisi n'est pas "Tous"
-      ppnFiltered.value = new Array(0);
-      let tempRulesFilterByTypeDocList = new Set();
-      for(let i = 0; i < selectedTypeDoc.value.length; i++) {
-        let tempList = items.value.filter(item => {
-          return item['typeDocument'].toLocaleLowerCase().includes(selectedTypeDoc.value[i].toString().toLocaleLowerCase())
-        });
-        tempList.forEach(item => {
-          tempRulesFilterByTypeDocList.add(item);
-        })
-      }
-      tempRulesFilterByTypeDocList.forEach(item => {
-        ppnFiltered.value.push(item)
+  } else if (selectedTypeDoc.value.length >= 1 && selectedTypeDoc.value.indexOf("Tous") === -1) {  //  Si le selectedTypeDoc choisi n'est pas "Tous"
+    ppnFiltered.value = new Array(0);
+    let tempRulesFilterByTypeDocList = new Set();
+    for (let i = 0; i < selectedTypeDoc.value.length; i++) {
+      let tempList = items.value.filter(item => {
+        return item['typeDocument'].toLocaleLowerCase().includes(selectedTypeDoc.value[i].toString().toLocaleLowerCase())
+      });
+      tempList.forEach(item => {
+        tempRulesFilterByTypeDocList.add(item);
       })
-    } else if (selectedTypeDoc.value.length === 0) { //  Si aucun selectedTypeDoc n'est sélectionné
-      ppnFiltered.value = items.value;
-      selectedTypeDoc.value = selectedCheckbox.value = new Array("Tous");
     }
+    tempRulesFilterByTypeDocList.forEach(item => {
+      ppnFiltered.value.push(item)
+    })
+  } else if (selectedTypeDoc.value.length === 0) { //  Si aucun selectedTypeDoc n'est sélectionné
+    ppnFiltered.value = items.value;
+    selectedTypeDoc.value = selectedCheckbox.value = new Array("Tous");
+  }
 }
 
-function updateItemSelected(ppn){
+function updateItemSelected(ppn) {
   let itemByType = ppnFiltered.value;
   modelDataTable.value = [];
   modelDataTable.value.push(itemByType[itemByType.map(item => item.ppn).indexOf(ppn)]);
@@ -346,29 +392,27 @@ function toggleMask(value) {
  */
 function resizeDataTable() {
   const instance = getCurrentInstance();
-  const vuetify = instance.proxy.$vuetify;
 
-  if(vuetify.breakpoint.name === "md" || vuetify.breakpoint.name === "sm" || vuetify.breakpoint.name === "xs") {
-    breakPointName.value = vuetify.breakpoint.name;
+  if (mdAndDown) {
     return 200;
   } else {
-    breakPointName.value = vuetify.breakpoint.name;
     return props.mobileBreakpoint;
   }
 }
 
 </script>
 <style>
-.masked{
+.masked {
   color: lightgrey;
   background-color: whitesmoke;
 }
-.showed{
+
+.showed {
   color: #252C61;
   font-weight: bold;
 }
 
-.headerTableClass{
+.headerTableClass {
   color: white;
   background-color: #676C91;
 }
@@ -376,12 +420,15 @@ function resizeDataTable() {
 .theme--light.v-data-table tbody tr.v-data-table__selected {
   background: #DADCE7 !important;
 }
+
 .theme--dark.v-data-table tbody tr.v-data-table__selected {
   background: #DADCE7 !important;
 }
+
 .theme--dark.v-data-table tbody tr.v-data-table__selected:hover {
   background: #DADCE7 !important;
 }
+
 .theme--light.v-data-table tbody tr.v-data-table__selected:hover {
   background: #DADCE7 !important;
 }
