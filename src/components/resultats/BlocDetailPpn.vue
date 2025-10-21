@@ -22,16 +22,16 @@
         <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
           <!--  Configuration de la colonne Règles  -->
           <span style='color: #252C61; font-weight: 500' v-if="header.value === 'priority'">
-            <v-icon x-small color="#252C61">mdi-checkbox-blank-circle</v-icon>
+            <v-icon size="x-small" color="#252C61">mdi-checkbox-blank-circle</v-icon>
             {{ header.text.split('|')[0] }}
-            <v-icon color="#4D4D4D" small >mdi-sort</v-icon>
+            <v-icon color="#4D4D4D" size="small" >mdi-sort</v-icon>
             <span style="display: block"></span>
-            <v-icon x-small color="#4D4D4D" class="pr-1">mdi-checkbox-blank-circle-outline</v-icon>
+            <v-icon size="x-small" color="#4D4D4D" class="pr-1">mdi-checkbox-blank-circle-outline</v-icon>
             <span style="font-weight: 500; color: #4D4D4D"> {{ header.text.split('|')[1] }}</span>
           </span>
           <span style="color: #4D4D4D; font-weight: 600" v-else>
               {{ header.text }}
-            <v-icon color="#4D4D4D" small >mdi-sort</v-icon>
+            <v-icon color="#4D4D4D" size="small" >mdi-sort</v-icon>
           </span>
         </template>
         <!-- lien vers le guide méthodologique dans l'intitulé des zones -->
@@ -44,8 +44,8 @@
         <!--  Icone dans la colonne Règles  -->
         <template v-slot:item.priority="{ item }">
           <div class="ma-0 pa-0 d-flex justify-center" :aria-label="'Règle ' + (item.priority)" role="img">
-            <v-icon v-model="item.priority" small v-if="item.priority === 'essentielle'" color="#252C61">mdi-checkbox-blank-circle</v-icon>
-            <v-icon v-model="item.priority" small v-if="item.priority === 'avancée'" color="#4D4D4D">mdi-checkbox-blank-circle-outline</v-icon>
+            <v-icon v-model="item.priority" size="small" v-if="item.priority === 'essentielle'" color="#252C61">mdi-checkbox-blank-circle</v-icon>
+            <v-icon v-model="item.priority" size="small" v-if="item.priority === 'avancée'" color="#4D4D4D">mdi-checkbox-blank-circle-outline</v-icon>
           </div>
         </template>
       </v-data-table>

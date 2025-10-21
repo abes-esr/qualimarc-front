@@ -6,11 +6,11 @@
       <!--      BOUTON TELECHARGER L'HISTORIQUE     -->
       <v-tooltip left>
         <template v-slot:activator="{props}">
-          <v-btn class="ma-0" elevation="0" :disabled="historiqueList.length === 0" small v-bind="props" color="#0c5c92">
+          <v-btn class="ma-0" elevation="0" :disabled="historiqueList.length === 0" size="small" v-bind="props" color="#0c5c92">
             <download-csv :delimiter="';'" :data="exportHistorique(historiqueList)" name="qualimarc-export-historique.csv" >
               <span style="color: white">TÉLÉCHARGER L'HISTORIQUE</span>
             </download-csv>
-            <v-icon small color="white" class="ml-2">mdi-download</v-icon>
+            <v-icon size="small" color="white" class="ml-2">mdi-download</v-icon>
           </v-btn>
         </template>
         <span>Télécharger l'historique dans un fichier nommé "qualimarc-export-historique.csv"</span>
