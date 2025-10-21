@@ -14,7 +14,7 @@
                 <span v-if="count === '0%'" style="padding: 24px; font-style: italic; color: grey;" class="d-flex justify-center">L'analyse va débuter, veuillez patienter quelques instants.</span>
                 <span v-if="count === '100%'" style="padding: 24px; font-style: italic; color: grey;" class="d-flex justify-center">L'analyse est terminée, veuillez patienter quelques instants.</span>
                 <v-progress-linear
-                        :value="count"
+                        v-model="count"
                         height="25"
                         color="#0F75BC"
                         rounded
