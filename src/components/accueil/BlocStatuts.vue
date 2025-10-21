@@ -1,6 +1,6 @@
 <template>
   <div  @mouseleave="hideBlock" @mouseenter="displayStatus" @focusin="displayStatus" @focusout="hideBlock">
-    <v-btn fab icon  :x-small="!mdAndUp" :small="mdAndUp" depressed color="white" aria-label="Status de l'application Qualimarc">
+    <v-btn fab icon :size="mdAndUp ? 'small' : 'x-small'" depressed color="white" aria-label="Status de l'application Qualimarc">
       <!--      Balise div servant à créer les aria-label et role pour l'accessibilité de l'application     -->
       <div aria-label="Status de l'application Qualimarc" role="img">
         <v-icon :style="(mdAndUp) ? 'font-size: 40px' : 'font-size: 32px'">mdi-gauge</v-icon>
