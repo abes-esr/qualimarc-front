@@ -12,14 +12,14 @@
             <span style="color: white">{{ analyse.description }}
               <span  v-if="analyse.id === 'QUICK'">
                  (règles essentielles
-                <v-icon x-small color="white">mdi-checkbox-blank-circle</v-icon>
+                <v-icon size="x-small" color="white">mdi-checkbox-blank-circle</v-icon>
                 )
               </span>
               <span v-if="analyse.id === 'COMPLETE'">
                  (règles essentielles
-                <v-icon x-small color="white">mdi-checkbox-blank-circle</v-icon>
+                <v-icon size="x-small" color="white">mdi-checkbox-blank-circle</v-icon>
                  et avancées
-                <v-icon x-small color="white">mdi-checkbox-blank-circle-outline</v-icon>
+                <v-icon size="x-small" color="white">mdi-checkbox-blank-circle-outline</v-icon>
                 )
               </span>
             </span>

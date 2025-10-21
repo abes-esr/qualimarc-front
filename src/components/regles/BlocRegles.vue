@@ -7,11 +7,11 @@
       <!--      BOUTON TELECHARGER LES REGLES     -->
       <v-tooltip left>
         <template v-slot:activator="{ props }">
-          <v-btn class="ma-0" elevation="0" :disabled="items.length === 0" small v-bind="props" color="#0c5c92">
+          <v-btn class="ma-0" elevation="0" :disabled="items.length === 0" size="small" v-bind="props" color="#0c5c92">
             <download-csv :delimiter="';'" :data="items" name="qualimarc-export-regles.csv" style="color: white">
               <span style="color: white">TÉLÉCHARGER TOUTES LES R&Egrave;GLES</span>
             </download-csv>
-            <v-icon small color="white" class="ml-2">mdi-download</v-icon>
+            <v-icon size="small" color="white" class="ml-2">mdi-download</v-icon>
           </v-btn>
         </template>
         <span>Télécharger toutes les règles dans un fichier nommé "qualimarc-export-rules.csv"</span>
@@ -26,7 +26,7 @@
         <!--            BOUTON EFFACER LES FILTRES-->
         <v-tooltip left>
           <template v-slot:activator="{ props }">
-            <v-btn class="ma-0" append-icon="mdi-filter-remove" small outlined color="#b30900" @click="resetSelector()" v-bind="props">
+            <v-btn class="ma-0" append-icon="mdi-filter-remove" size="small" outlined color="#b30900" @click="resetSelector()" v-bind="props">
               Effacer tous les filtres
             </v-btn>
           </template>
@@ -94,19 +94,19 @@
             <!--      ICONES DE TRI POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
             <v-menu offset-y v-if="header.value === 'id' || header.value === 'typeDoc' || header.value === 'priority'">
               <template v-slot:activator="{ props }">
-                <v-btn text class="bouton-simple" x-small v-bind="props" style="text-decoration: none;" :aria-label="header.value">
+                <v-btn text class="bouton-simple" size="x-small" v-bind="props" style="text-decoration: none;" :aria-label="header.value">
                   <span>
-                    <v-icon v-if="header.value === 'typeDoc'" small :color="colorIconFilterTypeDoc()">
+                    <v-icon v-if="header.value === 'typeDoc'" size="small" :color="colorIconFilterTypeDoc()">
                       mdi-filter
                     </v-icon>
                   </span>
                   <span>
-                    <v-icon v-if="header.value === 'id'" small :color="colorIconFilterId()">
+                    <v-icon v-if="header.value === 'id'" size="small" :color="colorIconFilterId()">
                       mdi-filter
                     </v-icon>
                   </span>
                   <span>
-                    <v-icon v-if="header.value === 'priority'" small :color="colorIconFilterPriority()">
+                    <v-icon v-if="header.value === 'priority'" size="small" :color="colorIconFilterPriority()">
                       mdi-filter
                     </v-icon>
                   </span>
@@ -129,7 +129,7 @@
               </div>
             </v-menu>
             <!--      SUPPRESSION DE L'ICONE DE TRI COLONNE "Règle de vérification / qualité"     -->
-            <v-icon color="white" small v-if="header.value !== 'message'">mdi-sort</v-icon>
+            <v-icon color="white" size="small" v-if="header.value !== 'message'">mdi-sort</v-icon>
           </template>
         </v-data-table>
       </div>

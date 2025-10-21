@@ -121,7 +121,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
       <div class="mt-4 d-flex flex-row-reverse">
-        <v-btn class="button" color="#0c5c92" depressed height="26" max-width="380" small tile
+        <v-btn class="button" color="#0c5c92" depressed height="26" max-width="380" size="small" tile
                @click="copyPnnWrongSyntax()">
           <span style="color: white">COPIER LES PPN AVEC SYNTAXE ERRONEE</span>
           <v-icon class="ml-2" color="white" small>mdi-content-copy</v-icon>

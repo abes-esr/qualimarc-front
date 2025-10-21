@@ -25,7 +25,7 @@
       </v-col>
       <v-col xs="12" sm="12" md="12" lg="" xl="" class="pl-lg-6" fluid fill-width>
         <div class="d-none d-lg-flex" style="height: 70%; width: 2px; position:absolute; margin: 0 0 0 -1.15em; background-color: #E6E6E6">
-          <v-btn fab x-small depressed color="#b2b2b2" style="position:absolute; margin: 0 0 0 -1.55em" @click="resizeBloc">
+          <v-btn fab size="x-small" depressed color="#b2b2b2" style="position:absolute; margin: 0 0 0 -1.55em" @click="resizeBloc">
             <v-icon @click="" color="white" large>{{ iconTimeline }}</v-icon>
           </v-btn>
         </div>

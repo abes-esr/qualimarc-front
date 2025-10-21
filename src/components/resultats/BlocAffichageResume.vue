@@ -29,9 +29,9 @@
           <v-menu offset-y v-if="header.value === 'typeDocument'">
             <template v-slot:activator="{ props }">
               <span v-bind="props" style='color: white; display: block'>{{ header.text }}</span>
-              <v-btn text class="bouton-simple" x-small v-bind="props" style="text-decoration: none;">
+              <v-btn text class="bouton-simple" size="x-small" v-bind="props" style="text-decoration: none;">
                 <span>
-                  <v-icon small color="white" :color="colorIconFilterTypeDoc()">
+                  <v-icon size="small" color="white" :color="colorIconFilterTypeDoc()">
                     mdi-filter
                   </v-icon>
                 </span>
@@ -47,7 +47,7 @@
         <span v-if="header.text === 'Aff/Masq.' || header.text === 'Nb. erreurs' || header.text === 'PPN'" style='color: white; display: block'>
           {{ header.text }}
         </span>
-          <v-icon color="white" small >mdi-sort</v-icon>
+          <v-icon color="white" size="small" >mdi-sort</v-icon>
       </template>
       <template v-slot:item.affiche="{ item }">
         <v-checkbox
