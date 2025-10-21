@@ -40,7 +40,7 @@ import BlocTypeAnalyse from "@/components/accueil/BlocTypeAnalyse.vue";
 import BlocRechercheParPpn from "@/components/accueil/BlocRechercheParPpn.vue";
 import BoutonLancement from "@/components/BoutonLancement.vue";
 import MessageErreur from "@/components/MessageErreur.vue";
-import {onMounted, ref, watchEffect} from 'vue';
+import {nextTick, onMounted, ref} from 'vue';
 import router from "@/router";
 import {useResultatStore} from "@/stores/resultat";
 import {useAnalyseStore} from "@/stores/analyse";
@@ -100,7 +100,9 @@ function stopAnalyse() {
 }
 
 function redirect() {
+  setTimeout(() => {
     router.push('/resultats');
+  }, 0);
 }
 
 function resetErrorMessage() {

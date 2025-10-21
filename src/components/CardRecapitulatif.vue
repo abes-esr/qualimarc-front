@@ -5,7 +5,7 @@
 
       <v-row class="d-flex justify-space-between align-center">
         <span>Nb. total de PPN analysés :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnTotal.length === 0" elevation="0" class="button" x-small color="#0c5c92">
+        <v-btn :disabled="resultatsToDisplay.PpnTotal.length === 0" elevation="0" class="button" size="x-small" color="#0c5c92">
           <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnTotal)" name="ppn_analyses.csv">
             <span>
               {{ resultatsToDisplay.PpnTotal.length }}
@@ -15,7 +15,7 @@
       </v-row>
       <v-row class="d-flex justify-space-between align-center">
         <span>Nb. de PPN avec erreurs :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnErreurs.length === 0" elevation="0" class="button" x-small color="#0c5c92">
+        <v-btn :disabled="resultatsToDisplay.PpnErreurs.length === 0" elevation="0" class="button" size="x-small" color="#0c5c92">
           <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnErreurs)" name="ppn_avec_erreurs.csv">
             <span>
               {{ resultatsToDisplay.PpnErreurs.length }}
@@ -25,7 +25,7 @@
       </v-row>
       <v-row class="d-flex justify-space-between align-center">
         <span>Nb. de PPN sans erreur :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnOk.length === 0" elevation="0" class="button" x-small color="#0c5c92">
+        <v-btn :disabled="resultatsToDisplay.PpnOk.length === 0" elevation="0" class="button" size="x-small" color="#0c5c92">
           <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnOk)" name="ppn_sans_erreur.csv">
             <span>
               {{ resultatsToDisplay.PpnOk.length }}
@@ -35,7 +35,7 @@
       </v-row>
       <v-row class="d-flex justify-space-between align-center">
         <span>Nb. de PPN non trouvés :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnInconnus.length === 0" elevation="0" class="button" x-small color="#0c5c92">
+        <v-btn :disabled="resultatsToDisplay.PpnInconnus.length === 0" elevation="0" class="button" size="x-small" color="#0c5c92">
           <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnInconnus)" name="ppn_inconnus.csv">
             <span>
               {{ resultatsToDisplay.PpnInconnus.length }}
