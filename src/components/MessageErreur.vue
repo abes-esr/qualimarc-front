@@ -21,17 +21,7 @@
 
 <script setup>
 
-import {onMounted, onUpdated} from "vue";
-
 const props = defineProps({
   backendErrorMessage: {type: Object}, messageError: {type: String}
 });
-
-onMounted(() => {
-  console.error(JSON.stringify(props.backendErrorMessage))
-})
-
-onUpdated(() => {
-  console.error(JSON.stringify(props.backendErrorMessage))
-})
 </script>
