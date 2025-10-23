@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const props = defineProps({isDisabled: Boolean, ppnList: []});
+const props = defineProps({isDisabled: Boolean, ppnList: Array});
 const emit = defineEmits(['onClick']);
 
 function generateWinibwRequest() {

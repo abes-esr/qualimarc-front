@@ -1,7 +1,7 @@
 <template>
   <v-container class="ma-0 pa-0">
-    <!--    <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>-->
-    <!--    <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>-->
+    <!--  TODO  <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>-->
+    <!--  TODO  <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>-->
     <v-row class="ma-0 pa-0">
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Liste des PPN avec erreurs</h1>
     </v-row>
@@ -59,8 +59,6 @@
                   </div>
                 </v-menu>
               </template>
-
-
             </div>
           </th>
         </tr>
@@ -69,7 +67,7 @@
 
       <!--      ffffffffffffffffffffffffffffffffffffff -->
       <template #item="{ item }">
-        <tr :class="classItemMasked(item)">
+        <tr @click="console.log(item)" :class="classItemMasked(item)">
           <td>
             <v-checkbox
                 v-model="item.affiche"
@@ -103,7 +101,7 @@
                 <span>Afficher/masquer tout</span>
               </div>
               <div class="mb-4 d-flex align-center justify-start">
-                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()" class="mr-2"
+                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList" class="mr-2"
                                @onClick="displayPopup"></bouton-winibw>
                 <span>Générer la requête pour WinIBW</span>
               </div>
@@ -224,7 +222,7 @@ function colorIconFilterTypeDoc() {
  */
 function feedItems() {
   loading.value = true;
-  items.value = [];
+  items.value = Array.of([]);
   resultatStore.getResultsList.forEach((el) => {
     if (el.detailerreurs)
       items.value.push({
@@ -243,7 +241,7 @@ function feedItems() {
  * Fonction permettant de récupérer les PPN pour la création de la requête WINIBW
  */
 function getPpnList() {
-  let ppnList = [];
+  let ppnList = Array.of([]);
   let listItems = (ppnFiltered.value.length === 0 || selectedTypeDoc.value === "Tous") ? items.value : ppnFiltered.value;
   listItems.forEach(item => {
     ppnList.push(item.ppn);

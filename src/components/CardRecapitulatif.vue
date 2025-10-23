@@ -52,7 +52,7 @@ import {onMounted, ref} from "vue";
 const props = defineProps({
   // props
   'resultats': {
-    type: [],
+    type: Object,
     required: true
   }
 });
