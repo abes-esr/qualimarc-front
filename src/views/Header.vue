@@ -1,56 +1,87 @@
 <template>
-  <header absolute padless class="pa-0" fluid>
+  <header absolute class="pa-0" fluid padless>
     <nav aria-label="Navigation principale">
-     <v-row :class="(mdAndUp) ? 'pr-4 pb-4 pl-12 bgColorPrimary' : 'pa-2 bgColorPrimary'" justify="center" :align="(mdAndUp) ? 'end' : 'start'" no-gutters>
-       <v-col cols="2" :style="(mdAndUp) ? null : 'margin-bottom: -10px'">
-         <a @click="$router.push({path: '/'})" aria-label="Redirige vers la page d'accueil de Qualimarc">
-           <img v-if="(mdAndUp)" :src="QMLogo" class="titleBarLogo" alt="logo Qualimarc"/>
-           <img v-else :src="QMLogoIconBlue" style="height: 50px; margin-bottom: -9px; margin-top: -8px" alt="logo Qualimarc"/>
-         </a>
-       </v-col>
-       <v-col :cols="(mdAndUp) ? '8' : '7'" :class="(mdAndUp) ? 'pl-8' : null">
-         <v-row class="ma-0 pa-0" justify="center" role="toolbar">
-           <v-btn text tile color="white" value="interfaceVerification" :class="{titleBarButtonSelected: (route.path === '/') || (route.path === '/resultats') }" to="/" aria-label="Redirige vers la page Interface d'analyse de Qualimarc ">{{ (mdAndUp) ? 'Interface d\'analyse' : 'Analyse' }}</v-btn>
-           <v-btn text tile color="white" value="interfaceRegles" :class="{titleBarButtonSelected: route.path === '/regles' }" to="/regles" aria-label="Redirige vers la page Interface des règles de Qualimarc"> {{(mdAndUp) ? 'Interface des règles' : 'Règles' }}</v-btn>
-           <v-btn text tile color="white" value="historique" :class="{titleBarButtonSelected: route.path === '/historiques' }" to="/historiques" aria-label="Redirige vers la page Historique de Qualimarc">Historique</v-btn>
-         </v-row>
-       </v-col>
-       <v-col :cols="(mdAndUp) ? '2' : '3'">
-         <v-row :class="(mdAndUp) ? 'justify-center' : 'ma-0 pa-0 justify-end'" :no-gutters="mdAndUp">
-           <v-tooltip bottom color="#54576D" dark>
-             <template v-slot:activator="{ props }">
-               <v-btn v-bind="props" icon :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'" fab :size="mdAndUp ? 'small' : 'x-small'"  :depressed="mdAndUp" color="white" href="https://stp.abes.fr/node/3?origine=sudocpro" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP" target="_blank">
-                 <v-img :src="chatBubbles" :height="(mdAndUp) ? '34px' : '24px'" :width="(mdAndUp) ? '34px' : '24px'" alt="Poser une question sur Abes STP"></v-img>
-               </v-btn>
-             </template>
-             <span style="color: white">Ouvre Abes STP dans un nouvel onglet</span>
-           </v-tooltip>
-           <v-tooltip bottom color="#54576D" dark>
-             <template v-slot:activator="{ props }">
-               <v-btn v-bind="props" icon :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'" fab :size="mdAndUp ? 'small' : 'x-small'" :depressed="mdAndUp" color="white" href="https://documentation.abes.fr/aidequalimarc/index.html" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de la documentation de Qualimarc" target="_blank">
-                 <v-img :src="questionMark" :height="(mdAndUp) ? '34px' : '24px'" :width="(mdAndUp) ? '34px' : '24px'" alt="Consulter le manuel utilisateur QualiMarc"></v-img>
-               </v-btn>
-             </template>
-             <span style="color: white">Ouvre le manuel utilisateur dans un nouvel onglet</span>
-           </v-tooltip>
-           <bloc-statuts/>
-         </v-row>
-       </v-col>
+      <v-row :align="(mdAndUp) ? 'end' : 'start'" :class="(mdAndUp) ? 'pr-4 pb-4 pl-12 bgColorPrimary' : 'pa-2 bgColorPrimary'"
+             justify="center" no-gutters>
+        <v-col align-self="center" cols="2">
+          <a aria-label="Redirige vers la page d'accueil de Qualimarc" @click="$router.push({path: '/'})">
+            <img v-if="(mdAndUp)" :src="QMLogo" alt="logo Qualimarc" class="titleBarLogo"/>
+            <img v-else :src="QMLogoIconBlue" alt="logo Qualimarc"
+                 style="height: 100px;"/>
+          </a>
+        </v-col>
+        <v-col cols="7" sm="7" md="8" class="pb-1" alignSelf="end" >
+          <v-row class="ma-0 pa-0" role="toolbar">
+            <v-spacer cols="0" md="1" lg="1" xl="3"></v-spacer>
+            <v-col class="ma-0 pa-0 d-flex justify-center"  cols="12" xs="12" sm="4" md="4" lg="3" xl="2">
+              <v-btn :class="{titleBarButtonSelected: (route.path === '/') || (route.path === '/resultats') }" aria-label="Redirige vers la page Interface d'analyse de Qualimarc " color="white" tile
+                     to="/" value="interfaceVerification"
+                     variant="text">
+                {{ (mdAndUp) ? 'Interface d\'analyse' : 'Analyse' }}
+              </v-btn>
+            </v-col>
+            <v-col class="ma-0 pa-0 d-flex justify-center" cols="12" xs="12" sm="4" md="4" lg="3" xl="2">
+              <v-btn :class="{titleBarButtonSelected: route.path === '/regles' }" aria-label="Redirige vers la page Interface des règles de Qualimarc" color="white" tile
+                     to="/regles" value="interfaceRegles"
+                     variant="text">
+                {{ (mdAndUp) ? 'Interface des règles' : 'Règles' }}
+              </v-btn>
+            </v-col>
+            <v-col class="ma-0 pa-0 d-flex justify-center" cols="12" xs="12" sm="4" md="2" lg="2" xl="2">
+              <v-btn :class="{titleBarButtonSelected: route.path === '/historiques' }" aria-label="Redirige vers la page Historique de Qualimarc" color="white" tile
+                     to="/historiques" value="historique"
+                     variant="text">Historique
+              </v-btn>
+            </v-col>
+            <v-spacer cols="0" md="1" lg="2" xl="3"></v-spacer>
+          </v-row>
+        </v-col>
+        <v-col  :align-self="(mdAndUp) ? 'end' : 'center'" :cols="(mdAndUp) ? '2' : '3'">
+          <v-row :class="(mdAndUp) ? 'justify-center' : 'justify-center'" :no-gutters="mdAndUp">
+            <v-tooltip bottom color="#54576D" dark>
+              <template v-slot:activator="{ props }">
+                <v-btn :depressed="mdAndUp" :size="mdAndUp ? 'small' : 'x-small'" :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP"
+                       color="white" fab href="https://stp.abes.fr/node/3?origine=sudocpro"
+                       icon
+                       target="_blank"
+                       v-bind="props">
+                  <v-img :height="(mdAndUp) ? '34px' : '24px'" :src="chatBubbles" :width="(mdAndUp) ? '34px' : '24px'"
+                         alt="Poser une question sur Abes STP"></v-img>
+                </v-btn>
+              </template>
+              <span style="color: white">Ouvre Abes STP dans un nouvel onglet</span>
+            </v-tooltip>
+            <v-tooltip bottom color="#54576D" dark>
+              <template v-slot:activator="{ props }">
+                <v-btn :depressed="mdAndUp" :size="mdAndUp ? 'small' : 'x-small'" :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de la documentation de Qualimarc"
+                       color="white" fab href="https://documentation.abes.fr/aidequalimarc/index.html"
+                       icon
+                       target="_blank"
+                       v-bind="props">
+                  <v-img :height="(mdAndUp) ? '34px' : '24px'" :src="questionMark" :width="(mdAndUp) ? '34px' : '24px'"
+                         alt="Consulter le manuel utilisateur QualiMarc"></v-img>
+                </v-btn>
+              </template>
+              <span style="color: white">Ouvre le manuel utilisateur dans un nouvel onglet</span>
+            </v-tooltip>
+            <bloc-statuts/>
+          </v-row>
+        </v-col>
       </v-row>
     </nav>
   </header>
 </template>
 
 <script setup>
-import { useRoute } from "vue-router"
+import {useRoute} from "vue-router"
 import BlocStatuts from "@/components/accueil/BlocStatuts.vue";
-import { useDisplay } from 'vuetify'
+import {useDisplay} from 'vuetify'
 import QMLogo from '@/assets/QMLogo.svg';
 import QMLogoIconBlue from '@/assets/QMLogoIconBlue.svg';
 import chatBubbles from '@/assets/chatBubbles.svg';
 import questionMark from '@/assets/questionMark.svg';
 
-const { mdAndUp } = useDisplay()
+const {mdAndUp} = useDisplay()
 
 const route = useRoute();
 </script>

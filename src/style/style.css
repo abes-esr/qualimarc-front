@@ -14,8 +14,9 @@
 }
 
 .titleBarButtonSelected {
-    border-bottom-style: solid ;
-    border-color: #cf491b;
+    color: red;
+    border-bottom-style: solid !important;
+    border-color: #cf491b!important;
 }
 
 .filAriane {
