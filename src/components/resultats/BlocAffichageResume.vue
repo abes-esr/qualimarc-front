@@ -19,10 +19,8 @@
         item-key="ppn"
         loading-text="Chargement..."
         select-mode="single"
-        @click:row="sendCurrentPpnToParent"
         @update:items="sendItemsToParent"
     >
-
       <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
         <tr>
           <th v-for="header in headers" :key="header.key" class="text-left">
@@ -40,6 +38,8 @@
                 >
                   {{ getSortIcon(header) }}
                 </v-icon>
+                <v-icon v-else color="white"
+                        class="ml-1" size="small" >mdi-sort</v-icon>
               </span>
               <template v-if="header.key === 'typeDocument'">
                 <v-menu offset-y>
@@ -64,14 +64,13 @@
         </tr>
       </template>
 
-
-      <!--      ffffffffffffffffffffffffffffffffffffff -->
-      <template #item="{ item }">
-        <tr @click="console.log(item)" :class="classItemMasked(item)">
+      <template v-slot:item="{ item }">
+        <tr @click="sendCurrentPpnToParent($event, item)"  :class="classItemMasked(item)">
           <td>
             <v-checkbox
                 v-model="item.affiche"
                 color="#CF4A1A"
+                class="position-absolute align-self-center"
                 false-icon="mdi-eye-off-outline"
                 hide-details
                 true-icon="mdi-eye"
@@ -128,7 +127,8 @@
         />
       </template>
     </v-data-table>
-    <bloc-aucune-donnee v-else>Les PPN en entrée ne comportent aucune erreur ou n’ont pas été trouvés dans le Sudoc.
+    <bloc-aucune-donnee v-else>
+      Les PPN en entrée ne comportent aucune erreur ou n’ont pas été trouvés dans le Sudoc.
       Reportez-vous au bloc “Récapitulatif” pour plus de détails.
     </bloc-aucune-donnee>
     <PopupRequestWinibw :dialog="dialog" :winibwRequest="winibwRequest" @onClose="setDialog"></PopupRequestWinibw>
@@ -222,7 +222,7 @@ function colorIconFilterTypeDoc() {
  */
 function feedItems() {
   loading.value = true;
-  items.value = Array.of([]);
+  items.value = [];
   resultatStore.getResultsList.forEach((el) => {
     if (el.detailerreurs)
       items.value.push({
@@ -241,7 +241,7 @@ function feedItems() {
  * Fonction permettant de récupérer les PPN pour la création de la requête WINIBW
  */
 function getPpnList() {
-  let ppnList = Array.of([]);
+  let ppnList = [];
   let listItems = (ppnFiltered.value.length === 0 || selectedTypeDoc.value === "Tous") ? items.value : ppnFiltered.value;
   listItems.forEach(item => {
     ppnList.push(item.ppn);
@@ -292,6 +292,7 @@ function setDialog(onClose) {
  */
 function classItemMasked(item) {
   return {
+    selected: modelDataTable.value.some(sel => sel.ppn === item.ppn),
     showed: item.affiche,
     masked: !item.affiche,
   }
@@ -300,9 +301,11 @@ function classItemMasked(item) {
 /**
  * Fonction renvoyant le ppn de la ligne sélectionné vers le composant parent
  */
-function sendCurrentPpnToParent(event, row) {
-  row.toggleSelect(row.item);
-  emit("onChangePpn", row.item.ppn);
+function sendCurrentPpnToParent(event, item) {
+  console.log("clic")
+  const alreadySelected = modelDataTable.value.some(sel => sel.ppn === item.ppn)
+  modelDataTable.value = alreadySelected ? [] : [item]
+  emit("onChangePpn", item.ppn);
 }
 
 function sendItemsToParent(items) {
@@ -415,19 +418,12 @@ function resizeDataTable() {
   background-color: #676C91;
 }
 
-.theme--light.v-data-table tbody tr.v-data-table__selected {
+.selected {
   background: #DADCE7 !important;
 }
 
-.theme--dark.v-data-table tbody tr.v-data-table__selected {
-  background: #DADCE7 !important;
-}
-
-.theme--dark.v-data-table tbody tr.v-data-table__selected:hover {
-  background: #DADCE7 !important;
-}
-
-.theme--light.v-data-table tbody tr.v-data-table__selected:hover {
-  background: #DADCE7 !important;
+tr:not(.selected):hover {
+  background-color: #eaeaea; /* gris clair au survol */
+  cursor: pointer;
 }
 </style>
