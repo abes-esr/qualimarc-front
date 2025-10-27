@@ -211,3 +211,7 @@
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+
+.v-checkbox .v-selection-control {
+    min-height: auto !important;
+}

@@ -70,7 +70,8 @@
             <v-checkbox
                 v-model="item.affiche"
                 color="#CF4A1A"
-                class="position-absolute align-self-center"
+                class=" align-self-center"
+                density="compact"
                 false-icon="mdi-eye-off-outline"
                 hide-details
                 true-icon="mdi-eye"
@@ -90,38 +91,41 @@
       <template v-slot:body.append>
         <tr>
           <td colspan="100%">
-            <!--      Affichage en mode mobile      -->
-            <div
-                v-if="(mobileBreakpoint === 4000 && breakPointName === 'xl') || (mobileBreakpoint === 4000 && breakPointName === 'lg') || breakPointName === 'xs'"
-                class="d-flex flex-column">
-              <div class="pl-3 d-flex align-center justify-start">
-                <v-checkbox color="#CF4A1A" false-icon="mdi-eye-off-outline" input-value="1" true-icon="mdi-eye"
-                            @change="toggleMask"/>
-                <span>Afficher/masquer tout</span>
-              </div>
-              <div class="mb-4 d-flex align-center justify-start">
-                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList" class="mr-2"
-                               @onClick="displayPopup"></bouton-winibw>
-                <span>Générer la requête pour WinIBW</span>
-              </div>
-            </div>
-            <!--      Affichage en mode pc      -->
-            <div v-else class="d-flex justify-space-between">
-              <div class="d-flex align-center mr-4">
-                <v-checkbox color="#CF4A1A" false-icon="mdi-eye-off-outline" input-value="1" true-icon="mdi-eye"
-                            @change="toggleMask"/>
-                <span>Afficher/masquer tout</span>
-              </div>
-              <div class="d-flex align-center">
-                <span class="pr-1">Générer la requête pour WinIBW</span>
-                <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()"
-                               @onClick="displayPopup"></bouton-winibw>
-              </div>
-            </div>
+            <v-row class="ma-0">
+              <v-col
+                  cols="12" sm="5"
+              >
+                <v-row class="d-flex align-center justify-start py-4">
+                  <v-checkbox
+                      v-model="allDisplayed"
+                      color="#CF4A1A"
+                      false-icon="mdi-eye-off-outline"
+                      class="d-flex align-center pr-2"
+                      density="compact"
+                      true-icon="mdi-eye"
+                      @change="toggleMask"
+                  />
+                  <span>Afficher/masquer tout</span>
+                </v-row>
+              </v-col >
+              <v-col
+                  cols="12" sm="7"
+              >
+                <v-row class="d-flex align-center
+                flex-row-reverse flex-sm-row
+                justify-end justify-md-end
+                py-4">
+                  <span class="px-2">Générer la requête pour WinIBW</span>
+
+                  <bouton-winibw :isDisabled="isWinibwButtonDisabled()" :ppnList="getPpnList()"
+                                 @onClick="displayPopup"></bouton-winibw>
+                </v-row>
+              </v-col>
+            </v-row>
           </td>
         </tr>
       </template>
-      <template #bottom>
+      <template v-slot:bottom>
         <v-data-table-footer
             :items-per-page-options="[5, 10, 20, 30, -1]"
         />
@@ -168,6 +172,7 @@ let itemsTrieAndFiltered = [];
 const modelDataTable = ref([]);
 const selectedCheckbox = ref([]);
 const {mdAndDown, name: breakPointName} = useDisplay()
+const allDisplayed = ref(true);
 
 onMounted(() => {
   feedItems();
@@ -380,9 +385,10 @@ function updateItemSelected(ppn) {
  * Fonction qui permet d'afficher ou de masquer toutes les lignes
  * @param value
  */
-function toggleMask(value) {
-  items.value.forEach(item => {
-    item.affiche = value;
+function toggleMask() {
+  console.log(allDisplayed.value)
+  ppnFiltered.value.forEach(item => {
+    item.affiche = allDisplayed.value;
   })
 }
 
