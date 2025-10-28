@@ -17,18 +17,24 @@
       </nav>
     </div>
     <v-row cols="12">
-      <v-col xs="12" sm="12" md="12" :lg="focusOn[0]" :xl="focusOn[1]" fluid fill-width>
+      <v-col xs="12" sm="12" md="12" :lg="focusOn[0]" :xl="focusOn[1]" class="pr-2" fluid fill-width>
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
         <v-layout child-flex>
           <BlocAffichageResume child-flex @onChangePpn="sendPpnToBlocResultat" @onChangeItems="sendItemsToBlocResultat" :currentPpn="currentPpn" :nbLancement="nbLancement" :mobileBreakpoint="mobileBreakpoint"></BlocAffichageResume>
         </v-layout>
       </v-col>
-      <v-col xs="12" sm="12" md="12" lg="" xl="" class="pl-lg-6" fluid fill-width>
-        <div class="d-none d-lg-flex" style="height: 70%; width: 2px; position:absolute; margin: 0 0 0 -1.15em; background-color: #E6E6E6">
-          <v-btn fab size="x-small" depressed color="#b2b2b2" style="position:absolute; margin: 0 0 0 -1.55em" @click="resizeBloc">
-            <v-icon @click="" color="white" large>{{ iconTimeline }}</v-icon>
-          </v-btn>
-        </div>
+      <div class="d-none d-lg-flex flex-column">
+        <v-btn icon size="x-small" variant="flat" color="#b2b2b2" @click="resizeBloc">
+          <v-icon size="x-large" color="white"> {{ iconTimeline }} </v-icon>
+        </v-btn>
+        <v-divider
+            class="align-self-center"
+            style="background-color: #b2b2b2"
+            thickness="2"
+            vertical
+        ></v-divider>
+      </div>
+      <v-col xs="12" sm="12" md="12" lg="" xl="" fluid fill-width>
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
         <v-layout child-flex>
           <bloc-detail-ppn class="ma-0 pa-0 mb-2" @onChangePpn="sendPpnToBlocResultat" :currentPpn="currentPpn" :currentItems="currentItems" ></bloc-detail-ppn>
