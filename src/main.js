@@ -5,7 +5,7 @@ import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
 import JsonCSV from 'vue-json-csv'
 import VueMatomo from 'vue-matomo'
-import VueShortKey from 'vue-shortkey'
+import VueShortKey from 'vue3-shortkey'
 
 // Création de l'app
 const app = createApp(App)
