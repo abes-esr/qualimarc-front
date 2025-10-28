@@ -19,7 +19,7 @@
         item-key="ppn"
         loading-text="Chargement..."
         select-mode="single"
-        @update:items="sendItemsToParent"
+        @update:current-items="sendItemsToParent"
     >
       <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
         <tr>
