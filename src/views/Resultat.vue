@@ -20,12 +20,20 @@
       <v-col xs="12" sm="12" md="12" :lg="focusOn[0]" :xl="focusOn[1]" class="pr-2" fluid fill-width>
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
         <v-layout child-flex>
-          <BlocAffichageResume child-flex @onChangePpn="sendPpnToBlocResultat" @onChangeItems="sendItemsToBlocResultat" :currentPpn="currentPpn" :nbLancement="nbLancement" :mobileBreakpoint="mobileBreakpoint"></BlocAffichageResume>
+          <BlocAffichageResume
+              child-flex
+              @onChangePpn="sendPpnToBlocResultat"
+              @onChangeItems="sendItemsToBlocResultat"
+              :currentPpn="currentPpn"
+              :nbLancement="nbLancement"
+              :is-mobile-forced="isMobileForced"
+              :mobileBreakpoint="mobileBreakpoint">
+          </BlocAffichageResume>
         </v-layout>
       </v-col>
       <div class="d-none d-lg-flex flex-column">
         <v-btn icon size="x-small" variant="flat" color="#b2b2b2" @click="resizeBloc">
-          <v-icon size="x-large" color="white"> {{ iconTimeline }} </v-icon>
+          <v-icon size="x-large" color="white"> {{ isMobileForced ? 'mdi-chevron-right' : 'mdi-chevron-left' }} </v-icon>
         </v-btn>
         <v-divider
             class="align-self-center"
@@ -95,9 +103,9 @@ const currentPpn = ref('');
 const currentItems = ref([]);
 const nbLancement = ref(0);
 const mobileBreakpoint = ref(200);
-const iconTimeline = ref('mdi-chevron-left');
 const focusOn = ref([4, 4]);
 const isProgressLoading = ref(false);
+const isMobileForced = ref(false);
 
 onMounted(() => {
   if(resultatStore.getRecapitulatif.length === 0) {
@@ -168,14 +176,13 @@ function stopAnalyse(){
 }
 
 function resizeBloc() {
-  if(iconTimeline.value === 'mdi-chevron-left'){
+  isMobileForced.value = !isMobileForced.value;
+  if(isMobileForced.value){
     focusOn.value = [3, 2];
-    mobileBreakpoint.value = 4000;
-    iconTimeline.value = 'mdi-chevron-right';
-  }else{
+  //   mobileBreakpoint.value = 4000;
+  } else {
     focusOn.value = [4, 4];
-    mobileBreakpoint.value = 200;
-    iconTimeline.value = 'mdi-chevron-left';
+    // mobileBreakpoint.value = 200;
   }
 }
 

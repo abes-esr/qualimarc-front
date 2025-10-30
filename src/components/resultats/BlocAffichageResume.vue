@@ -13,6 +13,7 @@
         :item-class="classItemMasked"
         :items="ppnFiltered"
         :loading="loading"
+        :mobile="xs || isMobileForced"
         :mobile-breakpoint="resizeDataTable()"
         class="borderBlocElements"
         density="compact"
@@ -38,8 +39,8 @@
                 >
                   {{ getSortIcon(header) }}
                 </v-icon>
-                <v-icon v-else color="white"
-                        class="ml-1" size="small" >mdi-sort</v-icon>
+                <v-icon v-else class="ml-1"
+                        color="white" size="small">mdi-sort</v-icon>
               </span>
               <template v-if="header.key === 'typeDocument'">
                 <v-menu offset-y>
@@ -63,14 +64,57 @@
           </th>
         </tr>
       </template>
-
       <template v-slot:item="{ item }">
-        <tr @click="sendCurrentPpnToParent($event, item)"  :class="classItemMasked(item)">
+        <tr v-if="(xs || isMobileForced)" :class="classItemMasked(item)" @click="sendCurrentPpnToParent($event, item)">
+          <td colspan="100%">
+            <v-row class="ma-0 py-2 d-flex align-center justify-space-between" >
+              <div>
+                Aff/Masq.
+              </div>
+              <div>
+                <v-checkbox
+                    v-model="item.affiche"
+                    class=" align-self-center"
+                    color="#CF4A1A"
+                    density="compact"
+                    false-icon="mdi-eye-off-outline"
+                    hide-details
+                    true-icon="mdi-eye"
+                ></v-checkbox>
+              </div>
+            </v-row>
+            <v-row class="ma-0 py-2 d-flex align-center justify-space-between">
+              <div>
+                PPN
+              </div>
+              <div>
+                {{ item.ppn }}
+              </div>
+            </v-row>
+            <v-row class="ma-0 py-2 d-flex align-center justify-space-between">
+              <div>
+                Type de document
+              </div>
+              <div>
+                {{ item.typeDocument }}
+              </div>
+            </v-row>
+            <v-row class="ma-0 py-2 d-flex align-center justify-space-between">
+              <div>
+                Nb. erreurs
+              </div>
+              <div>
+                {{ item.nberreurs }}
+              </div>
+            </v-row>
+          </td>
+        </tr>
+        <tr v-else :class="classItemMasked(item)" @click="sendCurrentPpnToParent($event, item)">
           <td>
             <v-checkbox
                 v-model="item.affiche"
-                color="#CF4A1A"
                 class=" align-self-center"
+                color="#CF4A1A"
                 density="compact"
                 false-icon="mdi-eye-off-outline"
                 hide-details
@@ -93,23 +137,23 @@
           <td colspan="100%">
             <v-row class="ma-0">
               <v-col
-                  cols="12" sm="5"
+                  :sm="isMobileForced ? 12 : 5" cols="12"
               >
                 <v-row class="d-flex align-center justify-start py-4">
                   <v-checkbox
                       v-model="allDisplayed"
-                      color="#CF4A1A"
-                      false-icon="mdi-eye-off-outline"
                       class="d-flex align-center pr-2"
+                      color="#CF4A1A"
                       density="compact"
+                      false-icon="mdi-eye-off-outline"
                       true-icon="mdi-eye"
                       @change="toggleMask"
                   />
                   <span>Afficher/masquer tout</span>
                 </v-row>
-              </v-col >
+              </v-col>
               <v-col
-                  cols="12" sm="7"
+                  :sm="isMobileForced ? 12 : 7" cols="12"
               >
                 <v-row class="d-flex align-center
                 flex-row-reverse flex-sm-row
@@ -152,7 +196,7 @@ const resultatStore = useResultatStore();
 const serviceApi = QualimarcService;
 
 const emit = defineEmits(['onChangePpn', 'onChangeItems']);
-const props = defineProps({currentPpn: String, nbLancement: Number, mobileBreakpoint: Number});
+const props = defineProps({currentPpn: String, nbLancement: Number, isMobileForced: Boolean});
 
 const size = '';
 const headers = [
@@ -171,7 +215,7 @@ const ppnFiltered = ref([]);
 let itemsTrieAndFiltered = [];
 const modelDataTable = ref([]);
 const selectedCheckbox = ref([]);
-const {mdAndDown, name: breakPointName} = useDisplay()
+const {xs, smAndDown, mdAndDown, mdAndUp, name: breakPointName} = useDisplay()
 const allDisplayed = ref(true);
 
 onMounted(() => {
@@ -297,6 +341,7 @@ function setDialog(onClose) {
  */
 function classItemMasked(item) {
   return {
+    mobile: xs.value,
     selected: modelDataTable.value.some(sel => sel.ppn === item.ppn),
     showed: item.affiche,
     masked: !item.affiche,
@@ -307,7 +352,7 @@ function classItemMasked(item) {
  * Fonction renvoyant le ppn de la ligne sélectionné vers le composant parent
  */
 function sendCurrentPpnToParent(event, item) {
-  console.log("clic")
+  console.log(classItemMasked(item))
   const alreadySelected = modelDataTable.value.some(sel => sel.ppn === item.ppn)
   modelDataTable.value = alreadySelected ? [] : [item]
   emit("onChangePpn", item.ppn);
@@ -426,6 +471,11 @@ function resizeDataTable() {
 
 .selected {
   background: #DADCE7 !important;
+}
+
+.mobile {
+  height: auto;
+  min-height: 48px
 }
 
 tr:not(.selected):hover {
