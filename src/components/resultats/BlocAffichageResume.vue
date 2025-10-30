@@ -10,11 +10,9 @@
         id="bgColorResults"
         v-model:selected="modelDataTable"
         :headers="headers"
-        :item-class="classItemMasked"
         :items="ppnFiltered"
         :loading="loading"
         :mobile="xs || isMobileForced"
-        :mobile-breakpoint="resizeDataTable()"
         class="borderBlocElements"
         density="compact"
         item-key="ppn"
@@ -212,7 +210,7 @@ const dialog = ref(false);
 const selectType = ref([]);
 const selectedTypeDoc = ref(new Array("Tous"));
 const ppnFiltered = ref([]);
-let itemsTrieAndFiltered = [];
+let itemsSortedAndFiltered = [];
 const modelDataTable = ref([]);
 const selectedCheckbox = ref([]);
 const {xs, smAndDown, mdAndDown, mdAndUp, name: breakPointName} = useDisplay()
@@ -234,16 +232,16 @@ watchEffect(() => {
 })
 
 function nextSelectedItem() {
-  let index = itemsTrieAndFiltered.findIndex(item => item.ppn === props.currentPpn);
-  if (index < itemsTrieAndFiltered.length - 1) {
-    emit('onChangePpn', itemsTrieAndFiltered[index + 1].ppn);
+  let index = itemsSortedAndFiltered.findIndex(item => item.ppn === props.currentPpn);
+  if (index < itemsSortedAndFiltered.length - 1) {
+    emit('onChangePpn', itemsSortedAndFiltered[index + 1].ppn);
   }
 }
 
 function previousSelectedItem() {
-  let index = itemsTrieAndFiltered.findIndex(item => item.ppn === props.currentPpn);
+  let index = itemsSortedAndFiltered.findIndex(item => item.ppn === props.currentPpn);
   if (index > 0) {
-    emit('onChangePpn', itemsTrieAndFiltered[index - 1].ppn);
+    emit('onChangePpn', itemsSortedAndFiltered[index - 1].ppn);
   }
 }
 
@@ -281,7 +279,7 @@ function feedItems() {
         nberreurs: el.detailerreurs.length
       })
   });
-  itemsTrieAndFiltered = items.value;
+  itemsSortedAndFiltered = items.value;
   ppnFiltered.value = items.value;
   loading.value = false;
 }
@@ -358,8 +356,9 @@ function sendCurrentPpnToParent(event, item) {
   emit("onChangePpn", item.ppn);
 }
 
-function sendItemsToParent(items) {
-  itemsTrieAndFiltered = items;
+function sendItemsToParent(complexItems) {
+  console.log(complexItems)
+  itemsSortedAndFiltered = complexItems.map(item => item.columns);
   emit("onChangeItems", items);
 }
 
@@ -435,21 +434,6 @@ function toggleMask() {
   ppnFiltered.value.forEach(item => {
     item.affiche = allDisplayed.value;
   })
-}
-
-/**
- * Fonction qui permet de récupérer la valeur du breakpoint de vuetify
- * et adapte l'affichage de la dataTable (mobile ou pc)
- * @returns {InferPropType<Number | NumberConstructor>|number}
- */
-function resizeDataTable() {
-  const instance = getCurrentInstance();
-
-  if (mdAndDown) {
-    return 200;
-  } else {
-    return props.mobileBreakpoint;
-  }
 }
 
 </script>
