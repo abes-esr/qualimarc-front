@@ -21,10 +21,9 @@
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
         <v-layout child-flex>
           <BlocAffichageResume
+              v-model:currentPpn="currentPpn"
+              v-model:itemsSortedAndFiltered="itemsSortedAndFiltered"
               child-flex
-              @onChangePpn="sendPpnToBlocResultat"
-              @onChangeItems="sendItemsToBlocResultat"
-              :currentPpn="currentPpn"
               :nbLancement="nbLancement"
               :is-mobile-forced="isMobileForced"
               :mobileBreakpoint="mobileBreakpoint">
@@ -45,7 +44,11 @@
       <v-col xs="12" sm="12" md="12" lg="" xl="" fluid fill-width>
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
         <v-layout child-flex>
-          <bloc-detail-ppn class="ma-0 pa-0 mb-2" @onChangePpn="sendPpnToBlocResultat" :currentPpn="currentPpn" :currentItems="currentItems" ></bloc-detail-ppn>
+          <bloc-detail-ppn
+              v-model:currentPpn="currentPpn"
+              :itemsSortedAndFiltered="itemsSortedAndFiltered"
+              class="ma-0 pa-0 mb-2"
+          ></bloc-detail-ppn>
         </v-layout>
           <div class="ma-0 pa-0" style="position: relative">
             <v-tooltip left>
@@ -100,7 +103,8 @@ import router from "@/router";
 const resultatStore = useResultatStore();
 
 const currentPpn = ref('');
-const currentItems = ref([]);
+const itemsSortedAndFiltered = ref([]);
+
 const nbLancement = ref(0);
 const mobileBreakpoint = ref(200);
 const focusOn = ref([4, 4]);
@@ -112,14 +116,6 @@ onMounted(() => {
     router.push({name: 'Redirection accueil'});
   }
 });
-
-function sendPpnToBlocResultat(ppn) {
-  currentPpn.value = ppn;
-}
-
-function sendItemsToBlocResultat(items) {
-  currentItems.value = items;
-}
 
 function itemsToExport() {
   let itemsToExport = [];

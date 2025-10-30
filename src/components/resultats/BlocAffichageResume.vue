@@ -193,8 +193,9 @@ import {useDisplay} from "vuetify/framework";
 const resultatStore = useResultatStore();
 const serviceApi = QualimarcService;
 
-const emit = defineEmits(['onChangePpn', 'onChangeItems']);
-const props = defineProps({currentPpn: String, nbLancement: Number, isMobileForced: Boolean});
+const props = defineProps({nbLancement: Number, isMobileForced: Boolean});
+const currentPpn = defineModel('currentPpn', {type: String});
+const itemsSortedAndFiltered = defineModel('itemsSortedAndFiltered', {type: Array});
 
 const size = '';
 const headers = [
@@ -210,7 +211,6 @@ const dialog = ref(false);
 const selectType = ref([]);
 const selectedTypeDoc = ref(new Array("Tous"));
 const ppnFiltered = ref([]);
-let itemsSortedAndFiltered = [];
 const modelDataTable = ref([]);
 const selectedCheckbox = ref([]);
 const {xs, smAndDown, mdAndDown, mdAndUp, name: breakPointName} = useDisplay()
@@ -223,8 +223,8 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  if (props.currentPpn) {
-    updateItemSelected(props.currentPpn)
+  if (currentPpn.value) {
+    updateItemSelected(currentPpn.value)
   }
   if (props.nbLancement) {
     feedItems()
@@ -232,16 +232,16 @@ watchEffect(() => {
 })
 
 function nextSelectedItem() {
-  let index = itemsSortedAndFiltered.findIndex(item => item.ppn === props.currentPpn);
-  if (index < itemsSortedAndFiltered.length - 1) {
-    emit('onChangePpn', itemsSortedAndFiltered[index + 1].ppn);
+  let index = itemsSortedAndFiltered.value.findIndex(item => item.ppn === currentPpn.value);
+  if (index < itemsSortedAndFiltered.value.length - 1) {
+    currentPpn.value = itemsSortedAndFiltered.value[index + 1].ppn;
   }
 }
 
 function previousSelectedItem() {
-  let index = itemsSortedAndFiltered.findIndex(item => item.ppn === props.currentPpn);
+  let index = itemsSortedAndFiltered.value.findIndex(item => item.ppn === currentPpn.value);
   if (index > 0) {
-    emit('onChangePpn', itemsSortedAndFiltered[index - 1].ppn);
+    currentPpn.value = itemsSortedAndFiltered.value[index - 1].ppn;
   }
 }
 
@@ -279,7 +279,7 @@ function feedItems() {
         nberreurs: el.detailerreurs.length
       })
   });
-  itemsSortedAndFiltered = items.value;
+  itemsSortedAndFiltered.value = items.value;
   ppnFiltered.value = items.value;
   loading.value = false;
 }
@@ -350,16 +350,13 @@ function classItemMasked(item) {
  * Fonction renvoyant le ppn de la ligne sélectionné vers le composant parent
  */
 function sendCurrentPpnToParent(event, item) {
-  console.log(classItemMasked(item))
   const alreadySelected = modelDataTable.value.some(sel => sel.ppn === item.ppn)
   modelDataTable.value = alreadySelected ? [] : [item]
-  emit("onChangePpn", item.ppn);
+  currentPpn.value = item.ppn;
 }
 
 function sendItemsToParent(complexItems) {
-  console.log(complexItems)
-  itemsSortedAndFiltered = complexItems.map(item => item.columns);
-  emit("onChangeItems", items);
+  itemsSortedAndFiltered.value = complexItems.map(item => item.raw);
 }
 
 /**

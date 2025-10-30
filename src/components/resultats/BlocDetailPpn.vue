@@ -47,8 +47,13 @@
           </div>
         </template>
       </v-data-table>
-      <v-pagination v-model="page" :length="itemsPpnParent.length" color="#0c5c92" :total-visible="12"
-        @input="sendCurrentPpnToParent(itemsPpnParent[page - 1].ppn)"></v-pagination>
+      <v-pagination
+          v-model="page"
+          @update:model-value="currentPpn = itemsPpnParent[page - 1].ppn"
+          color="#0c5c92"
+          :length="itemsPpnParent.length"
+          :total-visible="12"
+      ></v-pagination>
     </v-card>
     <bloc-aucune-donnee v-else>Cliquer sur un ppn de la liste du bloc de
       gauche
@@ -62,9 +67,12 @@ import { useResultatStore } from "@/stores/resultat";
 import CoverService from "@/service/CoverService";
 import BlocAucuneDonnee from "@/components/BlocAucuneDonnee";
 
-const props = defineProps({ currentPpn: String, currentItems: Array });
-const emit = defineEmits(['backendError', 'onChangePpn']);
+const props = defineProps({itemsSortedAndFiltered: Array });
+const emit = defineEmits(['backendError']);
+const currentPpn = defineModel('currentPpn', { type: String, required: true });
+
 const resultatStore = useResultatStore();
+
 const service = CoverService;
 
 const page = ref(1);
@@ -85,11 +93,11 @@ const headers = [
  * Fonction qui permet de vérifier un changement de valeur du ppn courant
  */
 watchEffect(() => {
-  if (props.currentPpn) {
+  if (currentPpn.value) {
     itemsPpnParent.value = [];
     coverLink.value = '';
     for (const result of resultatStore.getResultsList
-      .filter(e => props.currentItems.some(el => el.raw.ppn === e.ppn))) {
+      .filter(e => props.itemsSortedAndFiltered.some(el => el.ppn === e.ppn))) {
       let temp = [];
       for (const erreur of result.detailerreurs) {
         temp.push({
@@ -99,14 +107,14 @@ watchEffect(() => {
           message: erreur.message
         });
       }
-      itemsPpnParent.value[props.currentItems.map(item => item.raw.ppn).indexOf(result.ppn)] = {
+      itemsPpnParent.value[props.itemsSortedAndFiltered.map(item => item.ppn).indexOf(result.ppn)] = {
         titre: result.titre,
         auteur: result.auteur,
         ppn: result.ppn,
         itemsDetailPpn: temp,
       }
     }
-    page.value = itemsPpnParent.value.map(item => item.ppn).indexOf(props.currentPpn) + 1;
+    page.value = itemsPpnParent.value.map(item => item.ppn).indexOf(currentPpn.value) + 1;
   }
 }
 )
@@ -127,23 +135,8 @@ onUpdated(() => {
   feedCover();
 })
 
-
-function nextSelectedItem() {
-  if (page.value < itemsPpnParent.value.length) {
-    page.value++;
-    sendCurrentPpnToParent(itemsPpnParent.value[page.value - 1].ppn);
-  }
-}
-
-function previousSelectedItem() {
-  if (page.value > 1) {
-    page.value--;
-    sendCurrentPpnToParent(itemsPpnParent.value[page.value - 1].ppn);
-  }
-}
-
 function feedCover() {
-  const detailCurrentPpn = resultatStore.getResultsList.filter(result => result.ppn === props.currentPpn);
+  const detailCurrentPpn = resultatStore.getResultsList.filter(result => result.ppn === currentPpn.value);
   let ocn;
   let isbn;
   let typeDocument;
@@ -249,10 +242,6 @@ function getIconTypeDocument(typeDocument) {
 
 function emitOnError(error) {
   emit('backendError', error);
-}
-
-function sendCurrentPpnToParent(currentPpn) {
-  emit('onChangePpn', currentPpn);
 }
 
 function getPriority(priority) {
