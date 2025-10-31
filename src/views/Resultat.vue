@@ -1,6 +1,10 @@
 <template>
   <v-container fluid>
-    <progress-bar v-model:isLoading="isProgressLoading" @finished="updateNbLancement" @cancel="stopAnalyse"></progress-bar>
+    <KeyboardNavigation
+        v-model:currentPpn="currentPpn"
+        :items-sorted-and-filtered="itemsSortedAndFiltered"
+    />
+    <ProgressBar v-model:isLoading="isProgressLoading" @finished="updateNbLancement" @cancel="stopAnalyse"></ProgressBar>
     <div class="ma-0 pa-0 mb-2" style="color: #595959; font-size: 0.9em">
       <nav aria-label="fil d'Ariane" class="filAriane">
         <ul>
@@ -99,6 +103,7 @@ import ProgressBar from "@/components/ProgressBar.vue";
 import { ref, onMounted } from "vue";
 import { useResultatStore } from "@/stores/resultat";
 import router from "@/router";
+import KeyboardNavigation from "@/components/resultats/KeyboardNavigation.vue";
 
 const resultatStore = useResultatStore();
 

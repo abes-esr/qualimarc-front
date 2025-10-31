@@ -1,7 +1,5 @@
 <template>
   <v-container class="ma-0 pa-0">
-    <span v-shortkey="{up: ['arrowup'], left: ['arrowleft']}" @shortkey="goToPreviousLine()"></span>
-    <span v-shortkey="{down: ['arrowdown'], right: ['arrowright']}" @shortkey="goToNextLine()"></span>
     <v-row class="ma-0 pa-0">
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Liste des PPN avec erreurs</h1>
     </v-row>
@@ -182,7 +180,7 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, onMounted, ref, watchEffect} from "vue"
+import {onMounted, ref, watchEffect} from "vue"
 import {useResultatStore} from "@/stores/resultat";
 import BoutonWinibw from "@/components/BoutonWinibw";
 import PopupRequestWinibw from "@/components/resultats/PopupRequestWinibw";
@@ -219,7 +217,6 @@ const allDisplayed = ref(true);
 onMounted(() => {
   feedItems();
   feedTypeList();
-  nextSelectedItem();
 })
 
 watchEffect(() => {
@@ -230,32 +227,6 @@ watchEffect(() => {
     feedItems()
   }
 })
-
-function nextSelectedItem() {
-  let index = itemsSortedAndFiltered.value.findIndex(item => item.ppn === currentPpn.value);
-  if (index < itemsSortedAndFiltered.value.length - 1) {
-    currentPpn.value = itemsSortedAndFiltered.value[index + 1].ppn;
-  }
-}
-
-function previousSelectedItem() {
-  let index = itemsSortedAndFiltered.value.findIndex(item => item.ppn === currentPpn.value);
-  if (index > 0) {
-    currentPpn.value = itemsSortedAndFiltered.value[index - 1].ppn;
-  }
-}
-
-function focusOnFirstElement() {
-  nextSelectedItem()
-}
-
-function goToPreviousLine() {
-  previousSelectedItem()
-}
-
-function goToNextLine() {
-  nextSelectedItem()
-}
 
 
 function colorIconFilterTypeDoc() {
@@ -282,6 +253,7 @@ function feedItems() {
   itemsSortedAndFiltered.value = items.value;
   ppnFiltered.value = items.value;
   loading.value = false;
+  currentPpn.value = items.value[0].ppn;
 }
 
 /**
@@ -427,7 +399,6 @@ function updateItemSelected(ppn) {
  * @param value
  */
 function toggleMask() {
-  console.log(allDisplayed.value)
   ppnFiltered.value.forEach(item => {
     item.affiche = allDisplayed.value;
   })
