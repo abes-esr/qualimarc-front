@@ -253,7 +253,9 @@ function feedItems() {
   itemsSortedAndFiltered.value = items.value;
   ppnFiltered.value = items.value;
   loading.value = false;
-  currentPpn.value = items.value[0].ppn;
+  if (items.value.length > 0) {
+    currentPpn.value = items.value[0].ppn;
+  }
 }
 
 /**

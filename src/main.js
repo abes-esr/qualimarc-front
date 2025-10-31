@@ -1,8 +1,8 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
-import router from './router'
+import router from '@/router'
 import vuetify from './plugins/vuetify'
-import { createPinia } from 'pinia'
+import {createPinia} from 'pinia'
 import JsonCSV from 'vue-json-csv'
 import VueMatomo from 'vue-matomo'
 
@@ -10,8 +10,7 @@ import VueMatomo from 'vue-matomo'
 const app = createApp(App)
 
 // Création du store
-const pinia = createPinia()
-app.use(pinia)
+app.use(createPinia())
 
 // Router & plugins
 app.use(router)

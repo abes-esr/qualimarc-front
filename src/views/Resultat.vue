@@ -73,7 +73,7 @@
           </div>
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
         <v-layout child-flex>
-          <bloc-recapitulatif class="ma-0 pa-0 mt-16 mb-4" style="min-height: 13em" :nombre-resultat-analyse="nbLancement"></bloc-recapitulatif>
+          <bloc-recapitulatif v-if="resultatStore.getRecapitulatif.length !== 0" class="ma-0 pa-0 mt-16 mb-4" style="min-height: 13em" :nombre-resultat-analyse="nbLancement"></bloc-recapitulatif>
         </v-layout>
           <v-card
           flat
@@ -100,11 +100,12 @@ import BoutonLancement from "@/components/BoutonLancement.vue";
 import BlocDetailPpn from "@/components/resultats/BlocDetailPpn.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 
-import { ref, onMounted } from "vue";
+import {ref, onMounted, onBeforeMount} from "vue";
 import { useResultatStore } from "@/stores/resultat";
-import router from "@/router";
 import KeyboardNavigation from "@/components/resultats/KeyboardNavigation.vue";
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const resultatStore = useResultatStore();
 
 const currentPpn = ref('');
@@ -116,7 +117,8 @@ const focusOn = ref([4, 4]);
 const isProgressLoading = ref(false);
 const isMobileForced = ref(false);
 
-onMounted(() => {
+
+onBeforeMount(() => {
   if(resultatStore.getRecapitulatif.length === 0) {
     router.push({name: 'Redirection accueil'});
   }
