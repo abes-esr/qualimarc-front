@@ -6,7 +6,7 @@
         <v-icon :style="(mdAndUp) ? 'font-size: 40px' : 'font-size: 32px'">mdi-gauge</v-icon>
       </div>
     </v-btn>
-    <v-card v-if="isDisplayed" elevation="12" style="position: absolute; margin-left: -360px; margin-top: 20px; z-index: 10; border-radius: 5px!important;" width="400">
+    <v-card v-if="true" elevation="12" class="position-absolute" style="margin-left: -360px; margin-top: 20px; border-radius: 5px!important; z-index: 1000;" width="400">
       <v-card-title class="justify-center pt-1" style="background-color: #252C61; color: white">STATUTS</v-card-title>
       <v-card-text style="background-color: white;color: black">
         <v-row class="d-flex justify-space-between pa-2">
