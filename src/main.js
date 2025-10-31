@@ -5,7 +5,6 @@ import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
 import JsonCSV from 'vue-json-csv'
 import VueMatomo from 'vue-matomo'
-import VueShortKey from 'vue3-shortkey'
 
 // Création de l'app
 const app = createApp(App)
@@ -17,7 +16,6 @@ app.use(pinia)
 // Router & plugins
 app.use(router)
 app.use(vuetify)
-app.use(VueShortKey)
 
 // utilisation de piwik/matomo uniquement en production
 if (import.meta.env.VITE_APP_ROOT_API?.includes('qualimarc.sudoc')) {

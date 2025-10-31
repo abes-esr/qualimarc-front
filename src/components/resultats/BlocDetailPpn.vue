@@ -1,75 +1,115 @@
 <template>
   <v-container class="pa-0">
     <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Détail des erreurs par PPN</h1>
-    <v-card flat v-if="itemsPpnParent.length > 0 && itemsPpnParent[page - 1]" class="pa-0 ma-0 borderBlocElements">
+    <v-card v-if="itemsPpnParent.length > 0 && itemsPpnParent[page - 1]" class="pa-0 ma-0 borderBlocElements" flat>
       <img v-if="coverLink !== ''" :src="coverLink" alt="Première de couverture non trouvée"
-        class="borderPicturePpnErrorDetail">
-      <v-sheet v-else rounded style="position:absolute;" class="borderPicturePpnErrorDetail pa-2 rounded-circle"
-        :color="iconTypeDocument.color"><v-icon color="white">{{ iconTypeDocument.img }}</v-icon></v-sheet>
+           class="borderPicturePpnErrorDetail">
+      <v-sheet v-else :color="iconTypeDocument.color" class="borderPicturePpnErrorDetail pa-2 rounded-circle" rounded
+               style="position:absolute;">
+        <v-icon color="white">{{ iconTypeDocument.img }}</v-icon>
+      </v-sheet>
       <div class="mb-2 pt-1 text-justify detailErrorPpnSubtitle" style="background-color: #535775; color: white">{{
-        itemsPpnParent[page - 1].titre }} / {{ itemsPpnParent[page - 1].auteur }}</div>
+          itemsPpnParent[page - 1].titre
+        }} / {{ itemsPpnParent[page - 1].auteur }}
+      </div>
       <div class="mb-2 pt-1 text-justify detailErrorPpnSubtitle fontPrimaryColor" style="font-size: 0.92em">PPN {{
-        itemsPpnParent[page - 1].ppn }}</div>
-      <v-data-table id="bgColorGrey" fixed-header :headers="headers"
-        :items="itemsPpnParent[page - 1].itemsDetailPpn" :item-class="classItemPriority"
-        :items-per-page="itemsPpnParent[page - 1].itemsDetailPpn.length"
-        :height="itemsPpnParent[page - 1].itemsDetailPpn.length > 10 ? '40vh' : 'auto'" hide-default-footer dense
-        class="elevation-0">
-        <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
-          <!--  Configuration de la colonne Règles  -->
-          <span style='color: #252C61; font-weight: 500' v-if="header.value === 'priority'">
-            <v-icon size="x-small" color="#252C61">mdi-checkbox-blank-circle</v-icon>
-            {{ header.text.split('|')[0] }}
-            <v-icon color="#4D4D4D" size="small">mdi-sort</v-icon>
-            <span style="display: block"></span>
-            <v-icon size="x-small" color="#4D4D4D" class="pr-1">mdi-checkbox-blank-circle-outline</v-icon>
-            <span style="font-weight: 500; color: #4D4D4D"> {{ header.text.split('|')[1] }}</span>
-          </span>
-          <span style="color: #4D4D4D; font-weight: 600" v-else>
-            {{ header.text }}
-            <v-icon color="#4D4D4D" size="small">mdi-sort</v-icon>
-          </span>
+          itemsPpnParent[page - 1].ppn
+        }}
+      </div>
+      <v-data-table
+          id="bgColorGrey"
+          :headers="headers"
+          :height="itemsPpnParent[page - 1].itemsDetailPpn.length > 10 ? '40vh' : 'auto'"
+          :items="itemsPpnParent[page - 1].itemsDetailPpn"
+          :items-per-page="itemsPpnParent[page - 1].itemsDetailPpn.length"
+          class="elevation-0"
+          density="compact"
+          fixed-header
+          hide-default-footer>
+
+        <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
+          <tr>
+            <th v-for="header in headers" :key="header.key"  @click="toggleSort(header)">
+              <div class="d-flex align-center">
+                <span
+                    v-if="header.key === 'priority'"
+
+                    style='color: #252C61; font-weight: 400; font-size: 12px'>
+                  <v-icon color="#252C61" size="x-small">mdi-checkbox-blank-circle</v-icon>
+                  {{ header.title.split('|')[0] }}
+                  <span style="display: block"></span>
+                  <v-icon class="pr-1" color="#4D4D4D" size="x-small">mdi-checkbox-blank-circle-outline</v-icon>
+                  <span style="font-weight: 400; color: #4D4D4D"> {{ header.title.split('|')[1] }}</span>
+                </span>
+                <span
+                    v-else
+                    style='color: #4D4D4D; font-weight: 600; font-size: 12px'
+                >
+                    {{ header.title }}
+                </span>
+                <v-icon
+                    v-if="isSorted(header)"
+                    class="ml-1"
+                    size="small"
+                >
+                  {{ getSortIcon(header) }}
+                </v-icon>
+                <v-icon v-else class="ml-1" size="small">mdi-sort</v-icon>
+              </div>
+            </th>
+          </tr>
         </template>
+
         <!-- lien vers le guide méthodologique dans l'intitulé des zones -->
-        <template v-slot:item.zone1="{ item }">
-          <a target="_blank" :href="getLinkGuideMethodo(item.zone1)" class="linkBlue">{{ item.zone1 }}</a>
-        </template>
-        <template v-slot:item.zone2="{ item }">
-          <a target="_blank" :href="getLinkGuideMethodo(item.zone2)" class="linkBlue">{{ item.zone2 }}</a>
-        </template>
-        <!--  Icone dans la colonne Règles  -->
-        <template v-slot:item.priority="{ item }">
-          <div class="ma-0 pa-0 d-flex justify-center" :aria-label="'Règle ' + (item.priority)" role="img">
-            <v-icon v-model="item.priority" size="small" v-if="item.priority === 'essentielle'"
-              color="#252C61">mdi-checkbox-blank-circle</v-icon>
-            <v-icon v-model="item.priority" size="small" v-if="item.priority === 'avancée'"
-              color="#4D4D4D">mdi-checkbox-blank-circle-outline</v-icon>
-          </div>
+        <template v-slot:item="{ item }">
+          <tr :class="classItemPriority(item)">
+            <td>
+              <a :href="getLinkGuideMethodo(item.zone1)" class="linkBlue" target="_blank">{{ item.zone1 }}</a>
+            </td>
+            <td>
+              <a :href="getLinkGuideMethodo(item.zone2)" class="linkBlue" target="_blank">{{ item.zone2 }}</a>
+            </td>
+            <td>
+              {{ item.message }}
+            </td>
+            <td>
+              <div :aria-label="'Règle ' + (item.priority)" class="ma-0 pa-0 d-flex justify-center" role="img">
+                <v-icon v-if="item.priority === 'essentielle'" v-model="item.priority" color="#252C61"
+                        size="small">mdi-checkbox-blank-circle
+                </v-icon>
+                <v-icon v-if="item.priority === 'avancée'" v-model="item.priority" color="#4D4D4D"
+                        size="small">mdi-checkbox-blank-circle-outline
+                </v-icon>
+              </div>
+            </td>
+          </tr>
         </template>
       </v-data-table>
       <v-pagination
           v-model="page"
           @update:model-value="currentPpn = itemsPpnParent[page - 1].ppn"
-          color="#0c5c92"
           :length="itemsPpnParent.length"
-          :total-visible="12"
+          total-visible="12"
+          size="small"
+          color="#0c5c92"
       ></v-pagination>
     </v-card>
     <bloc-aucune-donnee v-else>Cliquer sur un ppn de la liste du bloc de
       gauche
-      pour afficher les détails des erreurs</bloc-aucune-donnee>
+      pour afficher les détails des erreurs
+    </bloc-aucune-donnee>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onUpdated, watchEffect } from "vue";
-import { useResultatStore } from "@/stores/resultat";
+import {onUpdated, ref, watchEffect} from "vue";
+import {useResultatStore} from "@/stores/resultat";
 import CoverService from "@/service/CoverService";
 import BlocAucuneDonnee from "@/components/BlocAucuneDonnee";
 
-const props = defineProps({itemsSortedAndFiltered: Array });
+const props = defineProps({itemsSortedAndFiltered: Array});
 const emit = defineEmits(['backendError']);
-const currentPpn = defineModel('currentPpn', { type: String, required: true });
+const currentPpn = defineModel('currentPpn', {type: String, required: true});
 
 const resultatStore = useResultatStore();
 
@@ -77,15 +117,13 @@ const service = CoverService;
 
 const page = ref(1);
 const coverLink = ref('');
-const iconTypeDocument = ref({ color: "black", img: "mdi-help" });
+const iconTypeDocument = ref({color: "black", img: "mdi-help"});
 const itemsPpnParent = ref([]);
-let sortBy = "zone1";
-let desc = false;
 const headers = [
-  { text: "Zone UNM1", value: "zone1", width: 133 },
-  { text: "Zone UNM2", value: "zone2", width: 133 },
-  { text: "Message d'erreur", value: "message" },
-  { text: "Règle essentielle|Règle avancée", value: "priority", width: 170 }
+  {title: "Zone UNM1", key: "zone1", width: 133},
+  {title: "Zone UNM2", key: "zone2", width: 133},
+  {title: "Message d'erreur", key: "message"},
+  {title: "Règle essentielle|Règle avancée", key: "priority", width: 200}
 ];
 
 
@@ -93,30 +131,30 @@ const headers = [
  * Fonction qui permet de vérifier un changement de valeur du ppn courant
  */
 watchEffect(() => {
-  if (currentPpn.value) {
-    itemsPpnParent.value = [];
-    coverLink.value = '';
-    for (const result of resultatStore.getResultsList
-      .filter(e => props.itemsSortedAndFiltered.some(el => el.ppn === e.ppn))) {
-      let temp = [];
-      for (const erreur of result.detailerreurs) {
-        temp.push({
-          zone1: erreur.zones[0],
-          zone2: erreur.zones[1],
-          priority: getPriority(erreur.priority),
-          message: erreur.message
-        });
-      }
-      itemsPpnParent.value[props.itemsSortedAndFiltered.map(item => item.ppn).indexOf(result.ppn)] = {
-        titre: result.titre,
-        auteur: result.auteur,
-        ppn: result.ppn,
-        itemsDetailPpn: temp,
+      if (currentPpn.value) {
+        itemsPpnParent.value = [];
+        coverLink.value = '';
+        for (const result of resultatStore.getResultsList
+            .filter(e => props.itemsSortedAndFiltered.some(el => el.ppn === e.ppn))) {
+          let temp = [];
+          for (const erreur of result.detailerreurs) {
+            temp.push({
+              zone1: erreur.zones[0],
+              zone2: erreur.zones[1],
+              priority: getPriority(erreur.priority),
+              message: erreur.message
+            });
+          }
+          itemsPpnParent.value[props.itemsSortedAndFiltered.map(item => item.ppn).indexOf(result.ppn)] = {
+            titre: result.titre,
+            auteur: result.auteur,
+            ppn: result.ppn,
+            itemsDetailPpn: temp,
+          }
+        }
+        page.value = itemsPpnParent.value.map(item => item.ppn).indexOf(currentPpn.value) + 1;
       }
     }
-    page.value = itemsPpnParent.value.map(item => item.ppn).indexOf(currentPpn.value) + 1;
-  }
-}
 )
 
 /**
