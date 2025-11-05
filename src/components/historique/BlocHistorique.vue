@@ -4,7 +4,7 @@
       <!--      TITRE     -->
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold">Historique des analyses</h1>
       <!--      BOUTON TELECHARGER L'HISTORIQUE     -->
-      <v-tooltip left>
+      <v-tooltip location="start">
         <template v-slot:activator="{props}">
           <DownloadCsv
               :data="exportHistorique(historiqueList)"

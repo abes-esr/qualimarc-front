@@ -5,7 +5,7 @@
       <!--      TITRE     -->
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Table générale des règles</h1>
       <!--      BOUTON TELECHARGER LES REGLES     -->
-      <v-tooltip left>
+      <v-tooltip location="start">
         <template v-slot:activator="{ props }">
             <DownloadCsv
                 v-bind="props"
@@ -28,7 +28,7 @@
       <!--      BLOC AFFICHAGE DES FILTRES ET BOUTONS SUPPRESSION DES FILTRES      -->
       <v-row class="mx-4 my-2" justify="center">
         <!--            BOUTON EFFACER LES FILTRES-->
-        <v-tooltip left>
+        <v-tooltip location="start">
           <template v-slot:activator="{ props }">
             <v-btn class="ma-0" append-icon="mdi-filter-remove" size="small" outlined color="#b30900" @click="resetSelector()" v-bind="props">
               Effacer tous les filtres
@@ -67,7 +67,7 @@
           <!--      REMPLISSAGE DU HEADER     -->
           <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
             <!--      HEADER ID     -->
-            <v-tooltip bottom v-if="header.value === 'id'">
+            <v-tooltip location="bottom" v-if="header.value === 'id'">
               <template v-slot:activator="{ props }">
                 <span v-bind="props" style='color: white; display: block'>{{ header.textBtn }}</span>
               </template>

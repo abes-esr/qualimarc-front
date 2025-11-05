@@ -12,7 +12,7 @@
               <div class="font-weight-bold pa-12">{{ props.winibwRequest }}</div>
             </td>
             <td>
-              <v-tooltip bottom>
+              <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
                   <v-btn @click="copyText" v-bind="props"><v-icon>mdi-content-copy</v-icon></v-btn>
                 </template>

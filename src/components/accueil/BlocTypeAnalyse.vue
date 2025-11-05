@@ -3,7 +3,7 @@
     <v-radio-group v-model="analyseSelected" class="d-inline-flex" @change="updateAnalyseSelectedInStore">
       <v-radio :data-cy="analyse.id" v-for="analyse in analysesList" :key="analyse.id" :value="analyse">
         <template v-slot:label>
-          <v-tooltip right color="#54576D" dark>
+          <v-tooltip location="end" color="#54576D" dark>
             <template v-slot:activator="{ props }">
               <div :aria-label="'Analyse ' + (analyse.libelle + ' , ' + analyse.description)" role="img">
                 <span style="color: #595959" v-bind="props">{{ analyse.libelle }}</span>
@@ -45,7 +45,7 @@
       <v-card flat class="d-flex flex-column pa-0 mb-2 pl-8">
         <v-checkbox v-for="ruleset in ruleSetList" :key="ruleset.id" :data-cy="ruleset.id" v-model="ruleSetSelected" :value="ruleset" @change="updateRuleSetInStore" class="ma-1" style="max-height: 30px">
             <template v-slot:label>
-              <v-tooltip bottom>
+              <v-tooltip location="bottom">
                 <template v-slot:activator="{ props }">
                   <span v-bind="props" style="color: #595959">{{ ruleset.libelle }}</span>
               </template>

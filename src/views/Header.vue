@@ -38,7 +38,7 @@
         </v-col>
         <v-col  :align-self="(mdAndUp) ? 'end' : 'center'" :cols="(mdAndUp) ? '2' : '3'">
           <v-row :class="(mdAndUp) ? 'justify-center' : 'justify-center'" :no-gutters="mdAndUp">
-            <v-tooltip bottom color="#54576D" dark>
+            <v-tooltip location="bottom" color="#54576D" dark>
               <template v-slot:activator="{ props }">
                 <v-btn :depressed="mdAndUp" :size="mdAndUp ? 'small' : 'x-small'" :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP"
                        color="white" fab href="https://stp.abes.fr/node/3?origine=sudocpro"
@@ -51,7 +51,7 @@
               </template>
               <span style="color: white">Ouvre Abes STP dans un nouvel onglet</span>
             </v-tooltip>
-            <v-tooltip bottom color="#54576D" dark>
+            <v-tooltip location="bottom" color="#54576D" dark>
               <template v-slot:activator="{ props }">
                 <v-btn :depressed="mdAndUp" :size="mdAndUp ? 'small' : 'x-small'" :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet de la documentation de Qualimarc"
                        color="white" fab href="https://documentation.abes.fr/aidequalimarc/index.html"
