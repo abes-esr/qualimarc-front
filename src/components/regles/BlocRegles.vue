@@ -7,17 +7,21 @@
       <!--      BOUTON TELECHARGER LES REGLES     -->
       <v-tooltip left>
         <template v-slot:activator="{ props }">
-          <v-btn class="ma-0" elevation="0" :disabled="items.length === 0" size="small" v-bind="props" color="#0c5c92">
-            <download-csv :delimiter="';'" :data="items" name="qualimarc-export-regles.csv" style="color: white">
+            <DownloadCsv
+                v-bind="props"
+                delimiter=";"
+                :disabled="items.length === 0"
+                size="small"
+                :data="items"
+                name="qualimarc-export-regles.csv"
+                style="color: white">
               <span style="color: white">TÉLÉCHARGER TOUTES LES R&Egrave;GLES</span>
-            </download-csv>
-            <v-icon size="small" color="white" class="ml-2">mdi-download</v-icon>
-          </v-btn>
+              <v-icon size="small" color="white" class="ml-2">mdi-download</v-icon>
+            </DownloadCsv>
         </template>
         <span>Télécharger toutes les règles dans un fichier nommé "qualimarc-export-rules.csv"</span>
       </v-tooltip>
     </v-row>
-
     <!--      FORMATAGE DES BORDURES      -->
     <div style="border-top: #252C61 solid 4px">
 
@@ -140,6 +144,7 @@
 <script setup>
 import {ref, onMounted} from "vue";
 import QualimarcService from "@/service/QualimarcService";
+import DownloadCsv from "@/components/DownloadCsv.vue";
 
 const serviceApi = QualimarcService;
 let headers = [

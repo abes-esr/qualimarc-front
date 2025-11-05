@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from '@/router'
 import vuetify from './plugins/vuetify'
 import {createPinia} from 'pinia'
-import JsonCSV from 'vue-json-csv'
 import VueMatomo from 'vue-matomo'
 
 // Création de l'app
@@ -37,8 +36,6 @@ if (import.meta.env.VITE_APP_ROOT_API?.includes('qualimarc.sudoc')) {
   })
 }
 
-// Composant global
-app.component('downloadCsv', JsonCSV)
 
 // Monter l'application
 app.mount('#app')

@@ -20,7 +20,6 @@
     "roboto-fontface": "*",
     "vite": "^7.1.9",
     "vue": "^3.5.22",
-    "vue-json-csv": "^2.1.0",
     "vue-matomo": "^4.2.0",
     "vue-router": "^4.5.1",
     "vuetify": "^3.10.5"
