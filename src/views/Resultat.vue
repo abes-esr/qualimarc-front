@@ -55,7 +55,7 @@
               class="ma-0 pa-0 mb-2"
           ></bloc-detail-ppn>
         </v-layout>
-        <div class="ma-0 pa-0" style="position: relative">
+        <div class="ma-0 pa-0 d-flex justify-end" style="position: relative;">
           <v-tooltip location="start">
             <template v-slot:activator="{ props }" class="ma-0 pa-0 ">
               <DownloadCsv
