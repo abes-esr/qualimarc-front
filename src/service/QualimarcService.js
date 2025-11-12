@@ -9,9 +9,14 @@ export class QualimarcService {
     });
 
     controller = new AbortController();
-    randomId = this.client.get("getGeneratedId").then((response) => {
-        this.randomId = response.data;
-    });
+    randomId = null;
+
+    async ensureRandomId() {
+        if (!this.randomId) {
+            const response = await this.client.get("getGeneratedId", { signal: this.controller.signal });
+            this.randomId = response.data;
+        }
+    }
     cancel() {
         // Cancel the request
         this.controller.abort();
@@ -27,7 +32,8 @@ export class QualimarcService {
          * @param isReplay boolean permetant de distingé si l' analyse est rejoué ou pas
          * @returns {Promise<AxiosResponse<any>>}
          */
-    checkPpnWithTypeAnalyse(ppnList, typeAnalyse, famillesDocuments, ruleSet, isReplay) {
+    async checkPpnWithTypeAnalyse(ppnList, typeAnalyse, famillesDocuments, ruleSet, isReplay) {
+        await this.ensureRandomId();
         let data = {
             id: this.randomId,
             ppnList: ppnList,
@@ -118,7 +124,8 @@ export class QualimarcService {
     /**
      * Renvoie le status de la tache (0 à 100%)
      */
-    getStatus() {
+    async getStatus() {
+        await this.ensureRandomId();
         return this.client.get("getStatus/"+this.randomId, {signal: this.controller.signal})
     }
 
