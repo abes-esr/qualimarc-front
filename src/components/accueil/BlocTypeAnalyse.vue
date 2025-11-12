@@ -1,40 +1,53 @@
 <template>
   <section class="borderSelectAnalyseType">
-    <v-radio-group v-model="analyseSelected" class="d-inline-flex" @change="updateAnalyseSelectedInStore">
-      <v-radio :data-cy="analyse.id" v-for="analyse in analysesList" :key="analyse.id" :value="analyse">
+    <v-radio-group
+        v-if="!isLoadingComponent"
+        v-model="analyseSelected"
+        class="d-inline-flex"
+        @change="updateAnalyseSelectedInStore">
+      <v-radio v-for="analyse in analysesList" :key="analyse.id" :data-cy="analyse.id" :value="analyse">
         <template v-slot:label>
-          <v-tooltip location="end" color="#54576D" dark>
+          <v-tooltip color="#54576D" dark location="end">
             <template v-slot:activator="{ props }">
               <div :aria-label="'Analyse ' + (analyse.libelle + ' , ' + analyse.description)" role="img">
                 <span style="color: #595959" v-bind="props">{{ analyse.libelle }}</span>
               </div>
             </template>
             <span style="color: white">{{ analyse.description }}
-              <span  v-if="analyse.id === 'QUICK'">
+              <span v-if="analyse.id === 'QUICK'">
                  (règles essentielles
-                <v-icon size="x-small" color="white">mdi-checkbox-blank-circle</v-icon>
+                <v-icon color="white" size="x-small">mdi-checkbox-blank-circle</v-icon>
                 )
               </span>
               <span v-if="analyse.id === 'COMPLETE'">
                  (règles essentielles
-                <v-icon size="x-small" color="white">mdi-checkbox-blank-circle</v-icon>
+                <v-icon color="white" size="x-small">mdi-checkbox-blank-circle</v-icon>
                  et avancées
-                <v-icon size="x-small" color="white">mdi-checkbox-blank-circle-outline</v-icon>
+                <v-icon color="white" size="x-small">mdi-checkbox-blank-circle-outline</v-icon>
                 )
               </span>
             </span>
           </v-tooltip>
         </template>
       </v-radio>
-      </v-radio-group>
-      <v-sheet v-if="analyseSelected.id === 'FOCUS'" >
-        <span  v-if="familleDocumentList.length > 0" class="ml-2" style="font-size: 0.9em; color : #252C61; font-weight: bold"><v-icon color="#252C61" small>mdi-chevron-right</v-icon>Par règles associées à un ou plusieurs types de documents</span>
-        <v-sheet class="d-flex align-content-start flex-wrap pa-0 mb-2 pl-8">
-          <v-checkbox v-for="familleDoc in familleDocumentList" :key="familleDoc.id" :data-cy="familleDoc.id" v-model="familleDocumentSetSelected"
-            class="ma-1"
-            style="max-height: 30px"
-            @change="updateFamilleDocumentSetInStore"
-            :value="familleDoc"
+    </v-radio-group>
+    <div v-else>
+      <v-skeleton-loader
+          v-for="i in 3" :key="i"
+          type="list-item-avatar"
+      ></v-skeleton-loader>
+    </div>
+    <v-sheet v-if="analyseSelected.id === 'FOCUS'">
+      <span v-if="familleDocumentList.length > 0" class="ml-2"
+            style="font-size: 0.9em; color : #252C61; font-weight: bold"><v-icon color="#252C61"
+                                                                                 small>mdi-chevron-right</v-icon>Par règles associées à un ou plusieurs types de documents</span>
+      <v-sheet class="d-flex align-content-start flex-wrap pa-0 mb-2 pl-8">
+        <v-checkbox v-for="familleDoc in familleDocumentList" :key="familleDoc.id" v-model="familleDocumentSetSelected"
+                    :data-cy="familleDoc.id"
+                    :value="familleDoc"
+                    class="ma-1"
+                    style="max-height: 30px"
+                    @change="updateFamilleDocumentSetInStore"
         >
           <template v-slot:label>
             <span style="color: #595959">{{ familleDoc.libelle }}</span>
@@ -61,89 +74,94 @@
 </template>
 
 <script setup>
-  import { useAnalyseStore } from "@/stores/analyse";
-  import { onMounted, ref } from "vue";
-  import QualimarcService from "@/service/QualimarcService";
+import {useAnalyseStore} from "@/stores/analyse";
+import {onMounted, ref} from "vue";
+import QualimarcService from "@/service/QualimarcService";
 
-  // Store
-  const analyseStore = useAnalyseStore();
+// Store
+const analyseStore = useAnalyseStore();
 
-  // Emit
-  const emit = defineEmits(['isSelected', 'backendError'])
+// Emit
+const emit = defineEmits(['isSelected', 'backendError'])
 
-  // Service
-  const serviceApi = QualimarcService ;
+// Service
+const serviceApi = QualimarcService;
 
-  // Data
-  const analysesList = ref([]);
-  const familleDocumentList = ref([]);
-  const ruleSetList = ref([]);
+// Data
+const analysesList = ref([]);
+const familleDocumentList = ref([]);
+const ruleSetList = ref([]);
 
-  // Selected Data
-  const analyseSelected = ref('');
-  const familleDocumentSetSelected = ref([]);
-  const ruleSetSelected = ref([]);
+// Selected Data
+const analyseSelected = ref('');
+const familleDocumentSetSelected = ref([]);
+const ruleSetSelected = ref([]);
 
-  onMounted(() => {
-    feedAnalyseList()
-  })
+const isLoadingComponent = ref(true);
 
-  function feedAnalyseList(){
-    serviceApi.getAnalyses().then((response) => {
-      analysesList.value = response.data.analyses;
-      familleDocumentList.value = analysesList.value.find(analyse => analyse.id === 'FOCUS').famillesDocument;
-      ruleSetList.value = analysesList.value.find(analyse => analyse.id === 'FOCUS').ruleSets;
-    }).catch((error) => {
-      emit('backendError', error)
-    })
-  }
+onMounted(() => {
+  feedAnalyseList()
+})
 
-  function feedFamilleDocumentList(){
-      serviceApi.getFamillesDocuments()
-        .then((response) => {
-          response.data.forEach((el) => familleDocumentList.value.push(el));
-        }).catch((error) => {
-          emitOnError(error);
-        });
-  }
+function feedAnalyseList() {
+  serviceApi.getAnalyses().then((response) => {
+    analysesList.value = response.data.analyses;
+    familleDocumentList.value = analysesList.value.find(analyse => analyse.id === 'FOCUS').famillesDocument;
+    ruleSetList.value = analysesList.value.find(analyse => analyse.id === 'FOCUS').ruleSets;
+  }).catch((error) => {
+    emit('backendError', error)
+  }).finally(() => isLoadingComponent.value = false);
+}
 
-  function feedRuleSetList(){
-    serviceApi.getRuleSetList()
+function feedFamilleDocumentList() {
+  serviceApi.getFamillesDocuments()
       .then((response) => {
-      response.data.forEach((el) => ruleSetList.value.push(el));
-    }).catch((error) => {
-      emitOnError(error);
-    });
-  }
+        response.data.forEach((el) => familleDocumentList.value.push(el));
+      }).catch((error) => {
+    emitOnError(error);
+  });
+}
 
-  function updateAnalyseSelectedInStore() {
-    //RAZ de la selection
-    familleDocumentSetSelected.value = [];
-    analyseStore.setFamilleDocumentSet(familleDocumentSetSelected.value);
-    ruleSetSelected.value = [];
-    analyseStore.setRuleSet(ruleSetSelected.value);
+function feedRuleSetList() {
+  serviceApi.getRuleSetList()
+      .then((response) => {
+        response.data.forEach((el) => ruleSetList.value.push(el));
+      }).catch((error) => {
+    emitOnError(error);
+  });
+}
 
-    analyseStore.setAnalyseSelected(analyseSelected.value);
-    emitOnEvent();
-  }
-  function updateFamilleDocumentSetInStore() {
-    analyseStore.setFamilleDocumentSet(familleDocumentSetSelected.value);
-    emitOnEvent();
-  }
-  function updateRuleSetInStore() {
-    analyseStore.setRuleSet(ruleSetSelected.value);
-    emitOnEvent();
-  }
+function updateAnalyseSelectedInStore() {
+  //RAZ de la selection
+  familleDocumentSetSelected.value = [];
+  analyseStore.setFamilleDocumentSet(familleDocumentSetSelected.value);
+  ruleSetSelected.value = [];
+  analyseStore.setRuleSet(ruleSetSelected.value);
 
-  function isSelected() {
-    return ((analyseSelected.value.id !== '' && analyseSelected.value.id !== 'FOCUS') || (analyseSelected.value.id === 'FOCUS' && ((familleDocumentSetSelected.value.length > 0) || (ruleSetSelected.value.length > 0))));
-  }
+  analyseStore.setAnalyseSelected(analyseSelected.value);
+  emitOnEvent();
+}
 
-  function emitOnEvent(){
-    emit('isSelected', isSelected());
-  }
-  function emitOnError(error){
-    emit('backendError', error);
-  }
+function updateFamilleDocumentSetInStore() {
+  analyseStore.setFamilleDocumentSet(familleDocumentSetSelected.value);
+  emitOnEvent();
+}
+
+function updateRuleSetInStore() {
+  analyseStore.setRuleSet(ruleSetSelected.value);
+  emitOnEvent();
+}
+
+function isSelected() {
+  return ((analyseSelected.value.id !== '' && analyseSelected.value.id !== 'FOCUS') || (analyseSelected.value.id === 'FOCUS' && ((familleDocumentSetSelected.value.length > 0) || (ruleSetSelected.value.length > 0))));
+}
+
+function emitOnEvent() {
+  emit('isSelected', isSelected());
+}
+
+function emitOnError(error) {
+  emit('backendError', error);
+}
 
 </script>
