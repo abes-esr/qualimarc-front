@@ -340,28 +340,31 @@ function sendItemsToParent(complexItems) {
  */
 function eventTypeChoice(type) {
   if (type === "Tous") {
-    selectedTypeDoc.value = new Array(type);
+    selectedTypeDoc.value = ["Tous"];
   } else {
-    if (selectedTypeDoc.value.length > 0) {
-      if (selectedTypeDoc.value.indexOf("Tous") >= 0) { //  Si un "Tous" est présent dans le selectedTypeDoc
-        selectedTypeDoc.value.splice(selectedTypeDoc.value.indexOf("Tous"), 1);
-      }
-      if (selectedTypeDoc.value.indexOf(type) === -1) {  //  Ajout un selectedTypeDoc s'il n'est pas déjà dans la liste selectedTypeDoc
-        selectedTypeDoc.value.push(type);
-      } else if (selectedTypeDoc.value.indexOf(type) >= 0) { //  Supprime un selectedTypeDoc coché lorsque l'on clique de nouveau sur lui
-        selectedTypeDoc.value.splice(selectedTypeDoc.value.indexOf(type), 1);
-        if (selectedTypeDoc.value.length === 0) { //  si le dernier typeDoc est déselectionné, on insère la valeur "Tous"
-          selectedTypeDoc.value.push("Tous");
-        }
-      }
-    } else {
-      selectedTypeDoc.value = new Array(type);
-    }
+    updateSelectedDocumentTypes(type);
   }
   selectedCheckbox.value = selectedTypeDoc.value;
   filterPpnByType();
 }
 
+function updateSelectedDocumentTypes(type) {
+  if (selectedTypeDoc.value.length > 0) {
+    if (selectedTypeDoc.value.indexOf("Tous") >= 0) { //  Si un "Tous" est présent dans le selectedTypeDoc
+      selectedTypeDoc.value.splice(selectedTypeDoc.value.indexOf("Tous"), 1);
+    }
+    if (selectedTypeDoc.value.indexOf(type) === -1) {  //  Ajout un selectedTypeDoc s'il n'est pas déjà dans la liste selectedTypeDoc
+      selectedTypeDoc.value.push(type);
+    } else if (selectedTypeDoc.value.indexOf(type) >= 0) { //  Supprime un selectedTypeDoc coché lorsque l'on clique de nouveau sur lui
+      selectedTypeDoc.value.splice(selectedTypeDoc.value.indexOf(type), 1);
+      if (selectedTypeDoc.value.length === 0) { //  si le dernier typeDoc est déselectionné, on insère la valeur "Tous"
+        selectedTypeDoc.value.push("Tous");
+      }
+    }
+  } else {
+    selectedTypeDoc.value = [type];
+  }
+}
 /**
  * Function qui permet de trier la liste de item à afficher dans la dataTable
  * en fonction du.des types de documents

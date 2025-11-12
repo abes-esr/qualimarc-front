@@ -24,16 +24,14 @@
     <v-row cols="12">
       <v-col :lg="focusOn[0]" :xl="focusOn[1]" class="pr-2" fill-width fluid md="12" sm="12" xs="12">
         <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-        <v-layout child-flex>
+
           <BlocAffichageResume
               v-model:currentPpn="currentPpn"
               v-model:itemsSortedAndFiltered="itemsSortedAndFiltered"
               :is-mobile-forced="isMobileForced"
               :mobileBreakpoint="mobileBreakpoint"
-              :nbLancement="nbLancement"
-              child-flex>
+              :nbLancement="nbLancement">
           </BlocAffichageResume>
-        </v-layout>
       </v-col>
       <div class="d-none d-lg-flex flex-column">
         <v-btn color="#b2b2b2" icon size="x-small" variant="flat" @click="resizeBloc">
