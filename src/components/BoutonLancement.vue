@@ -1,5 +1,5 @@
 <template>
-  <v-card flat class="ma-0 pa-0">
+  <v-card variant="flat" class="ma-0 pa-0">
     <v-btn
         data-cy="btn_lance_analyse"
         @click="checkPpnWithTypeAnalyse"

@@ -82,7 +82,7 @@
         </v-layout>
         <v-card
             class="float-right ma-0 pa-0"
-            flat
+            variant="flat"
         >
           <bouton-lancement
               class="ma-0 pa-0"

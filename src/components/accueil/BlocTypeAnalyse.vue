@@ -41,13 +41,15 @@
           </template>
         </v-checkbox>
       </v-sheet>
-      <span v-if="ruleSetList.length > 0" class="ml-2" style="font-size: 0.9em; color : #252C61; font-weight: bold;"><v-icon color="#252C61" small>mdi-chevron-right</v-icon>Par jeux de règles thématiques</span>
-      <v-card flat class="d-flex flex-column pa-0 mb-2 pl-8">
-        <v-checkbox v-for="ruleset in ruleSetList" :key="ruleset.id" :data-cy="ruleset.id" v-model="ruleSetSelected" :value="ruleset" @change="updateRuleSetInStore" class="ma-1" style="max-height: 30px">
-            <template v-slot:label>
-              <v-tooltip location="bottom">
-                <template v-slot:activator="{ props }">
-                  <span v-bind="props" style="color: #595959">{{ ruleset.libelle }}</span>
+      <span v-if="ruleSetList.length > 0" class="ml-2" style="font-size: 0.9em; color : #252C61; font-weight: bold;"><v-icon
+          color="#252C61" small>mdi-chevron-right</v-icon>Par jeux de règles thématiques</span>
+      <v-card class="d-flex flex-column pa-0 mb-2 pl-8" variant="flat">
+        <v-checkbox v-for="ruleset in ruleSetList" :key="ruleset.id" v-model="ruleSetSelected" :data-cy="ruleset.id"
+                    :value="ruleset" class="ma-1" style="max-height: 30px" @change="updateRuleSetInStore">
+          <template v-slot:label>
+            <v-tooltip location="bottom">
+              <template v-slot:activator="{ props }">
+                <span style="color: #595959" v-bind="props">{{ ruleset.libelle }}</span>
               </template>
               {{ ruleset.description }}
             </v-tooltip>

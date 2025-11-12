@@ -28,7 +28,7 @@
         </v-card-text>
         <v-card-actions class="justify-end">
             <v-btn
-                text
+                variant="text"
                 @click="emitOnClose"
             >Fermer</v-btn>
         </v-card-actions>

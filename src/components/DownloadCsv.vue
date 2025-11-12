@@ -1,5 +1,5 @@
 <template>
-  <v-btn :disabled="disabled"  @click="download" class="button" flat :size="size" color="#0c5c92">
+  <v-btn :disabled="disabled"  @click="download" class="button" variant="flat" :size="size" color="#0c5c92">
     <slot></slot>
   </v-btn>
 </template>

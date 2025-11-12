@@ -82,11 +82,11 @@
     color: #252C61;
 }
 
-.tetxFieldRegles .v-input__control .v-input__slot {
+.textFieldRegles .v-input__control .v-input__slot {
     min-height: auto!important;
 }
 
-.tetxFieldRegles label {
+.textFieldRegles label {
     color: #252C61!important;
 }
 
