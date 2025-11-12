@@ -30,8 +30,8 @@
         <!--            BOUTON EFFACER LES FILTRES-->
         <v-tooltip location="start">
           <template v-slot:activator="{ props }">
-            <v-btn append-icon="mdi-filter-remove" class="ma-0" color="#b30900" variant="outlined" size="small"
-                   v-bind="props" @click="resetSelector()">
+            <v-btn append-icon="mdi-filter-remove" class="ma-0" color="#b30900" size="small" v-bind="props"
+                   variant="outlined" @click="resetSelector()">
               Effacer tous les filtres
             </v-btn>
           </template>
@@ -53,11 +53,9 @@
       <div style="border: #252C61 solid 1px">
         <!--      DATA TABLE      -->
         <v-data-table id="bgColorIdColumnRulesTable"
-                      :custom-filter="searchByMessage"
                       :headers="headers"
-                      :items="rulesFiltered"
+                      :items="filteredItems"
                       :loading="isLoading"
-                      :search="ruleMessage"
                       class="pa-0 ma-0"
                       dense
                       item-key="id"
@@ -67,7 +65,8 @@
           <!--      REMPLISSAGE DU HEADER     -->
           <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
             <tr>
-              <th v-for="header in headers" :key="header.key" class="text-left" @click="header.sortable ? toggleSort(header):'';">
+              <th v-for="header in headers" :key="header.key" class="text-left"
+                  @click="header.sortable ? toggleSort(header):'';">
                 <!--      HEADER ID     -->
                 <v-tooltip v-if="header.key === 'id'" location="bottom">
                   <template v-slot:activator="{ props }">
@@ -79,35 +78,35 @@
                 <span v-if="header.key === 'message'" style='margin-top: 28px; color: white; display: block'>
                 {{ header.title }}
                 </span>
-                    <!--      AUTRES HEADER      -->
-                    <span v-if="header.key !== 'message' && header.key !== 'id'" style='color: white; display: block'>
+                <!--      AUTRES HEADER      -->
+                <span v-if="header.key !== 'message' && header.key !== 'id'" style='color: white; display: block'>
                     {{ header.title }}
                 </span>
                 <!--      CHAMP DE RECHERCHE COLONNE "Règles de vérification / qualité"     -->
 
-                    <v-text-field
-                        v-if="header.key === 'message'"
-                        v-model="ruleMessage"
-                        class="ma-0 pa-0 textFieldRegles"
-                        density="compact"
-                        height="26px"
-                        label="rechercher par mot-clé"
-
-                        style="background-color: white; color: #595959; font-weight: 400; font-style: italic; font-size: 1.2em"
-                    ></v-text-field>
+                <v-text-field
+                    v-if="header.key === 'message'"
+                    v-model="search"
+                    class="ma-0 pa-0 textFieldRegles"
+                    density="compact"
+                    height="26px"
+                    bg-color="white"
+                    label="rechercher par mot-clé"
+                ></v-text-field>
 
                 <!--      ICONES DE TRI POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
                 <v-menu v-if="header.key === 'id' || header.key === 'typeDoc' || header.key === 'priority'" offset-y>
                   <template v-slot:activator="{ props }">
-                    <v-btn :aria-label="header.key" size="x-small"
-                           v-bind="props" icon variant="text">
+                    <v-btn :aria-label="header.key" icon
+                           size="x-small" v-bind="props" variant="text">
                       <v-icon :color="colorIconFilter(header.key)" size="small">
                         mdi-filter
                       </v-icon>
                     </v-btn>
                   </template>
                   <div v-if="header.key === 'typeDoc'" class="pl-4 pr-8" style='background-color:white;color: black;'>
-                    <v-btn v-for="ruleTypeDoc in listSelectedRulesTypeDoc" :key="ruleTypeDoc.value" class="d-block" variant="plain"
+                    <v-btn v-for="ruleTypeDoc in listSelectedRulesTypeDoc" :key="ruleTypeDoc.value" class="d-block"
+                           variant="plain"
                            @click="eventTypeChoice(ruleTypeDoc) ">
                       <v-checkbox v-model="selectedCheckbox" :label="ruleTypeDoc" :value="ruleTypeDoc"></v-checkbox>
                     </v-btn>
@@ -162,7 +161,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import QualimarcService from "@/service/QualimarcService";
 import DownloadCsv from "@/components/DownloadCsv.vue";
 
@@ -218,7 +217,7 @@ const listSelectedRulesId = ref([]);
 const selectedTypeDoc = ref(new Array("Tous"));
 const listSelectedRulesTypeDoc = ref([]);
 const listSelectedRulesPriority = ref([]);
-const ruleMessage = ref();
+const search = ref('')
 const isLoading = ref(true);
 const rulesFiltered = ref([]);
 const selectedCheckbox = ref(["Tous"]);
@@ -234,6 +233,7 @@ onMounted(() => {
 
 function resetSelector() {
   selectedTypeDoc.value = new Array("Tous");
+  search.value = ''
   rulesFiltered.value = items.value;
   selectedCheckbox.value = ["Tous"];
   selectedPriority.value = "Toutes";
@@ -250,19 +250,16 @@ function colorIconFilter(headerKey) {
   } else return '#FFC1AB';
 }
 
-/**
- * Fonction qui permet de faire la correspondance entre la saisie de l'utilisateur et les items
- * @param value renvoie les valeurs de toutes les cases du dataTable qui contienne la recherche (n'est pas utilisé ici, mais obligation de le laisser)
- * @param search la saisie de l'utilisateur
- * @param item les items qui match avec la saisie de l'utilisateur
- * @returns {boolean} valeur de retour
- */
-function searchByMessage(value, search, item) {
-  return item.message != null &&
-      ruleMessage != null &&
-      typeof item.message === 'string' &&
-      item.message.toString().toLocaleUpperCase().indexOf(search.toLocaleUpperCase()) !== -1
-}
+
+const filteredItems = computed(() => {
+  if (!search.value) return rulesFiltered.value
+
+  const term = search.value.toLowerCase()
+
+  return rulesFiltered.value.filter(item =>
+      (item.message && item.message.toLowerCase().includes(term))
+  )
+})
 
 /**
  * fonction permetant de recuperer la liste des règles
