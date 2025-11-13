@@ -1,29 +1,19 @@
 <template>
   <v-container class="ma-0 pa-0">
     <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Récapitulatif</h1>
-    <v-card variant="flat" class="pa-0 ma-0 borderBlocElements">
-      <div class="mb-2 pt-1 rappelTypeAnalyse" style="background-color: #535775; color: white"><bloc-rappel-type-analyse></bloc-rappel-type-analyse></div>
-      <v-carousel
-          v-model="page"
-          hide-delimiters
-          :continuous="false"
-          height="auto"
+    <v-card max-width="100%" variant="flat" class="pa-0 ma-0 borderBlocElements">
+      <div class="mb-2 pt-1 rappelTypeAnalyse" style="background-color: #535775; color: white"><BlocRappelTypeAnalyse></BlocRappelTypeAnalyse></div>
+      <v-slide-group
+        v-model="page"
+        show-arrows
       >
-        <v-carousel-item
-            v-for="i in getNumberSlides()"
-            :key="i"
-
-        >
-          <v-row class="d-flex justify-space-around align-center pa-4 ml-10">
-            <v-col class="d-flex justify-center">
-              <card-recapitulatif :resultats="getRecapitulatifByIndex(i-1)"><span style="color: #595959"> {{ i }} </span></card-recapitulatif>
-            </v-col>
-            <v-col class="d-flex justify-center">
-              <card-recapitulatif v-if="isSecondCardHasToBeDisplayed(i)" :resultats="getRecapitulatifByIndex(i)"><span style="color: #595959"> {{ i + 1}} </span></card-recapitulatif>
-            </v-col>
-          </v-row>
-        </v-carousel-item>
-      </v-carousel>
+        <v-slide-group-item
+            v-for="recap in resultatStore.getRecapitulatif"
+            :key="recap"
+          >
+          <CardRecapitulatif :resultats="recap"><span style="color: #595959"> {{ getIndex(recap)+1 }} </span></CardRecapitulatif>
+        </v-slide-group-item>
+      </v-slide-group>
     </v-card>
   </v-container>
 </template>
@@ -31,41 +21,21 @@
 <script setup>
 import BlocRappelTypeAnalyse from "@/components/resultats/BlocRappelTypeAnalyse";
 import CardRecapitulatif from "@/components/CardRecapitulatif";
-import {ref, watchEffect} from 'vue';
+import { ref, watchEffect} from 'vue';
 import {useResultatStore} from "@/stores/resultat";
 
-const page = ref(0);
-const props = defineProps({
-  // props
-  'nombreResultatAnalyse': {
-    type: Number,
-    required: true
-  }
-});
+const page = ref(0);;
 
 const resultatStore = useResultatStore();
 
+function getIndex(resultat){
+  return resultatStore.getRecapitulatif.indexOf(resultat);
+}
 watchEffect(() => {
-  if (props.nombreResultatAnalyse) {
-    goToLastSlide();
+  if (resultatStore.getRecapitulatif.length > 0) {
+    page.value = resultatStore.getRecapitulatif.length - 1;
   }
-})
-
-function getRecapitulatifByIndex(index) {
-  return resultatStore.getRecapitulatif[index];
-}
-
-function getNumberSlides() {
-  return props.nombreResultatAnalyse <= 2 ? 1 : props.nombreResultatAnalyse - 1;
-}
-
-function goToLastSlide() {
-  page.value = (props.nombreResultatAnalyse > 2) ? props.nombreResultatAnalyse - 2 : 0;
-}
-
-function isSecondCardHasToBeDisplayed(i) {
-  return (props.nombreResultatAnalyse > 1) && (i < props.nombreResultatAnalyse);
-}
+});
 
 </script>
 

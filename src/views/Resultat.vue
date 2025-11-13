@@ -22,37 +22,49 @@
       </nav>
     </div>
     <v-row cols="12">
-      <v-col :lg="focusOn[0]" :xl="focusOn[1]" class="pr-2" fill-width fluid md="12" sm="12" xs="12">
-        <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-
-          <BlocAffichageResume
-              v-model:currentPpn="currentPpn"
-              v-model:itemsSortedAndFiltered="itemsSortedAndFiltered"
-              :is-mobile-forced="isMobileForced"
-              :mobileBreakpoint="mobileBreakpoint"
-              :nbLancement="nbLancement">
-          </BlocAffichageResume>
+      <v-col
+          class="d-flex pl-2 pa-0"
+          cols="12"
+          xs="12"
+          sm="12"
+          md="12"
+          :lg="isMobileForced ? 3 : 4"
+          :xl="isMobileForced ? 2 : 4">
+        <BlocAffichageResume
+            class="pr-lg-2"
+            v-model:currentPpn="currentPpn"
+            v-model:itemsSortedAndFiltered="itemsSortedAndFiltered"
+            :is-mobile-forced="isMobileForced"
+            :mobileBreakpoint="mobileBreakpoint"
+            :nbLancement="nbLancement">
+        </BlocAffichageResume>
+        <div class="d-none d-lg-flex flex-lg-column">
+          <v-btn color="#b2b2b2" icon size="x-small" variant="flat" @click="resizeBloc">
+            <v-icon color="white" size="x-large"> {{
+                isMobileForced ? 'mdi-chevron-right' : 'mdi-chevron-left'
+              }}
+            </v-icon>
+          </v-btn>
+          <v-divider
+              class="align-self-center"
+              style="background-color: #b2b2b2"
+              thickness="2"
+              vertical
+          ></v-divider>
+        </div>
       </v-col>
-      <div class="d-none d-lg-flex flex-column">
-        <v-btn color="#b2b2b2" icon size="x-small" variant="flat" @click="resizeBloc">
-          <v-icon color="white" size="x-large"> {{ isMobileForced ? 'mdi-chevron-right' : 'mdi-chevron-left' }}</v-icon>
-        </v-btn>
-        <v-divider
-            class="align-self-center"
-            style="background-color: #b2b2b2"
-            thickness="2"
-            vertical
-        ></v-divider>
-      </div>
-      <v-col fill-width fluid lg="" md="12" sm="12" xl="" xs="12">
-        <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-        <v-layout child-flex>
-          <bloc-detail-ppn
-              v-model:currentPpn="currentPpn"
-              :itemsSortedAndFiltered="itemsSortedAndFiltered"
-              class="ma-0 pa-0 mb-2"
-          ></bloc-detail-ppn>
-        </v-layout>
+      <v-col
+          class="px-2 pl-lg-2 pa-0"
+          cols="12"
+          md="12"
+          :lg="isMobileForced ? 9 : 8"
+          :xl="isMobileForced ? 10 : 8"
+      >
+        <bloc-detail-ppn
+            v-model:currentPpn="currentPpn"
+            :itemsSortedAndFiltered="itemsSortedAndFiltered"
+            class="ma-0 pa-0 mb-2"
+        ></bloc-detail-ppn>
         <div class="ma-0 pa-0 d-flex justify-end" style="position: relative;">
           <v-tooltip location="start">
             <template v-slot:activator="{ props }" class="ma-0 pa-0 ">
@@ -73,23 +85,20 @@
             <span>Télécharger le détail des erreurs trouvées dans tous les ppn de l’analyse en cours</span>
           </v-tooltip>
         </div>
-        <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-        <v-layout child-flex>
-          <bloc-recapitulatif v-if="resultatStore.getRecapitulatif.length !== 0" :nombre-resultat-analyse="nbLancement"
-                              class="ma-0 pa-0 mt-16 mb-4" style="min-height: 13em"></bloc-recapitulatif>
-        </v-layout>
+        <bloc-recapitulatif v-if="resultatStore.getRecapitulatif.length !== 0"
+                            class="ma-0 pa-0 mt-16 mb-4"></bloc-recapitulatif>
         <v-card
             class="float-right ma-0 pa-0"
             variant="flat"
         >
-          <bouton-lancement
+          <BoutonLancement
               class="ma-0 pa-0"
               is-replay
               @finished="maskAndStopProgress"
               @started="displayAndStartProgress"
           >
             Relancer l'analyse
-          </bouton-lancement>
+          </BoutonLancement>
         </v-card>
       </v-col>
     </v-row>
@@ -117,7 +126,6 @@ const itemsSortedAndFiltered = ref([]);
 
 const nbLancement = ref(0);
 const mobileBreakpoint = ref(200);
-const focusOn = ref([4, 4]);
 const isProgressLoading = ref(false);
 const isMobileForced = ref(false);
 
@@ -184,13 +192,6 @@ function stopAnalyse() {
 
 function resizeBloc() {
   isMobileForced.value = !isMobileForced.value;
-  if (isMobileForced.value) {
-    focusOn.value = [3, 2];
-    //   mobileBreakpoint.value = 4000;
-  } else {
-    focusOn.value = [4, 4];
-    // mobileBreakpoint.value = 200;
-  }
 }
 
 </script>

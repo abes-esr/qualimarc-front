@@ -1,9 +1,9 @@
 <template>
-  <v-row class="d-flex align-center" style="min-width: 330px">
+  <v-row class="d-flex align-center" style="width: 330px">
     <v-col cols="2" style="color: lightgrey; font-weight: 400; font-size: 1.2em; width: 40px; max-width: 40px">
       <slot></slot>
     </v-col>
-    <v-col cols="10" style="border-left: 2px solid lightgrey; width: 100%">
+    <v-col cols="10" style="border-left: 2px solid lightgrey;">
       <v-row>
         <v-col cols="10">
           <span>Nb. total de PPN analysés :</span>
@@ -108,6 +108,6 @@ function itemsToExport(items) {
 
 .v-row {
   margin: 0 !important;
-
+  flex: none;
 }
 </style>
