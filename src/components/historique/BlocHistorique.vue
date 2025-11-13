@@ -1,81 +1,128 @@
 <template>
-  <v-container align-items="center" style="min-width: 90%">
-    <v-row class="mb-2 px-4" justify="space-between">
+  <v-container class=" px-4" style="width: 90vw">
+    <v-row>
       <!--      TITRE     -->
-      <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold">Historique des analyses</h1>
+      <v-col class="pa-2 d-flex justify-start align-center" cols="12" lg="4" md="4" sm="12" xl="4" xs="12">
+        <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold">Historique des analyses</h1>
+      </v-col>
+      <v-spacer cols="0" lg="4" md="4" sm="0" xl="4" xs="0"></v-spacer>
       <!--      BOUTON TELECHARGER L'HISTORIQUE     -->
-      <v-tooltip location="start">
-        <template v-slot:activator="{props}">
-          <DownloadCsv
-              :data="exportHistorique(historiqueList)"
-              :disabled="historiqueList.length === 0"
-              delimiter=";"
-              name="qualimarc-export-historique.csv"
-              size="small"
-              v-bind="props">
-            <span style="color: white">TÉLÉCHARGER L'HISTORIQUE</span>
-            <v-icon class="ml-2" color="white" size="small">mdi-download</v-icon>
-          </DownloadCsv>
-        </template>
-        <span>Télécharger l'historique dans un fichier nommé "qualimarc-export-historique.csv"</span>
-      </v-tooltip>
+      <v-col class="pa-2 d-flex justify-md-end justify-lg-end justify-xl-end align-center" cols="12" lg="4" md="4"
+             sm="12" xl="4"
+             xs="12">
+        <v-tooltip location="start">
+          <template v-slot:activator="{props}">
+            <DownloadCsv
+                :data="exportHistorique(historiqueList)"
+                :disabled="historiqueList.length === 0"
+                delimiter=";"
+                name="qualimarc-export-historique.csv"
+                size="small"
+                v-bind="props">
+              <span style="color: white">TÉLÉCHARGER L'HISTORIQUE</span>
+              <v-icon class="ml-2" color="white" size="small">mdi-download</v-icon>
+            </DownloadCsv>
+          </template>
+          <span>Télécharger l'historique dans un fichier nommé "qualimarc-export-historique.csv"</span>
+        </v-tooltip>
+      </v-col>
     </v-row>
-    <div class="ma-0 pa-0" style="border-top: 4px solid #252c61">
-      <v-row class="mt-1" justify="space-around">
-        <v-alert v-if="historiqueList.length !== 0" border="left" class="mt-4" colored-border dense elevation="2"
-                 icon="mdi-information" type="info">
+    <v-row style="border-top: 4px solid #252c61">
+      <v-col class="pa-0 pt-2 text-center">
+        <v-alert
+            v-if="historiqueList.length !== 0"
+            border="start"
+            class="d-inline-flex "
+            density="compact"
+            elevation="2"
+            icon="mdi-information"
+            type="info"
+            variant="outlined">
           L’historique n’est valable que pour la durée de la session.
         </v-alert>
-        <v-alert v-else border="left" class="mt-4" colored-border dense elevation="2" icon="mdi-alert" type="warning">
-          <span style="display: block; color: #595959">L’historique est vide.</span>
-          <span style="font-style: italic; font-weight: 300; font-size: 0.9em; color: #595959">L’historique n’est valable que pour la durée de la session.</span>
+        <v-alert
+            v-else
+            border="start"
+            class="d-inline-flex"
+            density="compact"
+            elevation="2"
+            icon="mdi-alert"
+            type="warning"
+            variant="outlined"
+        >
+          <span style="display: block; color: #595959; text-align: start">L’historique est vide.</span>
+          <span style="font-style: italic; font-weight: 300; font-size: 0.9em; color: #595959; text-align: start">L’historique n’est valable que pour la durée de la session.</span>
         </v-alert>
-      </v-row>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-timeline
+            v-if="historiqueList.length !== 0"
+            density="compact"
+            side="end"
+        >
+          <!--      TRAITEMENT PAR ANALYSE      -->
+          <v-timeline-item
+              v-for="historique in historiqueList.slice().reverse()"
+              :key="historiqueList.indexOf(historique)"
+              dot-color="white"
 
-      <v-timeline v-if="historiqueList.length !== 0" align-top clipped dense style="width: 100%">
-        <!--      TRAITEMENT PAR ANALYSE      -->
-        <v-timeline-item v-for="historique in historiqueList.slice().reverse()"
-                         :key="historiqueList.indexOf(historique)" color="lightgrey">
-          <!--      AFFICHAGE DU NUMERO DE L'ANALYSE DANS LA PUCE     -->
-          <template v-slot:icon>
-            <span style="color: #B30900; font-weight: 400; font-size: 1.2em">{{
-                historiqueList.indexOf(historique) + 1
-              }}</span>
-          </template>
-          <v-expansion-panels multiple>
-            <v-expansion-panel class="mb-4" role="button">
-              <v-expansion-panel-title>
-                <v-row justify="space-around">
-                  <!--      AFFICHAGE DE LA DATE      -->
-                  <span class="mt-1">Analyse du {{ historique.date.toLocaleString() }} <span
-                      style="font-style: italic; color: #595959">- Type d'analyse : {{
-                      historique.analyse.analyseSelected.libelle
-                    }}</span></span>
-                  <!--      AFFICHAGE DU BOUTON      -->
-                  <v-btn class="button" color="#B30900" depressed
-                         height="26" max-width="220" @click="relanceAnalyse(historiqueList.indexOf(historique))">
-                    <span style="color: white">Relancer l'analyse</span>
-                    <v-icon class="ml-2" color="white">mdi-arrow-right-thin-circle-outline</v-icon>
-                  </v-btn>
-                </v-row>
-              </v-expansion-panel-title>
-              <v-expansion-panel-text>
-                <v-divider></v-divider>
-                <v-list-item class="mt-2" style="overflow-x: scroll; overflow-y: hidden">
-                  <!--      TRAITEMENT PAR RESULTAT     -->
-                  <v-col v-for="result in historique.resultats.slice()" :key="historique.resultats.indexOf(result)"
-                         class="mr-10">
-                    <card-recapitulatif :resultats="result"><span
-                        style="color: #595959">{{ historique.resultats.indexOf(result) + 1 }}</span>
-                    </card-recapitulatif>
-                  </v-col>
-                </v-list-item>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-timeline-item>
-      </v-timeline>
-    </div>
+          >
+            <!--      AFFICHAGE DU NUMERO DE L'ANALYSE DANS LA PUCE     -->
+            <template v-slot:icon>
+              <span style="color: #B30900; font-weight: 400; font-size: 1.2em;">
+                {{ historiqueList.indexOf(historique) + 1 }}
+              </span>
+            </template>
+            <v-expansion-panels multiple>
+              <v-expansion-panel role="button">
+                <v-expansion-panel-title>
+                  <v-row class="align-center">
+                    <v-col class="d-flex justify-start align-center" cols="12" md="8">
+                      <!--      AFFICHAGE DE LA DATE      -->
+                      <span class="pr-1">
+                        Analyse du {{ historique.date.toLocaleString() }}
+                      </span>
+                      <span style="font-style: italic; color: #595959">
+                        - Type d'analyse : {{ historique.analyse.analyseSelected.libelle }}
+                      </span>
+                    </v-col>
+                    <v-col class="d-flex justify-end align-center" cols="12" md="4">
+                      <!--      AFFICHAGE DU BOUTON      -->
+                      <v-btn
+                          append-icon="mdi-arrow-right-thin-circle-outline"
+
+                          color="#B30900"
+                          @click="relanceAnalyse(historiqueList.indexOf(historique))">
+                        Relancer l'analyse
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-title>
+                <v-expansion-panel-text>
+                  <v-divider></v-divider>
+                  <div class="d-flex"  style=" overflow-x: auto; overflow-y: hidden">
+                    <div
+                        v-for="result in historique.resultats.slice()"
+                        :key="historique.resultats.indexOf(result)"
+                        class="px-2"
+                    >
+                      <CardRecapitulatif
+                          :resultats="result">
+                        <span
+                            style="color: #595959">{{ historique.resultats.indexOf(result) + 1 }}
+                        </span>
+                      </CardRecapitulatif>
+                    </div>
+                  </div>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-timeline-item>
+        </v-timeline>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -167,3 +214,11 @@ function exportHistorique(items) {
 }
 
 </script>
+<style>
+.v-timeline-item__body {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 80% !important;
+}
+
+</style>

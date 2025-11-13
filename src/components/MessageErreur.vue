@@ -1,7 +1,6 @@
 <template>
   <v-alert v-if="backendErrorMessage !== null || messageError !== null"
            border="start"
-           colored-border
            variant="outlined"
            type="error"
            elevation="2">
