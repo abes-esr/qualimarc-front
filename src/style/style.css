@@ -14,7 +14,7 @@
 }
 
 .titleBarButtonSelected {
-    color: red;
+    border-bottom-width: 3px !important;
     border-bottom-style: solid !important;
     border-color: #cf491b!important;
 }
