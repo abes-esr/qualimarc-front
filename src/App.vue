@@ -2,7 +2,7 @@
   <v-app>
     <Header></Header>
     <main>
-      <router-view />
+      <router-view  style="min-height: 65dvh" />
     </main>
     <Footer></Footer>
   </v-app>
