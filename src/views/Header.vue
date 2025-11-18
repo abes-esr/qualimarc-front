@@ -18,6 +18,7 @@
               <v-btn :class="{titleBarButtonSelected: (route.path === '/') || (route.path === '/resultats') }"
                      aria-label="Redirige vers la page Interface d'analyse de Qualimarc " color="white" tile
                      to="/" value="interfaceVerification"
+                     style="width: 100%"
                      variant="text">
                 {{ (mdAndUp) ? 'Interface d\'analyse' : 'Analyse' }}
               </v-btn>
@@ -26,14 +27,16 @@
               <v-btn :class="{titleBarButtonSelected: route.path === '/regles' }"
                      aria-label="Redirige vers la page Interface des règles de Qualimarc" color="white" tile
                      to="/regles" value="interfaceRegles"
+                     style="width: 100%"
                      variant="text">
                 {{ (mdAndUp) ? 'Interface des règles' : 'Règles' }}
               </v-btn>
             </v-col>
-            <v-col class="ma-0 pa-0 d-flex justify-center" cols="12" lg="2" md="2" sm="4" xl="2" xs="12">
+            <v-col class="ma-0 pa-0 d-flex justify-center" cols="12" lg="3" md="4" sm="4" xl="2" xs="12">
               <v-btn :class="{titleBarButtonSelected: route.path === '/historiques' }"
                      aria-label="Redirige vers la page Historique de Qualimarc" color="white" tile
                      to="/historiques" value="historique"
+                     style="width: 100%"
                      variant="text">Historique
               </v-btn>
             </v-col>
