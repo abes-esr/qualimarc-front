@@ -31,7 +31,7 @@
           :lg="isMobileForced ? 3 : 4"
           :xl="isMobileForced ? 2 : 4">
         <BlocAffichageResume
-            class="pr-lg-2"
+            class="pr-2"
             v-model:currentPpn="currentPpn"
             v-model:itemsSortedAndFiltered="itemsSortedAndFiltered"
             :is-mobile-forced="isMobileForced"
@@ -60,11 +60,11 @@
           :lg="isMobileForced ? 9 : 8"
           :xl="isMobileForced ? 10 : 8"
       >
-        <bloc-detail-ppn
+        <BlocDetailPpn
             v-model:currentPpn="currentPpn"
             :itemsSortedAndFiltered="itemsSortedAndFiltered"
             class="ma-0 pa-0 mb-2"
-        ></bloc-detail-ppn>
+        ></BlocDetailPpn>
         <div class="ma-0 pa-0 d-flex justify-end" style="position: relative;">
           <v-tooltip location="start">
             <template v-slot:activator="{ props }" class="ma-0 pa-0 ">
@@ -85,8 +85,8 @@
             <span>Télécharger le détail des erreurs trouvées dans tous les ppn de l’analyse en cours</span>
           </v-tooltip>
         </div>
-        <bloc-recapitulatif v-if="resultatStore.getRecapitulatif.length !== 0"
-                            class="ma-0 pa-0 mt-16 mb-4"></bloc-recapitulatif>
+        <BlocRecapitulatif v-if="resultatStore.getRecapitulatif.length !== 0"
+                            class="ma-0 pa-0 mt-16 mb-4"></BlocRecapitulatif>
         <v-card
             class="float-right ma-0 pa-0"
             variant="flat"

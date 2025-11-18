@@ -6,12 +6,14 @@
       <v-slide-group
         v-model="page"
         show-arrows
+        class="mx-12"
       >
         <v-slide-group-item
-            v-for="recap in resultatStore.getRecapitulatif"
-            :key="recap"
+            v-for="(recap, i) in resultatStore.getRecapitulatif"
+            :key="i"
           >
-          <CardRecapitulatif :resultats="recap"><span style="color: #595959"> {{ getIndex(recap)+1 }} </span></CardRecapitulatif>
+          <CardRecapitulatif
+               :resultats="recap"><span style="color: #595959"> {{ getIndex(recap)+1 }} </span></CardRecapitulatif>
         </v-slide-group-item>
       </v-slide-group>
     </v-card>

@@ -1,9 +1,9 @@
 <template>
-  <v-row class="d-flex align-center" style="width: 330px">
-    <v-col cols="2" style="color: lightgrey; font-weight: 400; font-size: 1.2em; width: 40px; max-width: 40px">
+  <v-row class="d-flex align-center" style="width: 350px">
+    <v-col cols="2" style="color: lightgrey; font-weight: 400; font-size: 1.2em; width: 40px; max-width: 40px;">
       <slot></slot>
     </v-col>
-    <v-col cols="10" style="border-left: 2px solid lightgrey;">
+    <v-col cols="10" style="border-left: 2px solid lightgrey; white-space: nowrap;">
       <v-row>
         <v-col cols="10">
           <span>Nb. total de PPN analysés :</span>
