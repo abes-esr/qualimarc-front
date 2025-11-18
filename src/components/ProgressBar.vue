@@ -14,7 +14,7 @@
                 <span v-if="count === '0%'" style="padding: 24px; font-style: italic; color: grey;" class="d-flex justify-center">L'analyse va débuter, veuillez patienter quelques instants.</span>
                 <span v-if="count === '100%'" style="padding: 24px; font-style: italic; color: grey;" class="d-flex justify-center">L'analyse est terminée, veuillez patienter quelques instants.</span>
                 <v-progress-linear
-                        :value="count"
+                        v-model="count"
                         height="25"
                         color="#0F75BC"
                         rounded
@@ -42,7 +42,7 @@
 import {ref, watchEffect} from 'vue';
 import QualimarcService from "@/service/QualimarcService";
 
-const props = defineProps({isLoading: Boolean});
+const isLoading = defineModel('isLoading', { type: Boolean, default: false });
 const emit = defineEmits(['finished', 'cancel', 'error']);
 
 const serviceApi = QualimarcService;
@@ -53,7 +53,7 @@ const analysisInitialized = ref(false);
 const analysisCompleted = ref(false);
 
 watchEffect(() => {
-    if (props.isLoading) {
+    if (isLoading.value) {
         runProgress();
     }
 })
@@ -67,7 +67,7 @@ function runProgress() {
     isCanceled.value = false;
     const interval = setInterval(() => {
         // cas de réussite
-        if ((count.value === '100%') && !props.isLoading) {
+        if ((count.value === '100%') && !isLoading.value) {
             analysisCompleted.value = true;
             clearInterval(interval);
             finish();

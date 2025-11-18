@@ -1,11 +1,11 @@
 <template>
-    <v-btn @click="emitOnClick" depressed color="#B30900" class="button" small :disabled="props.isDisabled">
+    <v-btn @click="emitOnClick" depressed color="#B30900" class="button" size="small" :disabled="props.isDisabled">
       <v-icon color="white">mdi-cog-refresh</v-icon>
     </v-btn>
 </template>
 
 <script setup>
-const props = defineProps({isDisabled: Boolean, ppnList: []});
+const props = defineProps({isDisabled: Boolean, ppnList: Array});
 const emit = defineEmits(['onClick']);
 
 function generateWinibwRequest() {

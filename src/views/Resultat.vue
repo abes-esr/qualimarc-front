@@ -1,14 +1,19 @@
 <template>
   <v-container fluid>
-    <progress-bar :isLoading="isProgressLoading" @finished="updateNbLancement" @cancel="stopAnalyse"></progress-bar>
+    <KeyboardNavigation
+        v-model:currentPpn="currentPpn"
+        :items-sorted-and-filtered="itemsSortedAndFiltered"
+    />
+    <ProgressBar v-model:isLoading="isProgressLoading" @cancel="stopAnalyse"
+                 @finished="updateNbLancement"></ProgressBar>
     <div class="ma-0 pa-0 mb-2" style="color: #595959; font-size: 0.9em">
       <nav aria-label="fil d'Ariane" class="filAriane">
         <ul>
           <li>
-            <span @click="$router.push({path: '/'})" class="v-slider__thumb">Accueil</span>
+            <span class="v-slider__thumb" @click="$router.push({path: '/'})">Accueil</span>
           </li>
           <li>
-            <span @click="$router.push({path: '/'})" class="v-slider__thumb">Interface d'analyse</span>
+            <span class="v-slider__thumb" @click="$router.push({path: '/'})">Interface d'analyse</span>
           </li>
           <li>
             <div aria-current="page">Résultats de l'analyse</div>
@@ -17,56 +22,84 @@
       </nav>
     </div>
     <v-row cols="12">
-      <v-col xs="12" sm="12" md="12" :lg="focusOn[0]" :xl="focusOn[1]" fluid fill-width>
-        <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-        <v-layout child-flex>
-          <BlocAffichageResume child-flex @onChangePpn="sendPpnToBlocResultat" @onChangeItems="sendItemsToBlocResultat" :currentPpn="currentPpn" :nbLancement="nbLancement" :mobileBreakpoint="mobileBreakpoint"></BlocAffichageResume>
-        </v-layout>
-      </v-col>
-      <v-col xs="12" sm="12" md="12" lg="" xl="" class="pl-lg-6" fluid fill-width>
-        <div class="d-none d-lg-flex" style="height: 70%; width: 2px; position:absolute; margin: 0 0 0 -1.15em; background-color: #E6E6E6">
-          <v-btn fab x-small depressed color="#b2b2b2" style="position:absolute; margin: 0 0 0 -1.55em" @click="resizeBloc">
-            <v-icon @click="" color="white" large>{{ iconTimeline }}</v-icon>
+      <v-col
+          class="d-flex pl-2 pa-0"
+          cols="12"
+          xs="12"
+          sm="12"
+          md="12"
+          :lg="isMobileForced ? 3 : 4"
+          :xl="isMobileForced ? 2 : 4">
+        <BlocAffichageResume
+            class="pr-2"
+            v-model:currentPpn="currentPpn"
+            v-model:itemsSortedAndFiltered="itemsSortedAndFiltered"
+            :is-mobile-forced="isMobileForced"
+            :mobileBreakpoint="mobileBreakpoint"
+            :nbLancement="nbLancement">
+        </BlocAffichageResume>
+        <div class="d-none d-lg-flex flex-lg-column">
+          <v-btn color="#b2b2b2" icon size="x-small" variant="flat" @click="resizeBloc">
+            <v-icon color="white" size="x-large"> {{
+                isMobileForced ? 'mdi-chevron-right' : 'mdi-chevron-left'
+              }}
+            </v-icon>
           </v-btn>
+          <v-divider
+              class="align-self-center"
+              style="background-color: #b2b2b2"
+              thickness="2"
+              vertical
+          ></v-divider>
         </div>
-        <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-        <v-layout child-flex>
-          <bloc-detail-ppn class="ma-0 pa-0 mb-2" @onChangePpn="sendPpnToBlocResultat" :currentPpn="currentPpn" :currentItems="currentItems" ></bloc-detail-ppn>
-        </v-layout>
-          <div class="ma-0 pa-0" style="position: relative">
-            <v-tooltip left>
-              <template v-slot:activator="{on}" class="ma-0 pa-0 col-auto">
-                <v-btn :disabled="itemsToExport().length === 0" style="position: absolute; top: 4px; right: -10px; margin-right: 12px;" class="button" elevation="0" v-on="on" color="#0c5c92">
-                  <download-csv :delimiter="';'" :data="itemsToExport()" name="qualimarc-export.csv">
-                    <span style="color: white">
-                      TÉLÉCHARGER TOUS
-                      <span style="display: block"></span>
-                      LES RESULTATS
-                    </span>
-                  </download-csv>
-                  <v-icon color="white" class="ml-2">mdi-download</v-icon>
-                </v-btn>
-              </template>
-              <span>Télécharger le détail des erreurs trouvées dans tous les ppn de l’analyse en cours</span>
-            </v-tooltip>
-          </div>
-        <!--      Le v-layout est nécessaire pour un bon affichage du tableau sur écran large      -->
-        <v-layout child-flex>
-          <bloc-recapitulatif class="ma-0 pa-0 mt-16 mb-4" style="min-height: 13em" :nombre-resultat-analyse="nbLancement"></bloc-recapitulatif>
-        </v-layout>
-          <v-card
-          flat
-          class="float-right ma-0 pa-0"
-          >
-            <bouton-lancement
+      </v-col>
+      <v-col
+          class="px-2 pl-lg-2 pa-0"
+          cols="12"
+          md="12"
+          :lg="isMobileForced ? 9 : 8"
+          :xl="isMobileForced ? 10 : 8"
+      >
+        <BlocDetailPpn
+            v-model:currentPpn="currentPpn"
+            :itemsSortedAndFiltered="itemsSortedAndFiltered"
+            class="ma-0 pa-0 mb-2"
+        ></BlocDetailPpn>
+        <div class="ma-0 pa-0 d-flex justify-end" style="position: relative;">
+          <v-tooltip location="start">
+            <template v-slot:activator="{ props }" class="ma-0 pa-0 ">
+              <DownloadCsv
+                  :data="itemsToExport()"
+                  :disabled="itemsToExport().length === 0"
+                  delimiter=";"
+                  name="qualimarc-export.csv"
+                  v-bind="props">
+                <span style="color: white">
+                  TÉLÉCHARGER TOUS
+                  <span style="display: block"></span>
+                  LES RESULTATS
+                </span>
+                <v-icon class="ml-2" color="white">mdi-download</v-icon>
+              </DownloadCsv>
+            </template>
+            <span>Télécharger le détail des erreurs trouvées dans tous les ppn de l’analyse en cours</span>
+          </v-tooltip>
+        </div>
+        <BlocRecapitulatif v-if="resultatStore.getRecapitulatif.length !== 0"
+                            class="ma-0 pa-0 mt-16 mb-4"></BlocRecapitulatif>
+        <v-card
+            class="float-right ma-0 pa-0"
+            variant="flat"
+        >
+          <BoutonLancement
               class="ma-0 pa-0"
               is-replay
               @finished="maskAndStopProgress"
               @started="displayAndStartProgress"
           >
             Relancer l'analyse
-          </bouton-lancement>
-          </v-card>
+          </BoutonLancement>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -78,50 +111,46 @@ import BlocAffichageResume from "@/components/resultats/BlocAffichageResume.vue"
 import BoutonLancement from "@/components/BoutonLancement.vue";
 import BlocDetailPpn from "@/components/resultats/BlocDetailPpn.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import DownloadCsv from "@/components/DownloadCsv.vue";
 
-import { ref, onMounted } from "vue";
-import { useResultatStore } from "@/stores/resultat";
-import router from "@/router";
+import {onBeforeMount, ref} from "vue";
+import {useResultatStore} from "@/stores/resultat";
+import KeyboardNavigation from "@/components/resultats/KeyboardNavigation.vue";
+import {useRouter} from 'vue-router'
 
+const router = useRouter()
 const resultatStore = useResultatStore();
 
 const currentPpn = ref('');
-const currentItems = ref([]);
+const itemsSortedAndFiltered = ref([]);
+
 const nbLancement = ref(0);
 const mobileBreakpoint = ref(200);
-const iconTimeline = ref('mdi-chevron-left');
-const focusOn = ref([4, 4]);
 const isProgressLoading = ref(false);
+const isMobileForced = ref(false);
 
-onMounted(() => {
-  if(resultatStore.getRecapitulatif.length === 0) {
+
+onBeforeMount(() => {
+  if (resultatStore.getRecapitulatif.length === 0) {
     router.push({name: 'Redirection accueil'});
   }
 });
 
-function sendPpnToBlocResultat(ppn) {
-  currentPpn.value = ppn;
-}
-
-function sendItemsToBlocResultat(items) {
-  currentItems.value = items;
-}
-
 function itemsToExport() {
   let itemsToExport = [];
   resultatStore.getResultsList.forEach(result => {
-    if (result.detailerreurs){
+    if (result.detailerreurs) {
       result.detailerreurs.forEach(messageErreur => {
         let zoneunm2 = (messageErreur.zones[1]) ? messageErreur.zones[1] : "";
         let autresZones = "";
-        for (let i = 2;i<messageErreur.zones.length;i++) {
+        for (let i = 2; i < messageErreur.zones.length; i++) {
           autresZones += messageErreur.zones[i]
           if (i !== (messageErreur.zones.length - 1)) autresZones += " | ";
         }
         let priority;
-        if (messageErreur.priority === "P1"){
+        if (messageErreur.priority === "P1") {
           priority = "Règle essentielle"
-        } else if (messageErreur.priority === "P2"){
+        } else if (messageErreur.priority === "P2") {
           priority = "Règle avancée"
         }
         itemsToExport.push({
@@ -129,7 +158,7 @@ function itemsToExport() {
           'type de document': result.typeDocument,
           'zone/sous-zone 1': messageErreur.zones[0],
           'zone/sous-zone 2': zoneunm2,
-          'autres zones/sous-zones':autresZones,
+          'autres zones/sous-zones': autresZones,
           'message d\'erreur': messageErreur.message,
           'type d\'erreur': priority,
           'date derniere modification de la notice': result.dateModification,
@@ -157,31 +186,24 @@ function maskAndStopProgress() {
   isProgressLoading.value = false;
 }
 
-function stopAnalyse(){
+function stopAnalyse() {
   isProgressLoading.value = false;
 }
 
 function resizeBloc() {
-  if(iconTimeline.value === 'mdi-chevron-left'){
-    focusOn.value = [3, 2];
-    mobileBreakpoint.value = 4000;
-    iconTimeline.value = 'mdi-chevron-right';
-  }else{
-    focusOn.value = [4, 4];
-    mobileBreakpoint.value = 200;
-    iconTimeline.value = 'mdi-chevron-left';
-  }
+  isMobileForced.value = !isMobileForced.value;
 }
 
 </script>
 
 <style scoped>
-.v-slider__thumb{
-  cursor:pointer;
-  height:42px;
-  width:42px;
+.v-slider__thumb {
+  cursor: pointer;
+  height: 42px;
+  width: 42px;
 }
+
 .button {
-  color:white;
+  color: white;
 }
 </style>

@@ -1,8 +1,15 @@
 <template>
-  <v-card flat class="ma-0 pa-0">
-    <v-btn data-cy="btn_lance_analyse" @click="checkPpnWithTypeAnalyse" depressed color="#B30900" class="button" :disabled="props.isDisabled" :loading="spinnerActive">
+  <v-card variant="flat" class="ma-0 pa-0">
+    <v-btn
+        data-cy="btn_lance_analyse"
+        @click="checkPpnWithTypeAnalyse"
+        depressed :color="props.isDisabled ? '' : '#B30900'"
+        :style="props.isDisabled ? '' : 'color:white'"
+        :disabled="props.isDisabled"
+        :loading="spinnerActive"
+        append-icon="mdi-arrow-right-thin-circle-outline"
+    >
       <slot></slot>
-      <v-icon color="white" class="ml-2">mdi-arrow-right-thin-circle-outline</v-icon>
     </v-btn>
   </v-card>
 </template>
@@ -80,7 +87,4 @@ function emitOnFinished(){
 </script>
 
 <style scoped>
-.button {
-  color:white;
-}
 </style>

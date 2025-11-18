@@ -12,9 +12,9 @@
               <div class="font-weight-bold pa-12">{{ props.winibwRequest }}</div>
             </td>
             <td>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn @click="copyText" v-bind="attrs" v-on="on"><v-icon>mdi-content-copy</v-icon></v-btn>
+              <v-tooltip location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn @click="copyText" v-bind="props"><v-icon>mdi-content-copy</v-icon></v-btn>
                 </template>
                 <span>Copier la requête</span>
               </v-tooltip>
@@ -28,7 +28,7 @@
         </v-card-text>
         <v-card-actions class="justify-end">
             <v-btn
-                text
+                variant="text"
                 @click="emitOnClose"
             >Fermer</v-btn>
         </v-card-actions>

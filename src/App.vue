@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <Header></Header>
-    <main style='padding-bottom: 220px'>
-      <router-view />
+    <main>
+      <router-view  style="min-height: 65dvh" />
     </main>
     <Footer></Footer>
   </v-app>

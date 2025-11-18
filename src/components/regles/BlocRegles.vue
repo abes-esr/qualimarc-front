@@ -5,32 +5,34 @@
       <!--      TITRE     -->
       <h1 class="fontPrimaryColor" style="font-size: 1.26em; font-weight: bold;">Table générale des règles</h1>
       <!--      BOUTON TELECHARGER LES REGLES     -->
-      <v-tooltip left>
-        <template v-slot:activator="{on}">
-          <v-btn class="ma-0" elevation="0" :disabled="items.length === 0" small v-on="on" color="#0c5c92">
-            <download-csv :delimiter="';'" :data="items" name="qualimarc-export-regles.csv" style="color: white">
-              <span style="color: white">TÉLÉCHARGER TOUTES LES R&Egrave;GLES</span>
-            </download-csv>
-            <v-icon small color="white" class="ml-2">mdi-download</v-icon>
-          </v-btn>
+      <v-tooltip location="start">
+        <template v-slot:activator="{ props }">
+          <DownloadCsv
+              :data="items"
+              :disabled="items.length === 0"
+              delimiter=";"
+              name="qualimarc-export-regles.csv"
+              size="small"
+              style="color: white"
+              v-bind="props">
+            <span style="color: white">TÉLÉCHARGER TOUTES LES R&Egrave;GLES</span>
+            <v-icon class="ml-2" color="white" size="small">mdi-download</v-icon>
+          </DownloadCsv>
         </template>
         <span>Télécharger toutes les règles dans un fichier nommé "qualimarc-export-rules.csv"</span>
       </v-tooltip>
     </v-row>
-
     <!--      FORMATAGE DES BORDURES      -->
     <div style="border-top: #252C61 solid 4px">
 
       <!--      BLOC AFFICHAGE DES FILTRES ET BOUTONS SUPPRESSION DES FILTRES      -->
       <v-row class="mx-4 my-2" justify="center">
         <!--            BOUTON EFFACER LES FILTRES-->
-        <v-tooltip left>
-          <template v-slot:activator="{on}">
-            <v-btn class="ma-0" small outlined color="#b30900" @click="resetSelector()" v-on="on">
-              <span>Effacer tous les filtres</span>
-              <v-icon class="ml-2" small color="#b30900">
-                mdi-filter-remove
-              </v-icon>
+        <v-tooltip location="start">
+          <template v-slot:activator="{ props }">
+            <v-btn append-icon="mdi-filter-remove" class="ma-0" color="#b30900" size="small" v-bind="props"
+                   variant="outlined" @click="resetSelector()">
+              Effacer tous les filtres
             </v-btn>
           </template>
           <span>Effacer tous les filtres actifs</span>
@@ -49,90 +51,112 @@
 
       <!--      CADRE DE LA DATA TABLE      -->
       <div style="border: #252C61 solid 1px">
-      <!--      DATA TABLE      -->
+        <!--      DATA TABLE      -->
         <v-data-table id="bgColorIdColumnRulesTable"
-                      class="pa-0 ma-0"
                       :headers="headers"
-                      loading-text="Chargement..."
+                      :items="filteredItems"
                       :loading="isLoading"
-                      :items="rulesFiltered"
-                      :item-class="classItemPriority"
-                      :search="ruleMessage"
-                      :custom-filter="searchByMessage"
-                      single-select
-                      item-key="id"
+                      class="pa-0 ma-0"
                       dense
+                      item-key="id"
+                      loading-text="Chargement..."
+                      single-select
         >
           <!--      REMPLISSAGE DU HEADER     -->
-          <template v-for="header in headers" v-slot:[`header.${header.value}`]="{ headers }">
-            <!--      HEADER ID     -->
-            <v-tooltip bottom v-if="header.value === 'id'">
-              <template v-slot:activator="{ on }">
-                <span v-on="on" style='color: white; display: block'>{{ header.textBtn }}</span>
-              </template>
-              <span>{{ header.tooltip}}</span>
-            </v-tooltip>
-            <!--      HEADER REGLE DE VERIFICATION      -->
-            <span v-if="header.value === 'message'" style='margin-top: 28px; color: white; display: block'>
-                {{ header.text }}
-            </span>
-            <!--      AUTRES HEADER      -->
-            <span v-if="header.value !== 'message' && header.value !== 'id'" style='color: white; display: block'>
-                {{ header.text }}
-            </span>
-            <!--      CHAMP DE RECHERCHE COLONNE "Règles de vérification / qualité"     -->
-            <v-menu class="ma-0 pa-0" offset-y v-if="header.value === 'message'">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                    v-model="ruleMessage"
-                    label="rechercher par mot-clé"
-                    class="ma-0 pa-0 tetxFieldRegles"
-                    height="26px"
-                    dense
-                    solo
-                    style="color: #595959; font-weight: 400; font-style: italic; font-size: 1.2em"
-                ></v-text-field>
-              </template>
-            </v-menu>
-            <!--      ICONES DE TRI POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
-            <v-menu offset-y v-if="header.value === 'id' || header.value === 'typeDoc' || header.value === 'priority'">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn text class="bouton-simple" x-small v-bind="attrs" v-on="on" style="text-decoration: none;" :aria-label="header.value">
-                  <span>
-                    <v-icon v-if="header.value === 'typeDoc'" small :color="colorIconFilterTypeDoc()">
-                      mdi-filter
-                    </v-icon>
-                  </span>
-                  <span>
-                    <v-icon v-if="header.value === 'id'" small :color="colorIconFilterId()">
-                      mdi-filter
-                    </v-icon>
-                  </span>
-                  <span>
-                    <v-icon v-if="header.value === 'priority'" small :color="colorIconFilterPriority()">
-                      mdi-filter
-                    </v-icon>
-                  </span>
-                </v-btn>
-              </template>
-              <div style='background-color:white;color: black;' class="pl-4 pr-8" v-if="header.value === 'typeDoc'">
-                <v-btn class="d-block" plain v-for="ruleTypeDoc in listSelectedRulesTypeDoc" :key="ruleTypeDoc.value" @click="eventTypeChoice(ruleTypeDoc) ">
-                  <v-checkbox v-model="selectedCheckbox" :label="ruleTypeDoc" :value="ruleTypeDoc"></v-checkbox>
-                </v-btn><div style="height: 30px"></div>
-              </div>
-              <div style='background-color:white;color: black;' class="pl-4 pr-8" v-if="header.value === 'id'">
-                <v-btn class="d-block" plain v-for="ruleId in listSelectedRulesId" :key="ruleId.value" @click="filterRulesById(ruleId)">
-                  {{ ruleId }}
-                </v-btn>
-              </div>
-              <div style='background-color:white;color: black;' class="pl-4 pr-8" v-if="header.value === 'priority'">
-                <v-btn class="d-block" plain v-for="rulePriority in listSelectedRulesPriority" :key="rulePriority.value" @click="(selectedPriority = rulePriority) && filterRulesByPriority(rulePriority)">
-                  {{ rulePriority }}
-                </v-btn>
-              </div>
-            </v-menu>
-            <!--      SUPPRESSION DE L'ICONE DE TRI COLONNE "Règle de vérification / qualité"     -->
-            <v-icon color="white" small v-if="header.value !== 'message'">mdi-sort</v-icon>
+          <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
+            <tr>
+              <th v-for="header in headers" :key="header.key" class="text-left"
+                  @click="header.sortable ? toggleSort(header):'';">
+                <div :style="header.key === 'message' ? '' : 'display: flex; align-items: center; white-space: nowrap;'">
+                  <!--      HEADER ID     -->
+                  <v-tooltip v-if="header.key === 'id'" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <span style='color: white; display: block' v-bind="props">{{ header.textBtn }}</span>
+                    </template>
+                    <span>{{ header.tooltip }}</span>
+                  </v-tooltip>
+                  <!--      HEADER REGLE DE VERIFICATION      -->
+                  <span v-if="header.key === 'message'" style='margin-top: 28px; color: white; display: block'>
+                {{ header.title }}
+                </span>
+                  <!--      AUTRES HEADER      -->
+                  <span v-if="header.key !== 'message' && header.key !== 'id'" style='color: white; display: block'>
+                    {{ header.title }}
+                </span>
+                  <!--      CHAMP DE RECHERCHE COLONNE "Règles de vérification / qualité"     -->
+
+                  <v-text-field
+                      v-if="header.key === 'message'"
+                      v-model="search"
+                      bg-color="white"
+                      class="ma-0 pa-0 textFieldRegles"
+                      density="compact"
+                      height="26px"
+                      label="rechercher par mot-clé"
+                  ></v-text-field>
+
+<!--                   ICONES DE TRI                  -->
+                  <v-icon v-if="header.sortable && !isSorted(header)" class="pl-4" color="white" size="small">mdi-sort</v-icon>
+                  <v-icon v-else-if="header.sortable" class="pl-4" color="white" size="small">{{ getSortIcon(header) }}</v-icon>
+
+                  <!--      ICONES DE FILTRE POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
+                  <v-menu v-if="header.key === 'id' || header.key === 'typeDoc' || header.key === 'priority'" offset-y>
+                    <template v-slot:activator="{ props }">
+                      <v-btn :aria-label="header.key" icon
+                             size="x-small" v-bind="props" variant="text" class="pa-0 ma-0">
+                        <v-icon :color="colorIconFilter(header.key)" size="small">
+                          mdi-filter
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <div v-if="header.key === 'typeDoc'" class="pl-4 pr-8" style='background-color:white;color: black;'>
+                      <v-btn v-for="ruleTypeDoc in listSelectedRulesTypeDoc" :key="ruleTypeDoc.value" class="d-block"
+                             variant="plain"
+                             @click="eventTypeChoice(ruleTypeDoc) ">
+                        <v-checkbox v-model="selectedCheckbox" :label="ruleTypeDoc" :value="ruleTypeDoc"></v-checkbox>
+                      </v-btn>
+                      <div style="height: 30px"></div>
+                    </div>
+                    <div v-if="header.key === 'id'" class="pl-4 pr-8" style='background-color:white;color: black;'>
+                      <v-btn v-for="ruleId in listSelectedRulesId" :key="ruleId.value" class="d-block" variant="plain"
+                             @click="filterRulesById(ruleId)">
+                        {{ ruleId }}
+                      </v-btn>
+                    </div>
+                    <div v-if="header.key === 'priority'" class="pl-4 pr-8"
+                         style='background-color:white;color: black;'>
+                      <v-btn v-for="rulePriority in listSelectedRulesPriority" :key="rulePriority.value" class="d-block"
+                             variant="plain"
+                             @click="(selectedPriority = rulePriority) && filterRulesByPriority(rulePriority)">
+                        {{ rulePriority }}
+                      </v-btn>
+                    </div>
+                  </v-menu>
+                </div>
+              </th>
+            </tr>
+          </template>
+          <template v-slot:item="{ item }">
+            <tr :class="classItemPriority">
+              <td>
+                {{ item.id }}
+              </td>
+              <td>
+                {{ item.zoneUnm1 }}
+              </td>
+              <td>
+                {{ item.zoneUnm2 }}
+              </td>
+              <td>
+                {{ item.typeDoc }}
+              </td>
+              <td>
+                {{ item.message }}
+              </td>
+              <td>
+                {{ item.priority }}
+              </td>
+            </tr>
           </template>
         </v-data-table>
       </div>
@@ -141,24 +165,52 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
 import QualimarcService from "@/service/QualimarcService";
+import DownloadCsv from "@/components/DownloadCsv.vue";
 
 const serviceApi = QualimarcService;
 let headers = [
-  { text: "", value: "id", class: "headerTableClass", width: 20, textBtn: "ID règle", tooltip: "Les identifiants des règles sont générés automatiquement et sont donnés à titre informatif"},
-  { text: "Zone UNM 1", value: "zoneUnm1", class: "headerTableClass", width: 30},
-  { text: "Zone UNM 2", value: "zoneUnm2", class: "headerTableClass", width: 30},
-  { text: "Type de document concerné par la règle", value: "typeDoc", class: "headerTableClass", width: 160},
-  { text: "Règle de vérification", value: "message", class: "headerTableClass", width: 200, sortable : false},
-  { text: "Type de règle", value: "priority", class: "headerTableClass", width: 50}
+  {
+    title: "ID règle",
+    key: "id",
+    textBtn: "ID règle",
+    tooltip: "Les identifiants des règles sont générés automatiquement et sont donnés à titre informatif",
+    sortable: true
+  },
+  {
+    title: "Zone UNM 1",
+    key: "zoneUnm1",
+    sortable: true
+  },
+  {
+    title: "Zone UNM 2",
+    key: "zoneUnm2",
+    sortable: true
+  },
+  {
+    title: "Type de document",
+    key: "typeDoc",
+    tooltip: "Type de document concerné par la règle",
+    sortable: true
+  },
+  {
+    title: "Règle de vérification",
+    key: "message",
+    sortable: false
+  },
+  {
+    title: "Type de règle",
+    key: "priority",
+    sortable: true
+  }
 ];
 const items = ref([]);
 const listSelectedRulesId = ref([]);
 const selectedTypeDoc = ref(new Array("Tous"));
 const listSelectedRulesTypeDoc = ref([]);
 const listSelectedRulesPriority = ref([]);
-const ruleMessage = ref(null);
+const search = ref('')
 const isLoading = ref(true);
 const rulesFiltered = ref([]);
 const selectedCheckbox = ref(["Tous"]);
@@ -174,48 +226,38 @@ onMounted(() => {
 
 function resetSelector() {
   selectedTypeDoc.value = new Array("Tous");
+  search.value = ''
   rulesFiltered.value = items.value;
-  selectedCheckbox.value = "Tous";
+  selectedCheckbox.value = ["Tous"];
   selectedPriority.value = "Toutes";
   selectedId.value = "Tous";
 }
 
-function colorIconFilterTypeDoc() {
-  if (selectedCheckbox.value[0] === "Tous" || selectedCheckbox.value === "Tous" || selectedCheckbox.value.length === 0) {
+function colorIconFilter(headerKey) {
+  if (
+      headerKey === 'typeDoc' && (selectedCheckbox.value[0] === "Tous" || selectedCheckbox.value.length === 0) ||
+      headerKey === 'id' && selectedId.value === "Tous" ||
+      headerKey === 'priority' && selectedPriority.value === "Toutes"
+  ) {
     return 'white';
   } else return '#FFC1AB';
 }
 
-function colorIconFilterId() {
-  if (selectedId.value === "Tous") {
-    return 'white';
-  } else return '#FFC1AB';
-}
 
-function colorIconFilterPriority() {
-  if (selectedPriority.value === "Toutes") {
-    return 'white';
-  } else return '#FFC1AB';
-}
+const filteredItems = computed(() => {
+  if (!search.value) return rulesFiltered.value
 
-/**
- * Fonction qui permet de faire la correspondance entre la saisie de l'utilisateur et les items
- * @param value renvoie les valeurs de toutes les cases du dataTable qui contienne la recherche (n'est pas utilisé ici, mais obligation de le laisser)
- * @param search la saisie de l'utilisateur
- * @param item les items qui match avec la saisie de l'utilisateur
- * @returns {boolean} valeur de retour
- */
-function searchByMessage (value, search, item) {
-  return item.message != null &&
-      ruleMessage != null &&
-      typeof item.message === 'string' &&
-      item.message.toString().toLocaleUpperCase().indexOf(search.toLocaleUpperCase()) !== -1
-}
+  const term = search.value.toLowerCase()
+
+  return rulesFiltered.value.filter(item =>
+      (item.message && item.message.toLowerCase().includes(term))
+  )
+})
 
 /**
  * fonction permetant de recuperer la liste des règles
  */
-function feedItems(){
+function feedItems() {
   isLoading.value = true;
   items.value = [];
   serviceApi.getRules()
@@ -226,7 +268,7 @@ function feedItems(){
       }).catch((error) => {
     //TODO : emit erreur si impossible de récupérer les types via appel axios
     //emitOnError(error);
-        isLoading.value = false;
+    isLoading.value = false;
   });
 }
 
@@ -235,7 +277,7 @@ function feedItems(){
  * @param item
  * @returns {{essentielle: String, avancee: String}}
  */
-function classItemPriority(item){
+function classItemPriority(item) {
   return {
     essentielle: item.priority === 'Essentielle',
     avancee: item.priority === 'Avancée',
@@ -259,7 +301,7 @@ function feedTypeList() {
  */
 function feedIdList() {
   listSelectedRulesId.value.push("Tous");
-  for(let i = 0; i < items.value.length; i++) {
+  for (let i = 0; i < items.value.length; i++) {
     listSelectedRulesId.value.push(items.value[i].id);
   }
 }
@@ -273,31 +315,60 @@ function feedRulesPriorityList() {
   listSelectedRulesPriority.value.push("Avancée");
 }
 
+
+/**
+ * Retire l'option "Tous" de la liste si elle est présente
+ */
+function removeAllOption() {
+  const allIndex = selectedTypeDoc.value.indexOf("Tous");
+  if (allIndex >= 0) {
+    selectedTypeDoc.value.splice(allIndex, 1);
+  }
+}
+
+/**
+ * Bascule la sélection d'un type de document (ajout ou suppression)
+ * @param type le type à basculer
+ */
+function toggleTypeSelection(type) {
+  const typeIndex = selectedTypeDoc.value.indexOf(type);
+
+  if (typeIndex === -1) {
+    // Ajout du type s'il n'est pas présent
+    selectedTypeDoc.value.push(type);
+  } else {
+    // Suppression du type s'il est déjà présent
+    selectedTypeDoc.value.splice(typeIndex, 1);
+
+    // Si tous les types sont désélectionnés, réinitialiser à "Tous"
+    if (selectedTypeDoc.value.length === 0) {
+      selectedTypeDoc.value.push("Tous");
+    }
+  }
+}
+
 /**
  * Fonction qui permet d'afficher les typeDoc sélectionnés par l'utilisateur
  * @param type l'élément sélectionné
- * @returns {*[] | []} appelle la fonction d'affichage des Id sélectionnés par l'utilisateur
  */
 function eventTypeChoice(type) {
   if (type === "Tous") {
-    selectedTypeDoc.value = new Array(type);
+    selectedTypeDoc.value = ["Tous"];
   } else {
-    if (selectedTypeDoc.value.length > 0) {
-      if (selectedTypeDoc.value.indexOf("Tous") >= 0) { //  Si un "Tous" est présent dans le selectedTypeDoc
-        selectedTypeDoc.value.splice(selectedTypeDoc.value.indexOf("Tous"), 1);
-      }
-      if (selectedTypeDoc.value.indexOf(type) === -1) {  //  Ajout un typeDoc s'il n'est pas déjà dans la liste selectedTypeDoc
-        selectedTypeDoc.value.push(type);
-      } else if (selectedTypeDoc.value.indexOf(type) >= 0) { //  Supprime un typeDoc coché lorsque l'on clique de nouveau sur lui
-        selectedTypeDoc.value.splice(selectedTypeDoc.value.indexOf(type), 1);
-        if (selectedTypeDoc.value.length === 0) { //  si le dernier typeDoc est déselectionné, on insère la valeur "Tous"
-          selectedTypeDoc.value.push("Tous");
-        }
-      }
+    // S'assurer qu'il y a au moins un élément dans la liste
+    if (selectedTypeDoc.value.length === 0) {
+      selectedTypeDoc.value = [type];
     } else {
-      selectedTypeDoc.value = new Array(type);
+      // Retirer "Tous" si présent avant d'ajouter un type spécifique
+      if (selectedTypeDoc.value.includes("Tous")) {
+        removeAllOption();
+      }
+
+      // Basculer la sélection du type
+      toggleTypeSelection(type);
     }
   }
+
   selectedCheckbox.value = selectedTypeDoc.value;
   filterRulesByTypeDoc();
 }
@@ -324,17 +395,17 @@ function filterRulesById(ruleId) {
  * Function qui permet de filtrer par type de document
  * @returns {Ref<UnwrapRef<[]>>}
  */
-function filterRulesByTypeDoc(){
-  if ( (selectedPriority.value === "Toutes") && (selectedTypeDoc.value.indexOf("Tous") >= 0) ) {  //  si aucune priorité n'a été sélectionné et typeDoc === Tous
-      rulesFiltered.value = items.value;
-      selectedTypeDoc.value = new Array("Tous");
-  } else if ( (selectedPriority.value === "Toutes") && (selectedTypeDoc.value.indexOf("Tous") === -1) ) {  //  si aucun priorité n'a été sélectionnée et typeDoc !== Tous
+function filterRulesByTypeDoc() {
+  if ((selectedPriority.value === "Toutes") && (selectedTypeDoc.value.indexOf("Tous") >= 0)) {  //  si aucune priorité n'a été sélectionné et typeDoc === Tous
+    rulesFiltered.value = items.value;
+    selectedTypeDoc.value = new Array("Tous");
+  } else if ((selectedPriority.value === "Toutes") && (selectedTypeDoc.value.indexOf("Tous") === -1)) {  //  si aucun priorité n'a été sélectionnée et typeDoc !== Tous
     filterSelectedTypeDocTrueAndSelectedPriorityTrue();
-  } else if ( (selectedPriority.value !== "Toutes") && (selectedTypeDoc.value.indexOf("Tous") >= 0) ) {  //  si une priorité a été sélectionnée et typeDoc === Tous
+  } else if ((selectedPriority.value !== "Toutes") && (selectedTypeDoc.value.indexOf("Tous") >= 0)) {  //  si une priorité a été sélectionnée et typeDoc === Tous
     rulesFiltered.value = items.value.filter(rule => {
       return rule['priority'].toString().toLocaleLowerCase() === selectedPriority.value.toString().toLocaleLowerCase();
     });
-  } else if ( (selectedPriority.value !== "Toutes") && (selectedTypeDoc.value.indexOf("Tous") === -1) ) {  //  si une priorité a été sélectionnée et typeDoc !== Tous
+  } else if ((selectedPriority.value !== "Toutes") && (selectedTypeDoc.value.indexOf("Tous") === -1)) {  //  si une priorité a été sélectionnée et typeDoc !== Tous
     //  Vide la liste
     rulesFiltered.value = new Array(0);
     //  Tri par priorité
@@ -347,7 +418,7 @@ function filterRulesByTypeDoc(){
     });
     // Tri par typeDoc
     let tempRulesFilterByTypeDocList = new Set();
-    for(let i = 0; i < selectedTypeDoc.value.length; i++) {
+    for (let i = 0; i < selectedTypeDoc.value.length; i++) {
       let tempList = rulesFiltered.value.filter(item => {
         return item['typeDoc'].toLocaleLowerCase().includes(selectedTypeDoc.value[i].toString().toLocaleLowerCase())
       });
@@ -396,7 +467,7 @@ function filterRulesByPriority(priority) {
 function filterSelectedTypeDocTrueAndSelectedPriorityTrue() {
   rulesFiltered.value = new Array(0);
   let tempRulesFilterByTypeDocList = new Set();
-  for(let i = 0; i < selectedTypeDoc.value.length; i++) {
+  for (let i = 0; i < selectedTypeDoc.value.length; i++) {
     let tempList = items.value.filter(item => {
       return item['typeDoc'].toLocaleLowerCase().includes(selectedTypeDoc.value[i].toString().toLocaleLowerCase())
     });
@@ -413,11 +484,11 @@ function filterSelectedTypeDocTrueAndSelectedPriorityTrue() {
 
 <style>
 
-.essentielle{
+.essentielle {
   font-weight: 400;
 }
 
-.avancee{
+.avancee {
   font-weight: 400;
 }
 

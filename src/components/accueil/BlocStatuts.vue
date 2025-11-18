@@ -1,12 +1,12 @@
 <template>
   <div  @mouseleave="hideBlock" @mouseenter="displayStatus" @focusin="displayStatus" @focusout="hideBlock">
-    <v-btn fab :x-small="!$vuetify.breakpoint.mdAndUp" :small="$vuetify.breakpoint.mdAndUp" depressed color="white" aria-label="Status de l'application Qualimarc">
+    <v-btn fab icon :size="mdAndUp ? 'small' : 'x-small'" depressed color="white" aria-label="Status de l'application Qualimarc">
       <!--      Balise div servant à créer les aria-label et role pour l'accessibilité de l'application     -->
       <div aria-label="Status de l'application Qualimarc" role="img">
-        <v-icon :style="($vuetify.breakpoint.mdAndUp) ? 'font-size: 40px' : 'font-size: 32px'">mdi-gauge</v-icon>
+        <v-icon :style="(mdAndUp) ? 'font-size: 40px' : 'font-size: 32px'">mdi-gauge</v-icon>
       </div>
     </v-btn>
-    <v-card v-if="isDisplayed" elevation="12" style="position: absolute; margin-left: -360px; margin-top: 20px; z-index: 10; border-radius: 5px!important;" width="400">
+    <v-card v-if="isDisplayed" elevation="12" class="position-absolute" style="margin-left: -360px; margin-top: 20px; border-radius: 5px!important; z-index: 1000;" width="400">
       <v-card-title class="justify-center pt-1" style="background-color: #252C61; color: white">STATUTS</v-card-title>
       <v-card-text style="background-color: white;color: black">
         <v-row class="d-flex justify-space-between pa-2">
@@ -35,6 +35,9 @@
 <script setup>
 import { ref } from "vue";
 import StatutsService from "@/service/StatutsService";
+import { useDisplay } from 'vuetify'
+const { mdAndUp } = useDisplay()
+
 
 const service = StatutsService;
 const emit = defineEmits(['backendError']);

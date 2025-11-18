@@ -2,7 +2,7 @@ import axios from "axios";
 
 export class StatutsService {
     client = axios.create({
-        baseURL: process.env.VUE_APP_ROOT_API,
+        baseURL: import.meta.env.VITE_APP_ROOT_API,
     });
 
     /**
