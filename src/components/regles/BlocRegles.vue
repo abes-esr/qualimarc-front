@@ -67,68 +67,72 @@
             <tr>
               <th v-for="header in headers" :key="header.key" class="text-left"
                   @click="header.sortable ? toggleSort(header):'';">
-                <!--      HEADER ID     -->
-                <v-tooltip v-if="header.key === 'id'" location="bottom">
-                  <template v-slot:activator="{ props }">
-                    <span style='color: white; display: block' v-bind="props">{{ header.textBtn }}</span>
-                  </template>
-                  <span>{{ header.tooltip }}</span>
-                </v-tooltip>
-                <!--      HEADER REGLE DE VERIFICATION      -->
-                <span v-if="header.key === 'message'" style='margin-top: 28px; color: white; display: block'>
+                <div :style="header.key === 'message' ? '' : 'display: flex; align-items: center; white-space: nowrap;'">
+                  <!--      HEADER ID     -->
+                  <v-tooltip v-if="header.key === 'id'" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <span style='color: white; display: block' v-bind="props">{{ header.textBtn }}</span>
+                    </template>
+                    <span>{{ header.tooltip }}</span>
+                  </v-tooltip>
+                  <!--      HEADER REGLE DE VERIFICATION      -->
+                  <span v-if="header.key === 'message'" style='margin-top: 28px; color: white; display: block'>
                 {{ header.title }}
                 </span>
-                <!--      AUTRES HEADER      -->
-                <span v-if="header.key !== 'message' && header.key !== 'id'" style='color: white; display: block'>
+                  <!--      AUTRES HEADER      -->
+                  <span v-if="header.key !== 'message' && header.key !== 'id'" style='color: white; display: block'>
                     {{ header.title }}
                 </span>
-                <!--      CHAMP DE RECHERCHE COLONNE "Règles de vérification / qualité"     -->
+                  <!--      CHAMP DE RECHERCHE COLONNE "Règles de vérification / qualité"     -->
 
-                <v-text-field
-                    v-if="header.key === 'message'"
-                    v-model="search"
-                    class="ma-0 pa-0 textFieldRegles"
-                    density="compact"
-                    height="26px"
-                    bg-color="white"
-                    label="rechercher par mot-clé"
-                ></v-text-field>
+                  <v-text-field
+                      v-if="header.key === 'message'"
+                      v-model="search"
+                      bg-color="white"
+                      class="ma-0 pa-0 textFieldRegles"
+                      density="compact"
+                      height="26px"
+                      label="rechercher par mot-clé"
+                  ></v-text-field>
 
-                <!--      ICONES DE TRI POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
-                <v-menu v-if="header.key === 'id' || header.key === 'typeDoc' || header.key === 'priority'" offset-y>
-                  <template v-slot:activator="{ props }">
-                    <v-btn :aria-label="header.key" icon
-                           size="x-small" v-bind="props" variant="text">
-                      <v-icon :color="colorIconFilter(header.key)" size="small">
-                        mdi-filter
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <div v-if="header.key === 'typeDoc'" class="pl-4 pr-8" style='background-color:white;color: black;'>
-                    <v-btn v-for="ruleTypeDoc in listSelectedRulesTypeDoc" :key="ruleTypeDoc.value" class="d-block"
-                           variant="plain"
-                           @click="eventTypeChoice(ruleTypeDoc) ">
-                      <v-checkbox v-model="selectedCheckbox" :label="ruleTypeDoc" :value="ruleTypeDoc"></v-checkbox>
-                    </v-btn>
-                    <div style="height: 30px"></div>
-                  </div>
-                  <div v-if="header.key === 'id'" class="pl-4 pr-8" style='background-color:white;color: black;'>
-                    <v-btn v-for="ruleId in listSelectedRulesId" :key="ruleId.value" class="d-block" variant="plain"
-                           @click="filterRulesById(ruleId)">
-                      {{ ruleId }}
-                    </v-btn>
-                  </div>
-                  <div v-if="header.key === 'priority'" class="pl-4 pr-8" style='background-color:white;color: black;'>
-                    <v-btn v-for="rulePriority in listSelectedRulesPriority" :key="rulePriority.value" class="d-block"
-                           variant="plain"
-                           @click="(selectedPriority = rulePriority) && filterRulesByPriority(rulePriority)">
-                      {{ rulePriority }}
-                    </v-btn>
-                  </div>
-                </v-menu>
-                <!--      SUPPRESSION DE L'ICONE DE TRI COLONNE "Règle de vérification / qualité"     -->
-                <v-icon v-if="header.sortable && !isSorted(header)" color="white" size="small">mdi-sort</v-icon>
-                <v-icon v-else-if="header.sortable" color="white" size="small">{{ getSortIcon(header) }}</v-icon>
+<!--                   ICONES DE TRI                  -->
+                  <v-icon v-if="header.sortable && !isSorted(header)" class="pl-4" color="white" size="small">mdi-sort</v-icon>
+                  <v-icon v-else-if="header.sortable" class="pl-4" color="white" size="small">{{ getSortIcon(header) }}</v-icon>
+
+                  <!--      ICONES DE FILTRE POUR LES ID, TYPE DOCUMENTS ET TYPE REGLES      -->
+                  <v-menu v-if="header.key === 'id' || header.key === 'typeDoc' || header.key === 'priority'" offset-y>
+                    <template v-slot:activator="{ props }">
+                      <v-btn :aria-label="header.key" icon
+                             size="x-small" v-bind="props" variant="text" class="pa-0 ma-0">
+                        <v-icon :color="colorIconFilter(header.key)" size="small">
+                          mdi-filter
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <div v-if="header.key === 'typeDoc'" class="pl-4 pr-8" style='background-color:white;color: black;'>
+                      <v-btn v-for="ruleTypeDoc in listSelectedRulesTypeDoc" :key="ruleTypeDoc.value" class="d-block"
+                             variant="plain"
+                             @click="eventTypeChoice(ruleTypeDoc) ">
+                        <v-checkbox v-model="selectedCheckbox" :label="ruleTypeDoc" :value="ruleTypeDoc"></v-checkbox>
+                      </v-btn>
+                      <div style="height: 30px"></div>
+                    </div>
+                    <div v-if="header.key === 'id'" class="pl-4 pr-8" style='background-color:white;color: black;'>
+                      <v-btn v-for="ruleId in listSelectedRulesId" :key="ruleId.value" class="d-block" variant="plain"
+                             @click="filterRulesById(ruleId)">
+                        {{ ruleId }}
+                      </v-btn>
+                    </div>
+                    <div v-if="header.key === 'priority'" class="pl-4 pr-8"
+                         style='background-color:white;color: black;'>
+                      <v-btn v-for="rulePriority in listSelectedRulesPriority" :key="rulePriority.value" class="d-block"
+                             variant="plain"
+                             @click="(selectedPriority = rulePriority) && filterRulesByPriority(rulePriority)">
+                        {{ rulePriority }}
+                      </v-btn>
+                    </div>
+                  </v-menu>
+                </div>
               </th>
             </tr>
           </template>
@@ -170,8 +174,6 @@ let headers = [
   {
     title: "ID règle",
     key: "id",
-    class: "headerTableClass",
-    width: 20,
     textBtn: "ID règle",
     tooltip: "Les identifiants des règles sont générés automatiquement et sont donnés à titre informatif",
     sortable: true
@@ -179,36 +181,27 @@ let headers = [
   {
     title: "Zone UNM 1",
     key: "zoneUnm1",
-    class: "headerTableClass",
-    width: 30,
     sortable: true
   },
   {
     title: "Zone UNM 2",
     key: "zoneUnm2",
-    class: "headerTableClass",
-    width: 30,
     sortable: true
   },
   {
-    title: "Type de document concerné par la règle",
+    title: "Type de document",
     key: "typeDoc",
-    class: "headerTableClass",
-    width: 160,
+    tooltip: "Type de document concerné par la règle",
     sortable: true
   },
   {
     title: "Règle de vérification",
     key: "message",
-    class: "headerTableClass",
-    width: 200,
     sortable: false
   },
   {
     title: "Type de règle",
     key: "priority",
-    class: "headerTableClass",
-    width: 50,
     sortable: true
   }
 ];

@@ -30,7 +30,7 @@
         <template v-slot:headers="{ columns : headers , toggleSort, isSorted, getSortIcon }">
           <tr>
             <th v-for="header in headers" :key="header.key"  @click="toggleSort(header)">
-              <div class="d-flex align-center">
+              <div style="display: flex; align-items: center; white-space: nowrap;">
                 <span
                     v-if="header.key === 'priority'"
 
@@ -120,10 +120,10 @@ const coverLink = ref('');
 const iconTypeDocument = ref({color: "black", img: "mdi-help"});
 const itemsPpnParent = ref([]);
 const headers = [
-  {title: "Zone UNM1", key: "zone1", width: 133},
-  {title: "Zone UNM2", key: "zone2", width: 133},
+  {title: "Zone UNM1", key: "zone1"},
+  {title: "Zone UNM2", key: "zone2"},
   {title: "Message d'erreur", key: "message"},
-  {title: "Règle essentielle|Règle avancée", key: "priority", width: 200}
+  {title: "Règle essentielle|Règle avancée", key: "priority"}
 ];
 
 
