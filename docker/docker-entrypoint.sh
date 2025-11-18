@@ -13,7 +13,7 @@ rm -rf /usr/share/nginx/html/
 cp -rf /usr/share/nginx/html.orig/ /usr/share/nginx/html/
 sed -i \
   "s#QUALIMARC_PLACEHOLDER_VITE_APP_ROOT_API#${QUALIMARC_FRONT_API_BASEURL}#g" \
-  /usr/share/nginx/html/js/*
+  /usr/share/nginx/html/assets/*
 
 
 # execute nginx (cf CMD dans Dockerfile)
