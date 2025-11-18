@@ -1,6 +1,6 @@
 ###
 # Phase de compilation de l'appli vuejs
-FROM cypress/included:15.6.0 as build-image
+FROM cypress/included:15.6.0 AS build-image
 WORKDIR /build/
 # Mise en cache docker pour le téléchargement
 # des dépendances npm (répertoire node_modules/)
@@ -9,7 +9,6 @@ COPY ./package*.json /build/
 # éviter que npm retélécharge toutes les dépendances
 #COPY ./node_modules/ /build/node_modules/
 RUN npm ci
-RUN npm prune --production
 # Compilation du TS en JS compilé
 # en injectant des placeholders dans les variables .env de vuejs
 # (cf le fichier docker/vuejs_env_placeholder) pour pouvoir créer des conteneurs
@@ -22,6 +21,7 @@ RUN npm prune --production
 #COPY ./.eslintrc.js                 /build/.eslintrc.js
 COPY ./*.js                         /build/
 COPY ./*.json                       /build/
+COPY ./index.html                   /build/index.html
 COPY ./src/                         /build/src/
 COPY ./public/                      /build/public/
 RUN echo "VITE_APP_ROOT_API=" > /build/.env
@@ -37,13 +37,13 @@ RUN npm run build
 #    sleep 30s && \
 #    npx cypress verify && \
 #    npx cypress run
-
+RUN npm prune --production
 
 
 
 ####
 ## Serveur web (nginx) pour exec l'appli vuejs
-FROM nginx:1.20.2 as front-image
+FROM nginx:1.20.2 AS front-image
 COPY --from=build-image /build/dist/ /usr/share/nginx/html.orig/
 COPY ./docker/nginx-default.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
