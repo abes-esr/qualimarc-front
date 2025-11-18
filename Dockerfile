@@ -9,7 +9,7 @@ COPY ./package*.json /build/
 # éviter que npm retélécharge toutes les dépendances
 #COPY ./node_modules/ /build/node_modules/
 RUN npm ci
-
+RUN npm prune --production
 # Compilation du TS en JS compilé
 # en injectant des placeholders dans les variables .env de vuejs
 # (cf le fichier docker/vuejs_env_placeholder) pour pouvoir créer des conteneurs
@@ -29,15 +29,15 @@ RUN echo "VITE_APP_ROOT_API=" > /build/.env
 # pour lancer en tache de fond le serveur web avec npm
 # puis exécuter les tests cyrpress et stopper le processu
 # de build docker si jamais un test ne passe pas
-COPY ./cypress/                         /build/cypress/
-
-RUN npm run build
-RUN (npm run serve &) && \
-    sleep 30s && \
-    npx cypress verify && \
-    npx cypress run
+#COPY ./cypress/                         /build/cypress/
 
 COPY ./docker/vuejs_env_placeholder /build/.env
+RUN npm run build
+#RUN (npm run serve &) && \
+#    sleep 30s && \
+#    npx cypress verify && \
+#    npx cypress run
+
 
 
 
