@@ -1,46 +1,46 @@
 <template>
-    <v-container fluid>
-        <h1 class="ml-1 mb-2 fontPrimaryColor" style="font-size: 1em; font-weight: 400">Outil d'analyse des notices
-            bibliographiques du Sudoc</h1>
-        <progress-bar :isLoading="isProgressLoading" @finished="redirect" @cancel="stopAnalyse"
-                      @error="setMessageErreur"></progress-bar>
-        <v-row class="mb-2 pa-2" justify="space-between">
-            <v-col class="ma-2 pa-2" style="min-height: 34em;">
-                <h2 style="font-size: 1.26em; color : #252C61; font-weight: bold">
-                    <v-icon color="#252C61" style="margin-top: -4px">mdi-numeric-1-box</v-icon>
-                    Soumettre des PPN
-                </h2>
-                <bloc-recherche-par-ppn class="mb-0 pa-0" @isPpnListEmpty="setIsPpnListIsEmpty"
-                                        @backendError="setBackendError"/>
-            </v-col>
-            <v-col class="ma-2 pa-2" style="min-height: 34em">
-                <h2 style="font-size: 1.26em; color : #252C61; font-weight: bold;">
-                    <v-icon color="#252C61" style="margin-top: -4px">mdi-numeric-2-box</v-icon>
-                    Sélectionner un type d'analyse
-                </h2>
-                <bloc-type-analyse class="mb-2 pa-0" @isSelected="setIsAnalyseSelected"
-                                   @backendError="setBackendError"></bloc-type-analyse>
-                <message-erreur class="mb-2 pa-4" :backendErrorMessage="backendErrorMessage"
-                                :messageError="messageErreur"></message-erreur>
-                <bouton-lancement
-                        class="mb-2 pa-0"
-                        :isDisabled="(isPpnListIsEmpty || !isAnalyseSelected)"
-                        @backendError="setBackendError"
-                        @finished="maskAndStopProgress"
-                        @started="displayAndStartProgress"
-                >
-                    Lancer l'analyse
-                </bouton-lancement>
-            </v-col>
-        </v-row>
-    </v-container>
+  <v-container fluid>
+    <h1 class="ml-1 mb-2 fontPrimaryColor" style="font-size: 1em; font-weight: 400">Outil d'analyse des notices
+      bibliographiques du Sudoc</h1>
+    <progress-bar v-model:isLoading="isProgressLoading" @cancel="stopAnalyse" @error="setMessageErreur"
+                  @finished="redirect"></progress-bar>
+    <v-row class="mb-2 pa-2" justify="space-between">
+      <v-col class="ma-2 pa-2" style="min-height: 34em;">
+        <h2 style="font-size: 1.26em; color : #252C61; font-weight: bold">
+          <v-icon color="#252C61" style="margin-top: -4px">mdi-numeric-1-box</v-icon>
+          Soumettre des PPN
+        </h2>
+        <bloc-recherche-par-ppn class="mb-0 pa-0" @backendError="setBackendError"
+                                @isPpnListEmpty="setIsPpnListIsEmpty"/>
+      </v-col>
+      <v-col class="ma-2 pa-2" style="min-height: 34em">
+        <h2 style="font-size: 1.26em; color : #252C61; font-weight: bold;">
+          <v-icon color="#252C61" style="margin-top: -4px">mdi-numeric-2-box</v-icon>
+          Sélectionner un type d'analyse
+        </h2>
+        <bloc-type-analyse class="mb-2 pa-0" @backendError="setBackendError"
+                           @isSelected="setIsAnalyseSelected"></bloc-type-analyse>
+        <message-erreur :backendErrorMessage="backendErrorMessage" :messageError="messageErreur"
+                        class="mb-2 pa-4"></message-erreur>
+        <bouton-lancement
+            :isDisabled="(isPpnListIsEmpty || !isAnalyseSelected)"
+            class="mb-2 pa-0"
+            @backendError="setBackendError"
+            @finished="maskAndStopProgress"
+            @started="displayAndStartProgress"
+        >
+          Lancer l'analyse
+        </bouton-lancement>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script setup>
 import BlocTypeAnalyse from "@/components/accueil/BlocTypeAnalyse.vue";
 import BlocRechercheParPpn from "@/components/accueil/BlocRechercheParPpn.vue";
 import BoutonLancement from "@/components/BoutonLancement.vue";
 import MessageErreur from "@/components/MessageErreur.vue";
-import {onMounted, ref, watchEffect} from 'vue';
+import {onMounted, ref} from 'vue';
 import router from "@/router";
 import {useResultatStore} from "@/stores/resultat";
 import {useAnalyseStore} from "@/stores/analyse";
@@ -56,8 +56,8 @@ const resultatStore = useResultatStore();
 const analyseStore = useAnalyseStore();
 
 onMounted(() => {
-    resultatStore.$reset();
-    analyseStore.$reset();
+  resultatStore.$reset();
+  analyseStore.$reset();
 });
 
 /**
@@ -65,7 +65,7 @@ onMounted(() => {
  * @param isAnaslyseSelected
  */
 function setIsAnalyseSelected(isAnaslyseSelected) {
-    isAnalyseSelected.value = isAnaslyseSelected;
+  isAnalyseSelected.value = isAnaslyseSelected;
 }
 
 /**
@@ -73,38 +73,40 @@ function setIsAnalyseSelected(isAnaslyseSelected) {
  * @param isPpnListIsEmptyFromBloc
  */
 function setIsPpnListIsEmpty(isPpnListIsEmptyFromBloc) {
-    isPpnListIsEmpty.value = isPpnListIsEmptyFromBloc;
+  isPpnListIsEmpty.value = isPpnListIsEmptyFromBloc;
 }
 
 function setBackendError(error) {
-    backendErrorMessage.value = error;
-    stopAnalyse();
+  backendErrorMessage.value = error;
+  stopAnalyse();
 }
 
 function setMessageErreur(message) {
-    messageErreur.value = message;
+  messageErreur.value = message;
 }
 
 function displayAndStartProgress() {
-    isProgressLoading.value = true;
-    resetErrorMessage();
+  isProgressLoading.value = true;
+  resetErrorMessage();
 }
 
 function maskAndStopProgress() {
-    isProgressLoading.value = false;
-    backendErrorMessage.value = "";
+  isProgressLoading.value = false;
+  backendErrorMessage.value = null;
 }
 
 function stopAnalyse() {
-    isProgressLoading.value = false;
+  isProgressLoading.value = false;
 }
 
 function redirect() {
+  setTimeout(() => {
     router.push('/resultats');
+  }, 0);
 }
 
 function resetErrorMessage() {
-    messageErreur.value = null;
-    backendErrorMessage.value = null;
+  messageErreur.value = null;
+  backendErrorMessage.value = null;
 }
 </script>

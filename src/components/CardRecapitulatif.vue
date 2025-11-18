@@ -1,83 +1,113 @@
 <template>
-  <v-row class="d-flex align-center" style="min-width: 330px">
-    <v-col style="color: lightgrey; font-weight: 400; font-size: 1.2em; width: 40px; max-width: 40px"><slot></slot></v-col>
-    <v-sheet style="border-left: 2px solid lightgrey; width: 18em" class="pa-5 mb-1" >
-
-      <v-row class="d-flex justify-space-between align-center">
-        <span>Nb. total de PPN analysés :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnTotal.length === 0" elevation="0" class="button" x-small color="#0c5c92">
-          <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnTotal)" name="ppn_analyses.csv">
+  <v-row class="d-flex align-center" style="width: 350px">
+    <v-col cols="2" style="color: lightgrey; font-weight: 400; font-size: 1.2em; width: 40px; max-width: 40px;">
+      <slot></slot>
+    </v-col>
+    <v-col cols="10" style="border-left: 2px solid lightgrey; white-space: nowrap;">
+      <v-row>
+        <v-col cols="10">
+          <span>Nb. total de PPN analysés :</span>
+        </v-col>
+        <v-col cols="2">
+          <DownloadCsv
+              :data="itemsToExport(resultatsToDisplay.PpnTotal)"
+              :disabled="resultatsToDisplay.PpnTotal.length === 0"
+              delimiter=";"
+              name="ppn_analyses.csv"
+              size="x-small">
             <span>
               {{ resultatsToDisplay.PpnTotal.length }}
             </span>
-          </download-csv>
-        </v-btn>
+          </DownloadCsv>
+        </v-col>
       </v-row>
-      <v-row class="d-flex justify-space-between align-center">
-        <span>Nb. de PPN avec erreurs :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnErreurs.length === 0" elevation="0" class="button" x-small color="#0c5c92">
-          <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnErreurs)" name="ppn_avec_erreurs.csv">
-            <span>
-              {{ resultatsToDisplay.PpnErreurs.length }}
-            </span>
-          </download-csv>
-        </v-btn>
+      <v-row>
+        <v-col cols="10">
+          <span>Nb. de PPN avec erreurs :</span>
+        </v-col>
+        <v-col cols="2">
+          <DownloadCsv
+              :data="itemsToExport(resultatsToDisplay.PpnErreurs)"
+              :disabled="resultatsToDisplay.PpnErreurs.length === 0"
+              delimiter=";"
+              name="ppn_avec_erreurs.csv"
+              size="x-small">
+          <span>
+            {{ resultatsToDisplay.PpnErreurs.length }}
+          </span>
+          </DownloadCsv>
+        </v-col>
       </v-row>
-      <v-row class="d-flex justify-space-between align-center">
-        <span>Nb. de PPN sans erreur :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnOk.length === 0" elevation="0" class="button" x-small color="#0c5c92">
-          <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnOk)" name="ppn_sans_erreur.csv">
-            <span>
-              {{ resultatsToDisplay.PpnOk.length }}
-            </span>
-          </download-csv>
-        </v-btn>
+      <v-row>
+        <v-col cols="10">
+          <span>Nb. de PPN sans erreur :</span>
+        </v-col>
+        <v-col cols="2">
+          <DownloadCsv
+              :data="itemsToExport(resultatsToDisplay.PpnOk)"
+              :disabled="resultatsToDisplay.PpnOk.length === 0"
+              delimiter=";"
+              name="ppn_sans_erreur.csv"
+              size="x-small">
+          <span>
+            {{ resultatsToDisplay.PpnOk.length }}
+          </span>
+          </DownloadCsv>
+        </v-col>
       </v-row>
-      <v-row class="d-flex justify-space-between align-center">
-        <span>Nb. de PPN non trouvés :</span>
-        <v-btn :disabled="resultatsToDisplay.PpnInconnus.length === 0" elevation="0" class="button" x-small color="#0c5c92">
-          <download-csv :delimiter="';'" :data="itemsToExport(resultatsToDisplay.PpnInconnus)" name="ppn_inconnus.csv">
+      <v-row>
+        <v-col cols="10">
+          <span>Nb. de PPN non trouvés :</span>
+        </v-col>
+        <v-col cols="2">
+          <DownloadCsv
+              :data="itemsToExport(resultatsToDisplay.PpnInconnus)"
+              :disabled="resultatsToDisplay.PpnInconnus.length === 0"
+              delimiter=";"
+              name="ppn_inconnus.csv"
+              size="x-small">
             <span>
               {{ resultatsToDisplay.PpnInconnus.length }}
             </span>
-          </download-csv>
-        </v-btn>
+          </DownloadCsv>
+        </v-col>
       </v-row>
-    </v-sheet>
+    </v-col>
   </v-row>
 </template>
 <script setup>
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
+import DownloadCsv from "@/components/DownloadCsv.vue";
 
 const props = defineProps({
   // props
-  'resultats': {
-    type: [],
+  resultats: {
+    type: Object,
     required: true
   }
 });
 
-const resultatsToDisplay = ref({
-  PpnTotal: [],
-  PpnErreurs: [],
-  PpnOk: [],
-  PpnInconnus: []
-});
-
-onMounted(() => {
-  resultatsToDisplay.value = props.resultats;
-});
+const resultatsToDisplay = ref(props.resultats);
 
 function itemsToExport(items) {
   let itemsToExport = [];
   items.forEach(ppn => {
-    itemsToExport.push({'ppn':ppn});
+    itemsToExport.push({'ppn': ppn});
   })
   return itemsToExport;
 }
 </script>
 <style scoped>
 .button {
-  color:white;
+  color: white;
+}
+
+.v-col {
+  padding: 2px !important;
+}
+
+.v-row {
+  margin: 0 !important;
+  flex: none;
 }
 </style>

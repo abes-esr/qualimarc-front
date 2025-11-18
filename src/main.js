@@ -1,23 +1,27 @@
-import Vue from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
-import router from './router'
+import router from '@/router'
 import vuetify from './plugins/vuetify'
-import 'roboto-fontface/css/roboto/roboto-fontface.css'
-import '@mdi/font/css/materialdesignicons.css'
-import { createPinia, PiniaVuePlugin } from 'pinia'
-import JsonCSV from 'vue-json-csv';
-import VueMatomo from 'vue-matomo';
+import {createPinia} from 'pinia'
+import VueMatomo from 'vue-matomo'
 
-Vue.use(PiniaVuePlugin)
-Vue.use(require('vue-shortkey'))
+// Création de l'app
+const app = createApp(App)
+
+// Création du store
+app.use(createPinia())
+
+// Router & plugins
+app.use(router)
+app.use(vuetify)
 
 // utilisation de piwik/matomo uniquement en production
-if(process.env.VUE_APP_ROOT_API.includes('qualimarc.sudoc')){
-  Vue.use(VueMatomo, {
-    host: "https://piwik.abes.fr/",
+if (import.meta.env.VITE_APP_ROOT_API?.includes('qualimarc.sudoc')) {
+  app.use(VueMatomo, {
+    host: 'https://piwik.abes.fr/',
     siteId: 35,
     trackerFileName: 'matomo',
-    router: router,
+    router,
     enableLinkTracking: true,
     requireConsent: false,
     trackInitialView: true,
@@ -29,17 +33,9 @@ if(process.env.VUE_APP_ROOT_API.includes('qualimarc.sudoc')){
     cookieDomain: undefined,
     domains: undefined,
     preInitActions: []
-  });
+  })
 }
 
-const pinia = createPinia()
 
-Vue.config.productionTip = false
-Vue.component('downloadCsv', JsonCSV);
-
-new Vue({
-  router,
-  pinia,
-  vuetify,
-  render: function (h) { return h(App) }
-}).$mount('#app')
+// Monter l'application
+app.mount('#app')

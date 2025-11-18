@@ -5,15 +5,15 @@ export QUALIMARC_FRONT_API_BASEURL=${QUALIMARC_FRONT_API_BASEURL:='http://localh
 
 
 # Remplace les placeholders dans le code généré en prod
-# QUALIMARC_PLACEHOLDER_VUE_APP_ROOT_API
+# QUALIMARC_PLACEHOLDER_VITE_APP_ROOT_API
 # On va remplacer les placeholders depuis les JS originales
 echo "-> Remplacement des placeholders venant du .env de vuejs dans la destination /usr/share/nginx/html/"
 echo "-> QUALIMARC_FRONT_API_BASEURL=${QUALIMARC_FRONT_API_BASEURL}"
 rm -rf /usr/share/nginx/html/
 cp -rf /usr/share/nginx/html.orig/ /usr/share/nginx/html/
 sed -i \
-  "s#QUALIMARC_PLACEHOLDER_VUE_APP_ROOT_API#${QUALIMARC_FRONT_API_BASEURL}#g" \
-  /usr/share/nginx/html/js/*
+  "s#QUALIMARC_PLACEHOLDER_VITE_APP_ROOT_API#${QUALIMARC_FRONT_API_BASEURL}#g" \
+  /usr/share/nginx/html/assets/*
 
 
 # execute nginx (cf CMD dans Dockerfile)

@@ -3,8 +3,9 @@
   "version": "1.0.11-SNAPSHOT",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --port 8080 --host 0.0.0.0",
-    "build": "vue-cli-service build"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "explanations-dependencies": {
     "@mdi/font": "Distribution de Webfont pour les icônes de Material Design. Utilisé par vuetify",
@@ -12,27 +13,21 @@
     "roboto-fontface": "Un paquetage simple fournissant la police de caractères Roboto. Utilisé par vuetify et installé lors de son installation"
   },
   "dependencies": {
-    "@mdi/font": "^5.9.55",
+    "@mdi/font": "^7.4.47",
     "@pinia/nuxt": "^0.4.0",
     "axios": "^1.12.2",
-    "pinia": "^2.0.17",
+    "pinia": "^3.0.3",
     "roboto-fontface": "*",
-    "vue": "^2.7.8",
-    "vue-json-csv": "^1.2.12",
+    "vite": "^7.1.9",
+    "vue": "^3.5.22",
     "vue-matomo": "^4.2.0",
-    "vue-router": "^3.6.3",
-    "vue-shortkey": "^3.1.7",
-    "vuetify": "^2.6.0"
+    "vue-router": "^4.5.1",
+    "vuetify": "^3.10.5"
   },
   "devDependencies": {
-    "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
+    "@vitejs/plugin-vue": "^6.0.1",
     "cypress": "^15.3.0",
-    "sass": "~1.32.0",
-    "sass-loader": "^10.0.0",
-    "vue-cli-plugin-vuetify": "~2.5.1",
-    "vue-template-compiler": "^2.6.14",
-    "vuetify-loader": "^1.7.0"
+    "sass": "^1.93.2"
   },
   "browserslist": [
     "> 1%",
