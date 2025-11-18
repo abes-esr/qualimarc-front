@@ -24,14 +24,13 @@ COPY ./*.json                       /build/
 COPY ./index.html                   /build/index.html
 COPY ./src/                         /build/src/
 COPY ./public/                      /build/public/
-RUN echo "VITE_APP_ROOT_API=" > /build/.env
+COPY ./docker/vuejs_env_placeholder /build/.env
 # lance les tests cypress dans un RUN unique
 # pour lancer en tache de fond le serveur web avec npm
 # puis exécuter les tests cyrpress et stopper le processu
 # de build docker si jamais un test ne passe pas
 #COPY ./cypress/                         /build/cypress/
 
-COPY ./docker/vuejs_env_placeholder /build/.env
 RUN npm run build
 #RUN (npm run serve &) && \
 #    sleep 30s && \
