@@ -160,7 +160,7 @@ const isDragging = ref(false);
 
 //Combobox
 const lastValuesTypedOrPasted = ref(""); //Dernière Chaîne de caractères saisie dans la combobox, servant à alimenter ensuite ppnListTyped
-const ppnListCombobox = ref((route.query.numeroAnalyse && historiqueStore.getHistorique.length !== 0) ? historiqueStore.getHistorique[route.query.numeroAnalyse].analyse.ppnValidsList : ['123456987','123456789','017559782','006008577']); //Tableau de ppn alimenté par les chaînes de caractères mises dans la combobox
+const ppnListCombobox = ref((route.query.numeroAnalyse && historiqueStore.getHistorique.length !== 0) ? historiqueStore.getHistorique[route.query.numeroAnalyse].analyse.ppnValidsList : []); //Tableau de ppn alimenté par les chaînes de caractères mises dans la combobox
 const ppnInvalids = ref([]); //Tableau des ppn invalides saisis par l'utilisateur
 
 //Import de fichier
