@@ -23,7 +23,7 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
 })
 
-const currentPpn = defineModel('currentPpn', {type: String});
+const currentPpn = defineModel('currentPpn', {type: [String, null]});
 const props = defineProps({itemsSortedAndFiltered: Array });
 
 
