@@ -102,18 +102,21 @@
 </template>
 
 <script setup>
-import {onUpdated, ref, watchEffect} from "vue";
+import {onUpdated, ref, watch, watchEffect} from "vue";
 import {useResultatStore} from "@/stores/resultat";
 import CoverService from "@/service/CoverService";
 import BlocAucuneDonnee from "@/components/BlocAucuneDonnee";
 
 const props = defineProps({itemsSortedAndFiltered: Array});
+
 const emit = defineEmits(['backendError']);
-const currentPpn = defineModel('currentPpn', {type: String, required: true});
+const currentPpn = defineModel('currentPpn', {type: [String, null], required: true});
 
 const resultatStore = useResultatStore();
 
 const service = CoverService;
+
+const localItemsSortedAndFiltered = ref([...props.itemsSortedAndFiltered]);
 
 const page = ref(1);
 const coverLink = ref('');
@@ -126,6 +129,13 @@ const headers = [
   {title: "Règle essentielle|Règle avancée", key: "priority"}
 ];
 
+watch(
+    () => props.itemsSortedAndFiltered,
+    (newItems) => {
+      localItemsSortedAndFiltered.value = [...newItems]; // copie à chaque changement
+    },
+    { deep: true, immediate: true }
+);
 
 /**
  * Fonction qui permet de vérifier un changement de valeur du ppn courant
@@ -291,7 +301,7 @@ function getPriority(priority) {
 }
 
 function getLinkGuideMethodo(zone) {
-  if (zone != undefined) {
+  if (zone !== undefined) {
     let link = "https://documentation.abes.fr/sudoc/formats/unmb/zones/"
     if (zone.indexOf("$") > 1)
       link += zone.substring(0, 3);

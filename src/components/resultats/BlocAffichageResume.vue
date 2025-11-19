@@ -63,7 +63,7 @@
       <template v-slot:item="{ item }">
         <tr v-if="(xs || isMobileForced)" :class="classItemMasked(item)" @click="sendCurrentPpnToParent($event, item)">
           <td colspan="100%">
-            <v-row class="ma-0 py-2 d-flex align-center justify-space-between" >
+            <v-row class="ma-0 py-2 d-flex align-center justify-space-between">
               <div>
                 Aff/Masq.
               </div>
@@ -192,15 +192,15 @@ const resultatStore = useResultatStore();
 const serviceApi = QualimarcService;
 
 const props = defineProps({nbLancement: Number, isMobileForced: Boolean});
-const currentPpn = defineModel('currentPpn', {type: String});
+const currentPpn = defineModel('currentPpn', {type: [String, null]});
 const itemsSortedAndFiltered = defineModel('itemsSortedAndFiltered', {type: Array});
 
 const size = '';
 const headers = [
-  {title: "Aff/Masq.", key: "affiche", width: 80, headerProps: {class: "headerTableClass"}},
-  {title: "PPN", key: "ppn", width: 80, headerProps: {class: "headerTableClass"}},
-  {title: "Type de document", key: "typeDocument", width: 140, headerProps: {class: "headerTableClass"}},
-  {title: "Nb. erreurs", key: "nberreurs", width: 100, headerProps: {class: "headerTableClass"}}
+  {title: "Aff/Masq.", key: "affiche", headerProps: {class: "headerTableClass"}},
+  {title: "PPN", key: "ppn", headerProps: {class: "headerTableClass"}},
+  {title: "Type de document", key: "typeDocument", headerProps: {class: "headerTableClass"}},
+  {title: "Nb. erreurs", key: "nberreurs", headerProps: {class: "headerTableClass"}}
 ];
 const loading = ref(false);
 const items = ref([]);
@@ -215,16 +215,18 @@ const {xs, smAndDown, mdAndDown, mdAndUp, name: breakPointName} = useDisplay()
 const allDisplayed = ref(true);
 
 onMounted(() => {
-  feedItems();
-  feedTypeList();
+  loadItems();
+  loadTypeList();
 })
 
 watchEffect(() => {
   if (currentPpn.value) {
     updateItemSelected(currentPpn.value)
+  } else {
+    modelDataTable.value = [];
   }
   if (props.nbLancement) {
-    feedItems()
+    loadItems()
   }
 })
 
@@ -236,52 +238,47 @@ function colorIconFilterTypeDoc() {
 }
 
 /**
- * fonction permetant de recuperer les ppns du store
+ * fonction permettant de recuperer les ppns du store
  */
-function feedItems() {
+function loadItems() {
   loading.value = true;
-  items.value = [];
-  resultatStore.getResultsList.forEach((el) => {
-    if (el.detailerreurs)
-      items.value.push({
+  items.value = resultatStore.getResultsList
+      .filter(el => el.detailerreurs)
+      .map(el => ({
         affiche: true,
         ppn: el.ppn,
         typeDocument: el.typeDocument,
         nberreurs: el.detailerreurs.length
-      })
-  });
-  itemsSortedAndFiltered.value = items.value;
-  ppnFiltered.value = items.value;
-  loading.value = false;
-  if (items.value.length > 0) {
-    currentPpn.value = items.value[0].ppn;
-  }
-}
+      }));
 
-/**
- * Fonction permettant de récupérer les PPN pour la création de la requête WINIBW
- */
-function getPpnList() {
-  let ppnList = [];
-  let listItems = (ppnFiltered.value.length === 0 || selectedTypeDoc.value === "Tous") ? items.value : ppnFiltered.value;
-  listItems.forEach(item => {
-    ppnList.push(item.ppn);
-  });
-  return ppnList;
+
+  ppnFiltered.value = [...items.value];
+  itemsSortedAndFiltered.value = [...items.value];
+  loading.value = false;
+
+
+  currentPpn.value = items.value.length > 0 ? items.value[0].ppn : null;
 }
 
 /**
  * Fonction permettant d'initialiser les listes de types de documents affichés dans le filtre
  */
-function feedTypeList() {
-  selectType.value.push("Tous");
-  serviceApi.getFamillesDocuments()
-      .then((response) => {
-        response.data.forEach((el) => selectType.value.push(el.libelle));
-      }).catch((error) => {
-    //TODO : emit erreur si impossible de récupérer les types via appel axios
-    //emitOnError(error);
+function loadTypeList() {
+  selectType.value = ["Tous"];
+  serviceApi.getFamillesDocuments().then(res => {
+    res.data.forEach(el => selectType.value.push(el.libelle));
   });
+}
+
+
+/**
+ * Fonction permettant de récupérer les PPN pour la création de la requête WINIBW
+ */
+function getPpnList() {
+  const source = ppnFiltered.value.length === 0 || selectedTypeDoc.value.includes("Tous")
+      ? items.value
+      : ppnFiltered.value;
+  return source.map(i => i.ppn);
 }
 
 /**
@@ -365,31 +362,29 @@ function updateSelectedDocumentTypes(type) {
     selectedTypeDoc.value = [type];
   }
 }
+
 /**
  * Function qui permet de trier la liste de item à afficher dans la dataTable
  * en fonction du.des types de documents
  * sélectionnés
  */
 function filterPpnByType() {
-  if (selectedTypeDoc.value.indexOf("Tous") >= 0) { //  Si le selectedTypeDoc choisi est tous
+  if (selectedTypeDoc.value.indexOf("Tous") >= 0) {
     ppnFiltered.value = items.value;
-  } else if (selectedTypeDoc.value.length >= 1 && selectedTypeDoc.value.indexOf("Tous") === -1) {  //  Si le selectedTypeDoc choisi n'est pas "Tous"
-    ppnFiltered.value = new Array(0);
-    let tempRulesFilterByTypeDocList = new Set();
-    for (let i = 0; i < selectedTypeDoc.value.length; i++) {
-      let tempList = items.value.filter(item => {
-        return item['typeDocument'].toLocaleLowerCase().includes(selectedTypeDoc.value[i].toString().toLocaleLowerCase())
-      });
-      tempList.forEach(item => {
-        tempRulesFilterByTypeDocList.add(item);
-      })
-    }
-    tempRulesFilterByTypeDocList.forEach(item => {
-      ppnFiltered.value.push(item)
-    })
-  } else if (selectedTypeDoc.value.length === 0) { //  Si aucun selectedTypeDoc n'est sélectionné
+    selectedTypeDoc.value = ["Tous"];
+    selectedCheckbox.value = ["Tous"];
+  } else if (selectedTypeDoc.value.length >= 1) {
+    ppnFiltered.value = items.value.filter(item =>
+        selectedTypeDoc.value.includes(item.typeDocument)
+    );
+  } else {
     ppnFiltered.value = items.value;
-    selectedTypeDoc.value = selectedCheckbox.value = new Array("Tous");
+    selectedTypeDoc.value = selectedCheckbox.value = ["Tous"];
+  }
+  itemsSortedAndFiltered.value = [...ppnFiltered.value];
+
+  if (!ppnFiltered.value.some(item => item.ppn === currentPpn.value)) {
+    currentPpn.value = ppnFiltered.value.length > 0 ? ppnFiltered.value[0].ppn : null;
   }
 }
 
@@ -401,7 +396,6 @@ function updateItemSelected(ppn) {
 
 /**
  * Fonction qui permet d'afficher ou de masquer toutes les lignes
- * @param value
  */
 function toggleMask() {
   ppnFiltered.value.forEach(item => {
