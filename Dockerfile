@@ -38,8 +38,6 @@ RUN npm run build
 #    npx cypress run
 RUN npm prune --production
 
-
-
 ####
 ## Serveur web (nginx) pour exec l'appli vuejs
 FROM nginx:1.20.2 AS front-image
