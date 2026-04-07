@@ -49,16 +49,16 @@
               <template v-slot:activator="{ props }">
                 <v-btn :depressed="mdAndUp" :size="mdAndUp ? 'small' : 'x-small'"
                        :style="(mdAndUp) ? 'margin-right: 10px' : 'margin-right: 3px'"
-                       aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP"
-                       color="white" fab href="https://stp.abes.fr/node/3?origine=sudocpro"
+                       aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du guichet d'assistance"
+                       color="white" fab href="https://assistance.stp.abes.fr"
                        icon
                        target="_blank"
                        v-bind="props">
                   <v-img :height="(mdAndUp) ? '34px' : '24px'" :src="chatBubbles" :width="(mdAndUp) ? '34px' : '24px'"
-                         alt="Poser une question sur Abes STP"></v-img>
+                         alt="Poser une question sur le guichet d'assistance"></v-img>
                 </v-btn>
               </template>
-              <span style="color: white">Ouvre Abes STP dans un nouvel onglet</span>
+              <span style="color: white">Ouvre le guichet d'assistance dans un nouvel onglet</span>
             </v-tooltip>
             <v-tooltip color="#54576D" dark location="bottom">
               <template v-slot:activator="{ props }">
