@@ -35,9 +35,9 @@
              <v-icon color="#cf491b" small>mdi-chevron-right</v-icon>
              <v-tooltip location="end" color="#54576D" dark>
                <template v-slot:activator="{ props }">
-                 <a v-bind="props" href="https://stp.abes.fr/node/3?origine=sudocpro" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP" target="_blank" class="linkBlue">Guichet Abes STP</a>
+                 <a v-bind="props" href="https://assistance.stp.abes.fr" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet d'assistance" target="_blank" class="linkBlue">Guichet Abes STP</a>
                </template>
-               <span style="color: white">Ouvre Abes STP dans un nouvel onglet</span>
+               <span style="color: white">Ouvre le guichet d'assistance dans un nouvel onglet</span>
              </v-tooltip>
            </span>
          </v-container>
@@ -71,9 +71,9 @@
              <v-icon color="#cf491b" small>mdi-chevron-right</v-icon>
              <v-tooltip location="bottom" color="#54576D" dark>
                <template v-slot:activator="{ props }">
-                 <a v-bind="props" href="https://stp.abes.fr/node/3?origine=sudocpro" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP" target="_blank" class="linkBlue">Guichet Abes STP</a>
+                 <a v-bind="props" href="https://assistance.stp.abes.fr" aria-label="Ouvre, dans un nouvel onglet du navigateur, la page internet du Guichet Abes STP" target="_blank" class="linkBlue">Guichet Abes STP</a>
                </template>
-               <span style="color: white">Ouvre Abes STP dans un nouvel onglet</span>
+               <span style="color: white">Ouvre le guichet d'assistance dans un nouvel onglet</span>
              </v-tooltip>
            </span>
           </v-container>
