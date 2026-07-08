@@ -51,6 +51,7 @@ const count = ref('0%');
 const isCanceled = ref(false);
 const pollingIntervalId = ref(null);
 const isStatusRequestPending = ref(false);
+const isResultRequestPending = ref(false);
 
 watch(isLoading, (loading) => {
     if (loading) {
@@ -68,23 +69,35 @@ onBeforeUnmount(() => {
 function startPolling() {
     count.value = '0%';
     isCanceled.value = false;
+    isStatusRequestPending.value = false;
+    isResultRequestPending.value = false;
     stopPolling();
 
     pollingIntervalId.value = window.setInterval(async () => {
-        if ((count.value === '100%') && !isLoading.value) {
-            stopPolling();
-            finish();
-            return;
-        }
-
         if (isCanceled.value) {
             stopPolling();
             return;
         }
 
         if (count.value.replace('%', '') > 100) {
-            emit('error', 'Une erreur inattendue est survenue sur le serveur. Merci de relancer votre analyse.');
-            cancel();
+            handleUnexpectedError();
+            return;
+        }
+
+        if ((count.value === '100%') && !isResultRequestPending.value) {
+            isResultRequestPending.value = true;
+            try {
+                const response = await serviceApi.getResult();
+                if (response?.status === 200) {
+                    serviceApi.logAnalysisDuration('terminee');
+                    isLoading.value = false;
+                    finish(response.data);
+                }
+            } catch (error) {
+                handleUnexpectedError(error);
+            } finally {
+                isResultRequestPending.value = false;
+            }
             return;
         }
 
@@ -95,6 +108,8 @@ function startPolling() {
                 if (response?.data) {
                     count.value = response.data;
                 }
+            } catch (error) {
+                handleUnexpectedError(error);
             } finally {
                 isStatusRequestPending.value = false;
             }
@@ -112,13 +127,21 @@ function stopPolling() {
 function cancel() {
     isCanceled.value = true;
     stopPolling();
+    serviceApi.logAnalysisDuration('annulee');
     serviceApi.cancel();
     emit('cancel', true);
 }
 
-function finish() {
+function finish(result) {
     stopPolling();
-    emit('finished');
+    emit('finished', result);
+}
+
+function handleUnexpectedError() {
+    stopPolling();
+    isLoading.value = false;
+    serviceApi.logAnalysisDuration('en erreur');
+    emit('error', 'Une erreur inattendue est survenue sur le serveur. Merci de relancer votre analyse.');
 }
 </script>
 

@@ -3,7 +3,7 @@
     <h1 class="ml-1 mb-2 fontPrimaryColor" style="font-size: 1em; font-weight: 400">Outil d'analyse des notices
       bibliographiques du Sudoc</h1>
     <progress-bar v-model:isLoading="isProgressLoading" @cancel="stopAnalyse" @error="setMessageErreur"
-                  @finished="redirect"></progress-bar>
+                  @finished="handleAnalysisFinished"></progress-bar>
     <v-row class="mb-2 pa-2" justify="space-between">
       <v-col class="ma-2 pa-2" style="min-height: 34em;">
         <h2 style="font-size: 1.26em; color : #252C61; font-weight: bold">
@@ -26,7 +26,6 @@
             :isDisabled="(isPpnListIsEmpty || !isAnalyseSelected)"
             class="mb-2 pa-0"
             @backendError="setBackendError"
-            @finished="maskAndStopProgress"
             @started="displayAndStartProgress"
         >
           Lancer l'analyse
@@ -44,6 +43,7 @@ import {onMounted, ref} from 'vue';
 import router from "@/router";
 import {useResultatStore} from "@/stores/resultat";
 import {useAnalyseStore} from "@/stores/analyse";
+import {useHistoriqueStore} from "@/stores/historique";
 import ProgressBar from "@/components/ProgressBar.vue";
 
 const isAnalyseSelected = ref(false);
@@ -54,6 +54,7 @@ const messageErreur = ref(null);
 //Store
 const resultatStore = useResultatStore();
 const analyseStore = useAnalyseStore();
+const historiqueStore = useHistoriqueStore();
 
 onMounted(() => {
   resultatStore.$reset();
@@ -90,19 +91,33 @@ function displayAndStartProgress() {
   resetErrorMessage();
 }
 
-function maskAndStopProgress() {
+function handleAnalysisFinished(responseData) {
+  resultatStore.setResultsListArray(responseData.resultRules);
+  resultatStore.pushRecapitulatif(
+    responseData.ppnAnalyses,
+    responseData.ppnInconnus,
+    responseData.ppnErrones,
+    responseData.ppnOk
+  );
+  historiqueStore.createNewHistorique(
+      {
+        ppnValidsList: analyseStore.getPpnValidsList,
+        ppnInvalidsList: analyseStore.getPpnInvalidsList,
+        analyseSelected : analyseStore.getAnalyseSelected,
+        familleDocumentSet : analyseStore.getFamilleDocumentSet,
+        ruleSet : analyseStore.getRuleSet,
+      },
+      resultatStore.getLastRecapitulatif
+  );
   isProgressLoading.value = false;
   backendErrorMessage.value = null;
+  setTimeout(() => {
+    router.push('/resultats');
+  }, 0);
 }
 
 function stopAnalyse() {
   isProgressLoading.value = false;
-}
-
-function redirect() {
-  setTimeout(() => {
-    router.push('/resultats');
-  }, 0);
 }
 
 function resetErrorMessage() {
