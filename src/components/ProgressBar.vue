@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import {ref, watchEffect} from 'vue';
+import {onBeforeUnmount, ref, watch} from 'vue';
 import QualimarcService from "@/service/QualimarcService";
 
 const isLoading = defineModel('isLoading', { type: Boolean, default: false });
@@ -49,60 +49,75 @@ const serviceApi = QualimarcService;
 
 const count = ref('0%');
 const isCanceled = ref(false);
-const analysisInitialized = ref(false);
-const analysisCompleted = ref(false);
+const pollingIntervalId = ref(null);
+const isStatusRequestPending = ref(false);
 
-watchEffect(() => {
-    if (isLoading.value) {
-        runProgress();
+watch(isLoading, (loading) => {
+    if (loading) {
+        startPolling();
     }
-})
+});
+
+onBeforeUnmount(() => {
+    stopPolling();
+});
 
 /**
- * Permet de faire plusieurs appel au service pour simuler un chargement
- *
+ * Lance une unique boucle de polling pour suivre la progression.
  */
-function runProgress() {
+function startPolling() {
     count.value = '0%';
     isCanceled.value = false;
-    const interval = setInterval(() => {
-        // cas de réussite
+    stopPolling();
+
+    pollingIntervalId.value = window.setInterval(async () => {
         if ((count.value === '100%') && !isLoading.value) {
-            analysisCompleted.value = true;
-            clearInterval(interval);
+            stopPolling();
             finish();
+            return;
         }
 
-        // cas ou l'analyse est stoppée
         if (isCanceled.value) {
-            clearInterval(interval)
+            stopPolling();
+            return;
         }
 
-        // cas ou le back arrive à envoyer un pourcentage au dessus de 100% (c'est déjà arrivé)
         if (count.value.replace('%', '') > 100) {
-            emit('error', 'Un erreur inattendue est survenue sur le serveur. Merci de relancer votre analyse.')
+            emit('error', 'Une erreur inattendue est survenue sur le serveur. Merci de relancer votre analyse.');
             cancel();
-            clearInterval(interval);
+            return;
         }
 
-        //cas ou l'analyse n'est pas finie
-        if (count.value !== '100%') {
-            serviceApi.getStatus().then((response) => {
-                count.value = response.data; // set la valeur de la barre de progression
-            });
+        if ((count.value !== '100%') && !isStatusRequestPending.value) {
+            isStatusRequestPending.value = true;
+            try {
+                const response = await serviceApi.getStatus();
+                if (response?.data) {
+                    count.value = response.data;
+                }
+            } finally {
+                isStatusRequestPending.value = false;
+            }
         }
-    }, 500)
-    return () => clearInterval(interval)
+    }, 500);
+}
+
+function stopPolling() {
+    if (pollingIntervalId.value !== null) {
+        clearInterval(pollingIntervalId.value);
+        pollingIntervalId.value = null;
+    }
 }
 
 function cancel() {
     isCanceled.value = true;
+    stopPolling();
     serviceApi.cancel();
     emit('cancel', true);
 }
 
 function finish() {
-    analysisCompleted.value = false;
+    stopPolling();
     emit('finished');
 }
 </script>
