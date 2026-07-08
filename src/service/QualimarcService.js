@@ -126,7 +126,14 @@ export class QualimarcService {
      */
     async getStatus() {
         await this.ensureRandomId();
-        return this.client.get("getStatus/"+this.randomId, {signal: this.controller.signal})
+        try {
+            return await this.client.get("getStatus/" + this.randomId, {signal: this.controller.signal})
+        } catch (error) {
+            if (error.message === 'canceled' || error.code === 'ERR_CANCELED') {
+                return null;
+            }
+            throw error;
+        }
     }
 
 }

@@ -37,10 +37,15 @@ const serviceApi = QualimarcService;
 const spinnerActive = ref(false);
 
 function checkPpnWithTypeAnalyse() {
+  const startedAt = performance.now();
+  const ppnCount = analyseStore.getPpnValidsList.length;
+  const analysisType = analyseStore.getAnalyseSelected.id;
+
   spinnerActive.value = true;
   emit('started');
   serviceApi.checkPpnWithTypeAnalyse(analyseStore.getPpnValidsList, analyseStore.getAnalyseSelected.id, analyseStore.getFamilleDocumentSet, analyseStore.getRuleSet, props.isReplay)
     .then((response) => {
+      logAnalysisDuration('terminee', startedAt, ppnCount, analysisType);
       resultatStore.setResultsListArray(response.data.resultRules);
       resultatStore.pushRecapitulatif(
         response.data.ppnAnalyses,
@@ -68,12 +73,25 @@ function checkPpnWithTypeAnalyse() {
     })
     .catch((error) => {
       if(error.message === 'canceled') {
-        // Annulation de la requête
+        logAnalysisDuration('annulee', startedAt, ppnCount, analysisType);
       }else {
+        logAnalysisDuration('en erreur', startedAt, ppnCount, analysisType);
         emitOnError(error);
       }
     })
     .finally(() => spinnerActive.value = false);
+}
+
+function logAnalysisDuration(status, startedAt, ppnCount, analysisType) {
+  const durationMs = Math.round(performance.now() - startedAt);
+
+  console.info('[Qualimarc] Analyse ' + status, {
+    dureeMs: durationMs,
+    dureeSecondes: Number((durationMs / 1000).toFixed(3)),
+    nbPpn: ppnCount,
+    typeAnalyse: analysisType,
+    replay: props.isReplay,
+  });
 }
 
 function emitOnError(error){
