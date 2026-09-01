@@ -5,7 +5,7 @@
         :items-sorted-and-filtered="itemsSortedAndFiltered"
     />
     <ProgressBar v-model:isLoading="isProgressLoading" @cancel="stopAnalyse"
-                 @error="stopAnalyse" @finished="handleReplayFinished"></ProgressBar>
+                 @finished="updateNbLancement"></ProgressBar>
     <div class="ma-0 pa-0 mb-2" style="color: #595959; font-size: 0.9em">
       <nav aria-label="fil d'Ariane" class="filAriane">
         <ul>
@@ -94,6 +94,7 @@
           <BoutonLancement
               class="ma-0 pa-0"
               is-replay
+              @finished="maskAndStopProgress"
               @started="displayAndStartProgress"
           >
             Relancer l'analyse
@@ -114,13 +115,11 @@ import DownloadCsv from "@/components/DownloadCsv.vue";
 
 import {onBeforeMount, ref} from "vue";
 import {useResultatStore} from "@/stores/resultat";
-import {useHistoriqueStore} from "@/stores/historique";
 import KeyboardNavigation from "@/components/resultats/KeyboardNavigation.vue";
 import {useRouter} from 'vue-router'
 
 const router = useRouter()
 const resultatStore = useResultatStore();
-const historiqueStore = useHistoriqueStore();
 
 const currentPpn = ref('');
 const itemsSortedAndFiltered = ref([]);
@@ -179,23 +178,12 @@ function updateNbLancement() {
   nbLancement.value = resultatStore.getRecapitulatif.length;
 }
 
-function handleReplayFinished(responseData) {
-  resultatStore.setResultsListArray(responseData.resultRules);
-  resultatStore.pushRecapitulatif(
-      responseData.ppnAnalyses,
-      responseData.ppnInconnus,
-      responseData.ppnErrones,
-      responseData.ppnOk
-  );
-  historiqueStore.pushReplayedResultatToLastHistorique(
-      resultatStore.getLastRecapitulatif
-  );
-  isProgressLoading.value = false;
-  updateNbLancement();
-}
-
 function displayAndStartProgress() {
   isProgressLoading.value = true;
+}
+
+function maskAndStopProgress() {
+  isProgressLoading.value = false;
 }
 
 function stopAnalyse() {

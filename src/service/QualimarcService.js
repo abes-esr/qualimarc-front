@@ -10,7 +10,6 @@ export class QualimarcService {
 
     controller = new AbortController();
     randomId = null;
-    currentAnalysis = null;
 
     async ensureRandomId() {
         if (!this.randomId) {
@@ -18,40 +17,10 @@ export class QualimarcService {
             this.randomId = response.data;
         }
     }
-
-    startAnalysisTracking(ppnCount, analysisType, isReplay) {
-        this.currentAnalysis = {
-            startedAt: performance.now(),
-            ppnCount: ppnCount,
-            analysisType: analysisType,
-            isReplay: isReplay,
-        };
-    }
-
-    logAnalysisDuration(status) {
-        if (!this.currentAnalysis) {
-            this.randomId = null;
-            return;
-        }
-
-        const durationMs = Math.round(performance.now() - this.currentAnalysis.startedAt);
-
-        console.info('[Qualimarc] Analyse ' + status, {
-            dureeMs: durationMs,
-            dureeSecondes: Number((durationMs / 1000).toFixed(3)),
-            nbPpn: this.currentAnalysis.ppnCount,
-            typeAnalyse: this.currentAnalysis.analysisType,
-            replay: this.currentAnalysis.isReplay,
-        });
-
-        this.currentAnalysis = null;
-        this.randomId = null;
-    }
-
     cancel() {
+        // Cancel the request
         this.controller.abort();
         this.controller = new AbortController();
-        this.randomId = null;
     }
 
         /**
@@ -64,7 +33,6 @@ export class QualimarcService {
          * @returns {Promise<AxiosResponse<any>>}
          */
     async checkPpnWithTypeAnalyse(ppnList, typeAnalyse, famillesDocuments, ruleSet, isReplay) {
-        this.randomId = null;
         await this.ensureRandomId();
         let data = {
             id: this.randomId,
@@ -158,26 +126,7 @@ export class QualimarcService {
      */
     async getStatus() {
         await this.ensureRandomId();
-        try {
-            return await this.client.get("getStatus/" + this.randomId, {signal: this.controller.signal})
-        } catch (error) {
-            if (error.message === 'canceled' || error.code === 'ERR_CANCELED') {
-                return null;
-            }
-            throw error;
-        }
-    }
-
-    async getResult() {
-        await this.ensureRandomId();
-        try {
-            return await this.client.get("result/" + this.randomId, {signal: this.controller.signal})
-        } catch (error) {
-            if (error.message === 'canceled' || error.code === 'ERR_CANCELED') {
-                return null;
-            }
-            throw error;
-        }
+        return this.client.get("getStatus/"+this.randomId, {signal: this.controller.signal})
     }
 
 }
