@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import {onBeforeUnmount, ref, watch} from 'vue';
+import {ref, watchEffect} from 'vue';
 import QualimarcService from "@/service/QualimarcService";
 
 const isLoading = defineModel('isLoading', { type: Boolean, default: false });
@@ -49,99 +49,61 @@ const serviceApi = QualimarcService;
 
 const count = ref('0%');
 const isCanceled = ref(false);
-const pollingIntervalId = ref(null);
-const isStatusRequestPending = ref(false);
-const isResultRequestPending = ref(false);
+const analysisInitialized = ref(false);
+const analysisCompleted = ref(false);
 
-watch(isLoading, (loading) => {
-    if (loading) {
-        startPolling();
+watchEffect(() => {
+    if (isLoading.value) {
+        runProgress();
     }
-});
-
-onBeforeUnmount(() => {
-    stopPolling();
-});
+})
 
 /**
- * Lance une unique boucle de polling pour suivre la progression.
+ * Permet de faire plusieurs appel au service pour simuler un chargement
+ *
  */
-function startPolling() {
+function runProgress() {
     count.value = '0%';
     isCanceled.value = false;
-    isStatusRequestPending.value = false;
-    isResultRequestPending.value = false;
-    stopPolling();
+    const interval = setInterval(() => {
+        // cas de réussite
+        if ((count.value === '100%') && !isLoading.value) {
+            analysisCompleted.value = true;
+            clearInterval(interval);
+            finish();
+        }
 
-    pollingIntervalId.value = window.setInterval(async () => {
+        // cas ou l'analyse est stoppée
         if (isCanceled.value) {
-            stopPolling();
-            return;
+            clearInterval(interval)
         }
 
+        // cas ou le back arrive à envoyer un pourcentage au dessus de 100% (c'est déjà arrivé)
         if (count.value.replace('%', '') > 100) {
-            handleUnexpectedError();
-            return;
+            emit('error', 'Un erreur inattendue est survenue sur le serveur. Merci de relancer votre analyse.')
+            cancel();
+            clearInterval(interval);
         }
 
-        if ((count.value === '100%') && !isResultRequestPending.value) {
-            isResultRequestPending.value = true;
-            try {
-                const response = await serviceApi.getResult();
-                if (response?.status === 200) {
-                    serviceApi.logAnalysisDuration('terminee');
-                    isLoading.value = false;
-                    finish(response.data);
-                }
-            } catch (error) {
-                handleUnexpectedError(error);
-            } finally {
-                isResultRequestPending.value = false;
-            }
-            return;
+        //cas ou l'analyse n'est pas finie
+        if (count.value !== '100%') {
+            serviceApi.getStatus().then((response) => {
+                count.value = response.data; // set la valeur de la barre de progression
+            });
         }
-
-        if ((count.value !== '100%') && !isStatusRequestPending.value) {
-            isStatusRequestPending.value = true;
-            try {
-                const response = await serviceApi.getStatus();
-                if (response?.data) {
-                    count.value = response.data;
-                }
-            } catch (error) {
-                handleUnexpectedError(error);
-            } finally {
-                isStatusRequestPending.value = false;
-            }
-        }
-    }, 500);
-}
-
-function stopPolling() {
-    if (pollingIntervalId.value !== null) {
-        clearInterval(pollingIntervalId.value);
-        pollingIntervalId.value = null;
-    }
+    }, 500)
+    return () => clearInterval(interval)
 }
 
 function cancel() {
     isCanceled.value = true;
-    stopPolling();
-    serviceApi.logAnalysisDuration('annulee');
     serviceApi.cancel();
     emit('cancel', true);
 }
 
-function finish(result) {
-    stopPolling();
-    emit('finished', result);
-}
-
-function handleUnexpectedError() {
-    stopPolling();
-    isLoading.value = false;
-    serviceApi.logAnalysisDuration('en erreur');
-    emit('error', 'Une erreur inattendue est survenue sur le serveur. Merci de relancer votre analyse.');
+function finish() {
+    analysisCompleted.value = false;
+    emit('finished');
 }
 </script>
 
