@@ -1,50 +1,55 @@
-function testValeurs() {
-    // Teste la valeur de chaque ppn
-    cy.get(':nth-child(1) > .v-chip__content').contains("123456789");
-    cy.get(':nth-child(2) > .v-chip__content').contains("123456790");
+describe("Ajout de PPN et vidage de la liste", () => {
+  beforeEach(() => {
+    cy.intercept("GET", "**/getAnalyses", { fixture: "analyses.json" }).as("getAnalyses");
+    cy.visit("/");
+    cy.wait("@getAnalyses");
+  });
 
-    // Teste de la visibilité du v-alert
-    cy.get('.v-alert').should('not.be.hidden');
+  function ajouteSaisie(texte) {
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] input').click().type(`${texte}{enter}`);
+  }
 
-    // Ouvre le v-alert
-    cy.get('.v-expansion-panel-header__icon > .v-icon').click();
+  function blocRecherche() {
+    return cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').parents("section");
+  }
 
-    // Teste de la valeur du chip dans le v-alert
-    cy.get('.v-expansion-panel-content__wrap > .v-chip > .v-chip__content').contains("45df753");
-    // Teste le vidage de la liste
-    // clique sur le chip avec data-cy=del_all_ppn
-    cy.get('[data-cy=del_all_ppn]').click({ multiple: true });
-    cy.get('.v-select__selections').should('have.value', '');
-}
+  function verifiePpnValidesEtInvalides() {
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] .v-chip__content').eq(0).should("contain", "123456789");
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] .v-chip__content').eq(1).should("contain", "123456790");
 
-describe('Ajout d\' ppn et vidage de la liste', () => {
-    it('Ajout de ppn un par un', () => {
+    blocRecherche().find(".v-alert").should("be.visible");
+    blocRecherche().find(".v-expansion-panel-title").click();
+    blocRecherche().find(".v-expansion-panel-text .v-chip__content").should("contain", "45df753");
+  }
 
-        // Teste l'ajout d'un ppn par ppn
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').click({multiple:true, force:true}).type("123456789 ");
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').type('{enter}');
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').click().type("123456790 ");
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').type('{enter}');
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').click().type("45df753");
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').type('{enter}');
+  function videLaListe() {
+    cy.get('[data-cy="del_all_ppn"]').click();
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] .v-chip').should("not.exist");
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] input').should("have.value", "");
+    blocRecherche().find(".v-alert").should("not.exist");
+  }
 
-        testValeurs();
-    })
+  it("Ajout de ppn un par un puis vidage de la liste", () => {
+    ajouteSaisie("123456789");
+    ajouteSaisie("123456790");
+    ajouteSaisie("45df753");
 
-    it ('Ajout d\'une liste de ppn',() => {
+    verifiePpnValidesEtInvalides();
+    videLaListe();
+  });
 
-        // Teste l'ajout d'une liste de ppn
-        cy.get('[data-cy="COMBOBOX_AJOUT_PPN"]').click({multiple:true, force:true}).type("123456789,123456790 45df753");
-        cy.get('.v-select__selections').type('{enter}');
+  it("Ajout d'une liste de ppn en une seule saisie", () => {
+    ajouteSaisie("123456789,123456790 45df753");
 
-        testValeurs();
-    })
+    verifiePpnValidesEtInvalides();
+    videLaListe();
+  });
 
-    it('Ajout d\'un fichier de ppn', () => {
-        // Teste l'ajout du fichier de ppn dans le input-file
-        cy.get('input[type=file]').selectFile('cypress/fixtures/ppnList.csv', {force: true});
+  it("Import d'un fichier de ppn", () => {
+    cy.get('input[type=file]').selectFile("cypress/fixtures/ppnList.csv", { force: true, mimeType: "text/plain" });
 
-        // Teste le contenu du input-file
-        cy.get('.v-file-input__text').contains('ppnList.csv');
-    })
-})
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] .v-chip').should("have.length", 10);
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] .v-chip__content').eq(0).should("contain", "224395084");
+    cy.get('[data-cy="COMBOBOX_AJOUT_PPN"] .v-chip__content').eq(9).should("contain", "114820414");
+  });
+});
