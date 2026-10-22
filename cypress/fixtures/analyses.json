@@ -1,0 +1,26 @@
+{
+  "analyses": [
+    {
+      "id": "QUICK",
+      "libelle": "Analyse rapide",
+      "description": "Règles essentielles"
+    },
+    {
+      "id": "COMPLETE",
+      "libelle": "Analyse experte",
+      "description": "Règles essentielles et avancées"
+    },
+    {
+      "id": "FOCUS",
+      "libelle": "Analyse ciblée",
+      "description": "Règles par familles de documents ou jeux de règles",
+      "famillesDocument": [
+        {
+          "id": "B",
+          "libelle": "Audiovisuel"
+        }
+      ],
+      "ruleSets": []
+    }
+  ]
+}
