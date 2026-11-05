@@ -1,6 +1,6 @@
 ###
 # Phase de compilation de l'appli vuejs
-FROM cypress/included:15.6.0 AS build-image
+FROM cypress/included:16.2.0 AS build-image
 WORKDIR /build/
 # Mise en cache docker pour le téléchargement
 # des dépendances npm (répertoire node_modules/)
@@ -40,7 +40,7 @@ RUN npm prune --production
 
 ####
 ## Serveur web (nginx) pour exec l'appli vuejs
-FROM nginx:1.20.2 AS front-image
+FROM nginx:1 AS front-image
 COPY --from=build-image /build/dist/ /usr/share/nginx/html.orig/
 COPY ./docker/nginx-default.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/docker-entrypoint.sh /docker-entrypoint.sh
