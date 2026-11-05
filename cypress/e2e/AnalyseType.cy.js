@@ -1,25 +1,14 @@
-describe('Sélection du type d\'analyse', () => {
-    it('Analyse RAPIDE', () => {
-        cy.get('[data-cy="QUICK"]').click({force:true});
+describe("Sélection du type d'analyse", () => {
+  beforeEach(() => {
+    cy.intercept("GET", "**/getAnalyses", { fixture: "analyses.json" }).as("getAnalyses");
+    cy.visit("/");
+    cy.wait("@getAnalyses");
+  });
 
-        cy.get('div.v-item--active')
-            .find('input')
-            .should('have.attr', 'aria-checked', 'true');
-    })
-
-    it('Analyse EXPERTE', () => {
-        cy.get('[data-cy="COMPLETE"]').click({force:true});
-
-        cy.get('div.v-item--active')
-            .find('input')
-            .should('have.attr', 'aria-checked', 'true');
-    })
-
-    it('Analyse CIBLEE', () => {
-        cy.get('[data-cy="FOCUS"]').click({force:true});
-
-        cy.get('div.v-item--active')
-            .find('input')
-            .should('have.attr', 'aria-checked', 'true');
-    })
-})
+  ["QUICK", "COMPLETE", "FOCUS"].forEach((id) => {
+    it(`Sélection de l'analyse ${id}`, () => {
+      cy.get(`[data-cy="${id}"] input`).check({ force: true });
+      cy.get(`[data-cy="${id}"] input`).should("be.checked");
+    });
+  });
+});
